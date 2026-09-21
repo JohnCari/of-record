@@ -240,22 +240,14 @@ export async function verifySentences(
 
     // Declared fact or law with nothing behind it: blocked, no model involved.
     if (sentence.kind === "fact" && sentence.recordCites.length === 0) {
-      out.push(
-        uncited("a sentence declared as fact carries no record cite", "code"),
-      );
+      out.push(uncited("a sentence declared as fact carries no record cite", "code"));
     }
     if (sentence.kind === "law" && sentence.authorityCites.length === 0) {
-      out.push(
-        uncited("a sentence declared as law carries no authority", "code"),
-      );
+      out.push(uncited("a sentence declared as law carries no authority", "code"));
     }
     // Declared argument, but the judge reads a fact or a rule in it. The drafter may be right, so
     // this goes to a person rather than blocking, which keeps classifier noise out of the gate.
-    if (
-      sentence.kind === "argument" &&
-      assertsFact &&
-      sentence.recordCites.length === 0
-    ) {
+    if (sentence.kind === "argument" && assertsFact && sentence.recordCites.length === 0) {
       out.push({
         ...uncited(
           "declared as argument, but it reads as asserting a fact and cites no record",
@@ -265,11 +257,7 @@ export async function verifySentences(
         confidence: kind?.assertsFact ?? null,
       });
     }
-    if (
-      sentence.kind === "argument" &&
-      statesLaw &&
-      sentence.authorityCites.length === 0
-    ) {
+    if (sentence.kind === "argument" && statesLaw && sentence.authorityCites.length === 0) {
       out.push({
         ...uncited(
           "declared as argument, but it reads as stating a rule and cites no authority",
@@ -307,11 +295,7 @@ export function statusOf(checks: Check[], threshold: number): SentenceStatus {
   const confident = (check: Check) =>
     check.stage === "code" || (check.confidence ?? 0) >= threshold;
 
-  if (checks.some((check) => BLOCKING.has(check.verdict) && confident(check)))
-    return "blocked";
-  if (
-    checks.some((check) => check.verdict === "ambiguous" || !confident(check))
-  )
-    return "review";
+  if (checks.some((check) => BLOCKING.has(check.verdict) && confident(check))) return "blocked";
+  if (checks.some((check) => check.verdict === "ambiguous" || !confident(check))) return "review";
   return "verified";
 }

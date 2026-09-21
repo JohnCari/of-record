@@ -29,10 +29,7 @@ export type JudgeUsage = {
  * there is no free-text channel through which it could introduce a fact or a citation.
  */
 export interface Judge {
-  support(
-    questions: SupportQuestion[],
-    signal?: AbortSignal,
-  ): Promise<Map<string, SupportAnswer>>;
+  support(questions: SupportQuestion[], signal?: AbortSignal): Promise<Map<string, SupportAnswer>>;
   classify(
     sentences: { id: string; text: string }[],
     signal?: AbortSignal,
@@ -40,25 +37,17 @@ export interface Judge {
   readonly usage: JudgeUsage;
 }
 
-const SUPPORT_CRITERIA: Record<
-  SupportQuestion["mode"],
-  Record<Relation, string>
-> = {
+const SUPPORT_CRITERIA: Record<SupportQuestion["mode"], Record<Relation, string>> = {
   fact: {
-    supports:
-      "The passage states the claim or directly implies that it is true",
-    contradicts:
-      "The passage states the opposite of the claim or implies that it is false",
-    says_nothing:
-      "The passage does not address what the claim asserts, either way",
+    supports: "The passage states the claim or directly implies that it is true",
+    contradicts: "The passage states the opposite of the claim or implies that it is false",
+    says_nothing: "The passage does not address what the claim asserts, either way",
   },
   law: {
-    supports:
-      "The passage states this rule or holding as the law the court applies",
+    supports: "The passage states this rule or holding as the law the court applies",
     contradicts:
       "The passage rejects this rule, states the opposite rule, or states it only as a party's argument or a dissenting view",
-    says_nothing:
-      "The passage concerns a similar topic but does not state this rule or holding",
+    says_nothing: "The passage concerns a similar topic but does not state this rule or holding",
   },
 };
 
@@ -72,10 +61,7 @@ function chunk<T>(items: T[], size: (item: T) => number): T[][] {
   let used = 0;
   for (const item of items) {
     const cost = size(item);
-    if (
-      current.length > 0 &&
-      (current.length >= MAX_QUESTIONS || used + cost > MAX_STATE_CHARS)
-    ) {
+    if (current.length > 0 && (current.length >= MAX_QUESTIONS || used + cost > MAX_STATE_CHARS)) {
       chunks.push(current);
       current = [];
       used = 0;
@@ -91,9 +77,7 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
   const model = options.model ?? "typesafe-ai/jev";
   const usage: JudgeUsage = { requests: 0, inputTokens: 0, outputTokens: 0 };
 
-  function record(result: {
-    usage: { inputTokens?: number; outputTokens?: number };
-  }) {
+  function record(result: { usage: { inputTokens?: number; outputTokens?: number } }) {
     usage.requests += 1;
     usage.inputTokens += result.usage.inputTokens ?? 0;
     usage.outputTokens += result.usage.outputTokens ?? 0;
@@ -104,19 +88,13 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
 
     async support(questions, signal) {
       const answers = new Map<string, SupportAnswer>();
-      const batches = chunk(
-        questions,
-        (q) => q.claim.length + q.passage.length,
-      );
+      const batches = chunk(questions, (q) => q.claim.length + q.passage.length);
 
       for (const batch of batches) {
         // Question keys are for code and are not sent to the model, so each question names its
         // own slice of the shared state by path.
         const items = Object.fromEntries(
-          batch.map((q, i) => [
-            `c${i}`,
-            { claim: q.claim, passage: q.passage },
-          ]),
+          batch.map((q, i) => [`c${i}`, { claim: q.claim, passage: q.passage }]),
         );
         const asked = Object.fromEntries(
           batch.map((q, i) => [
@@ -137,9 +115,7 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
         });
         record(result);
         const reported = (
-          result.providerMetadata?.typesafe as
-            | { confidence?: Record<string, number> }
-            | undefined
+          result.providerMetadata?.typesafe as { confidence?: Record<string, number> } | undefined
         )?.confidence;
 
         batch.forEach((q, i) => {
@@ -155,8 +131,7 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
           answers.set(q.id, {
             choice: answer.choice,
             probabilities,
-            confidence:
-              reported?.[`c${i}`] ?? Math.max(...Object.values(probabilities)),
+            confidence: reported?.[`c${i}`] ?? Math.max(...Object.values(probabilities)),
           });
         });
       }
@@ -166,20 +141,14 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
     async classify(sentences, signal) {
       const answers = new Map<string, KindAnswer>();
       // Two questions per sentence, so half as many sentences fit in a request.
-      const batches = chunk(sentences, (s) => s.text.length * 2).flatMap(
-        (batch) =>
-          batch.length > MAX_QUESTIONS / 2
-            ? [
-                batch.slice(0, MAX_QUESTIONS / 2),
-                batch.slice(MAX_QUESTIONS / 2),
-              ]
-            : [batch],
+      const batches = chunk(sentences, (s) => s.text.length * 2).flatMap((batch) =>
+        batch.length > MAX_QUESTIONS / 2
+          ? [batch.slice(0, MAX_QUESTIONS / 2), batch.slice(MAX_QUESTIONS / 2)]
+          : [batch],
       );
 
       for (const batch of batches) {
-        const items = Object.fromEntries(
-          batch.map((s, i) => [`s${i}`, s.text]),
-        );
+        const items = Object.fromEntries(batch.map((s, i) => [`s${i}`, s.text]));
         const asked = Object.fromEntries(
           batch.flatMap((_, i) => [
             [
@@ -218,11 +187,8 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
         record(result);
         batch.forEach((s, i) => {
           answers.set(s.id, {
-            assertsFact: (
-              result.answers[`s${i}_fact`] as { probability: number }
-            ).probability,
-            statesLaw: (result.answers[`s${i}_law`] as { probability: number })
-              .probability,
+            assertsFact: (result.answers[`s${i}_fact`] as { probability: number }).probability,
+            statesLaw: (result.answers[`s${i}_law`] as { probability: number }).probability,
           });
         });
       }

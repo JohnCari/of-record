@@ -64,9 +64,7 @@ export function caseNameMatch(drafted: string, resolved: string): number {
   let substantive = false;
 
   for (const token of shorter) {
-    const at = unused.findIndex(
-      (other) => other.startsWith(token) || token.startsWith(other),
-    );
+    const at = unused.findIndex((other) => other.startsWith(token) || token.startsWith(other));
     if (at === -1) continue;
     if (Math.min(token.length, unused[at].length) >= 4) substantive = true;
     unused.splice(at, 1);

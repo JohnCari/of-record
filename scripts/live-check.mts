@@ -5,12 +5,7 @@ import { okfRecordStore } from "../src/lib/verify/okf-record";
 import type { DraftSentence } from "../src/lib/verify/types";
 import { verifySentences } from "../src/lib/verify/verify";
 
-const f = (
-  id: string,
-  text: string,
-  docId: string,
-  quote: string,
-): DraftSentence => ({
+const f = (id: string, text: string, docId: string, quote: string): DraftSentence => ({
   id,
   text,
   kind: "fact",
@@ -89,6 +84,5 @@ for (const v of out) {
   console.log(
     `${v.status.toUpperCase().padEnd(9)} ${v.sentenceId.padEnd(24)} kind ${v.declaredKind}->${v.effectiveKind}`,
   );
-  for (const c of v.checks)
-    console.log(`          [${c.stage}] ${c.verdict}: ${c.reason}`);
+  for (const c of v.checks) console.log(`          [${c.stage}] ${c.verdict}: ${c.reason}`);
 }

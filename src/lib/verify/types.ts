@@ -3,21 +3,13 @@ import { z } from "zod";
 /** What the drafter must produce. Schema-constrained so a sentence cannot exist without its cites. */
 export const recordCiteSchema = z.object({
   docId: z.string().describe("doc_id of the record document, e.g. ex-d"),
-  quote: z
-    .string()
-    .describe(
-      "Verbatim words copied from that document that support the sentence",
-    ),
+  quote: z.string().describe("Verbatim words copied from that document that support the sentence"),
 });
 
 export const authorityCiteSchema = z.object({
-  citation: z
-    .string()
-    .describe("Reporter citation exactly as verified, e.g. 123 P.3d 456"),
+  citation: z.string().describe("Reporter citation exactly as verified, e.g. 123 P.3d 456"),
   caseName: z.string().describe("Case name as verified, e.g. Smith v. Jones"),
-  quote: z
-    .string()
-    .describe("Verbatim words copied from the opinion that state the rule"),
+  quote: z.string().describe("Verbatim words copied from the opinion that state the rule"),
 });
 
 export const sentenceKindSchema = z.enum(["fact", "law", "argument"]);

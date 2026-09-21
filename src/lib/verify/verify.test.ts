@@ -86,15 +86,9 @@ function scriptedJudge(
   };
 }
 
-const supportsAll = () =>
-  scriptedJudge(() => ({ choice: "supports", confidence: 0.97 }));
+const supportsAll = () => scriptedJudge(() => ({ choice: "supports", confidence: 0.97 }));
 
-const fact = (
-  id: string,
-  text: string,
-  quote: string,
-  docId = "ex-d",
-): DraftSentence => ({
+const fact = (id: string, text: string, quote: string, docId = "ex-d"): DraftSentence => ({
   id,
   text,
   kind: "fact",
@@ -105,26 +99,19 @@ const fact = (
 describe("locateQuote", () => {
   it("matches across typography and line wraps, not across rewording", () => {
     expect(normalize("“No.”  April\n22")).toBe('"No." April 22');
-    expect(
-      locateQuote(
-        "April 22 was the first time we put anything in writing",
-        DEPO,
-      ).found,
-    ).toBe(true);
-    expect(
-      locateQuote("April 22 was the first time we wrote anything down", DEPO)
-        .found,
-    ).toBe(false);
+    expect(locateQuote("April 22 was the first time we put anything in writing", DEPO).found).toBe(
+      true,
+    );
+    expect(locateQuote("April 22 was the first time we wrote anything down", DEPO).found).toBe(
+      false,
+    );
   });
 
   it("allows an ellipsis inside one passage and refuses to stitch two passages together", () => {
-    expect(
-      locateQuote("April 22 was ... anything in writing", DEPO).found,
-    ).toBe(true);
-    expect(
-      locateQuote("any written notice ... April 22 was the first time", DEPO)
-        .found,
-    ).toBe(false);
+    expect(locateQuote("April 22 was ... anything in writing", DEPO).found).toBe(true);
+    expect(locateQuote("any written notice ... April 22 was the first time", DEPO).found).toBe(
+      false,
+    );
   });
 
   it("refuses a quote too short to anchor anything", () => {
@@ -134,23 +121,15 @@ describe("locateQuote", () => {
   });
 
   it("gives the judge the question along with the answer", () => {
-    const result = locateQuote(
-      "April 22 was the first time we put anything in writing",
-      DEPO,
-    );
-    expect(result.found && result.context).toMatch(
-      /any written notice rejecting/,
-    );
+    const result = locateQuote("April 22 was the first time we put anything in writing", DEPO);
+    expect(result.found && result.context).toMatch(/any written notice rejecting/);
   });
 });
 
 describe("caseNameMatch", () => {
   it("accepts Bluebook abbreviations of the same case", () => {
     expect(
-      caseNameMatch(
-        "W. Distrib. Co. v. Diodosio",
-        "Western Distributing Co. v. Diodosio",
-      ),
+      caseNameMatch("W. Distrib. Co. v. Diodosio", "Western Distributing Co. v. Diodosio"),
     ).toBeGreaterThanOrEqual(0.6);
   });
   it("rejects a different case", () => {
@@ -162,17 +141,12 @@ describe("caseNameMatch", () => {
     ).toBeLessThan(0.3);
   });
   it("does not let bare initials match", () => {
-    expect(
-      caseNameMatch("W. D. v. D.", "Western Distributing Co. v. Diodosio"),
-    ).toBe(0);
+    expect(caseNameMatch("W. D. v. D.", "Western Distributing Co. v. Diodosio")).toBe(0);
   });
 });
 
 describe("verifySentences", () => {
-  const deps = (
-    judge: Judge,
-    table: Record<string, ResolvedCitation> = {},
-  ) => ({
+  const deps = (judge: Judge, table: Record<string, ResolvedCitation> = {}) => ({
     record,
     authorities: resolver(table),
     judge,
@@ -256,11 +230,7 @@ describe("verifySentences", () => {
   });
 
   it("blocks a fictitious citation and a mismatched one in code", async () => {
-    const law = (
-      id: string,
-      citation: string,
-      caseName: string,
-    ): DraftSentence => ({
+    const law = (id: string, citation: string, caseName: string): DraftSentence => ({
       id,
       text: "Summary judgment is proper when no material fact is disputed.",
       kind: "law",
@@ -269,24 +239,15 @@ describe("verifySentences", () => {
         {
           citation,
           caseName,
-          quote:
-            "appropriate only when there is no genuine issue of material fact",
+          quote: "appropriate only when there is no genuine issue of material fact",
         },
       ],
     });
     const judge = supportsAll();
     const [fictitious, mismatched, good] = await verifySentences(
       [
-        law(
-          "s1",
-          "512 P.3d 880",
-          "Hartwell Supply Co. v. Dunmore Retail Group",
-        ),
-        law(
-          "s2",
-          "841 P.2d 1053",
-          "Hartwell Supply Co. v. Dunmore Retail Group",
-        ),
+        law("s1", "512 P.3d 880", "Hartwell Supply Co. v. Dunmore Retail Group"),
+        law("s2", "841 P.2d 1053", "Hartwell Supply Co. v. Dunmore Retail Group"),
         law("s3", "841 P.2d 1053", "W. Distrib. Co. v. Diodosio"),
       ],
       deps(judge, { "841 P.2d 1053": found }),
@@ -388,13 +349,7 @@ describe("verifySentences", () => {
       classify: async () => new Map(),
     };
     const [v] = await verifySentences(
-      [
-        fact(
-          "s1",
-          "x",
-          "April 22 was the first time we put anything in writing",
-        ),
-      ],
+      [fact("s1", "x", "April 22 was the first time we put anything in writing")],
       deps(silent),
     );
     expect(v.status).toBe("review");
@@ -408,10 +363,7 @@ describe("statusOf", () => {
 });
 
 describe("evaluateGate", () => {
-  const v = (
-    sentenceId: string,
-    status: "verified" | "blocked" | "review" | "exempt",
-  ) => ({
+  const v = (sentenceId: string, status: "verified" | "blocked" | "review" | "exempt") => ({
     sentenceId,
     status,
     declaredKind: "fact" as const,

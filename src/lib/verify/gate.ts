@@ -51,15 +51,10 @@ export function evaluateGate(
     const verification = byId.get(sentenceId);
     // A sentence nobody verified is the failure this whole system exists to prevent.
     if (!verification) blocking.push({ sentenceId, status: "unverified" });
-    else if (
-      verification.status === "blocked" ||
-      verification.status === "review"
-    ) {
+    else if (verification.status === "blocked" || verification.status === "review") {
       blocking.push({ sentenceId, status: verification.status });
     } else counts[verification.status] += 1;
   }
 
-  return blocking.length > 0
-    ? { open: false, blocking }
-    : { open: true, ...counts };
+  return blocking.length > 0 ? { open: false, blocking } : { open: true, ...counts };
 }

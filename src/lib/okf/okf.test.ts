@@ -8,9 +8,7 @@ const KNOWLEDGE = join(process.cwd(), "knowledge");
 describe("parseOkf", () => {
   it("rejects a document without frontmatter or without a type", () => {
     expect(() => parseOkf("# Title\n\nBody", "a.md")).toThrow(/frontmatter/);
-    expect(() => parseOkf("---\ntitle: x\n---\n\nBody", "a.md")).toThrow(
-      /type/,
-    );
+    expect(() => parseOkf("---\ntitle: x\n---\n\nBody", "a.md")).toThrow(/type/);
   });
 
   it("splits the banner into notice and keeps it out of model-visible text", () => {
@@ -27,10 +25,7 @@ describe("parseOkf", () => {
   });
 
   it("keeps a blockquote that appears after content as a passage", () => {
-    const doc = parseOkf(
-      "---\ntype: T\n---\n\nFirst.\n\n> quoted later",
-      "a.md",
-    );
+    const doc = parseOkf("---\ntype: T\n---\n\nFirst.\n\n> quoted later", "a.md");
     expect(doc.notice).toBeNull();
     expect(doc.passages).toHaveLength(2);
   });
@@ -39,9 +34,7 @@ describe("parseOkf", () => {
 describe("the matter bundle", () => {
   it("loads every record document with a unique doc_id", async () => {
     const docs = await loadBundle(KNOWLEDGE, "matter");
-    const records = docs.filter(
-      (doc) => doc.frontmatter.type === "Record Document",
-    );
+    const records = docs.filter((doc) => doc.frontmatter.type === "Record Document");
     const ids = records.map((doc) => doc.frontmatter.doc_id);
     expect(records.length).toBeGreaterThanOrEqual(7);
     expect(new Set(ids).size).toBe(ids.length);

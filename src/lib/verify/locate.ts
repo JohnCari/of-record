@@ -9,10 +9,10 @@ export const MIN_QUOTE_WORDS = 4;
  */
 export function normalize(text: string): string {
   return text
-    .replace(/[‘’‚′]/g, "'")
-    .replace(/[“”„″]/g, '"')
-    .replace(/[‐-―]/g, "-")
-    .replace(/ /g, " ")
+    .replace(/[\u2018\u2019\u201A\u2032]/g, "'") // curly single quotes, prime
+    .replace(/[\u201C\u201D\u201E\u2033]/g, '"') // curly double quotes, double prime
+    .replace(/[\u2010-\u2015]/g, "-") // hyphen, en dash, em dash, horizontal bar
+    .replace(/\u00A0/g, " ") // non-breaking space
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -36,7 +36,7 @@ export type Located =
 export function locateQuote(quote: string, passages: Passage[]): Located {
   const cleaned = stripOuterQuotes(normalize(quote));
   const segments = cleaned
-    .split(/\s*(?:\.\.\.|…|\[\.\.\.\])\s*/)
+    .split(/\s*(?:\.\.\.|\u2026|\[\.\.\.\])\s*/)
     .map((segment) => segment.trim())
     .filter((segment) => segment.length > 0);
 
@@ -78,9 +78,7 @@ export function locateQuote(quote: string, passages: Passage[]): Located {
 function contextFor(passage: Passage, passages: Passage[]): string {
   const body = passages
     .filter(
-      (other) =>
-        Math.abs(other.index - passage.index) <= 1 &&
-        other.section === passage.section,
+      (other) => Math.abs(other.index - passage.index) <= 1 && other.section === passage.section,
     )
     .map((other) => other.text)
     .join("\n");
