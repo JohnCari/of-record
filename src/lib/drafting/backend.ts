@@ -68,7 +68,17 @@ export async function authorityResolver(
 export type ValidationSummary = {
   gate: GateResult;
   counts: Record<SentenceVerification["status"], number>;
-  problems: { sentenceId: string; status: string; text: string; reasons: string[] }[];
+  problems: {
+    sentenceId: string;
+    status: string;
+    text: string;
+    reasons: string[];
+    /**
+     * True for an application sentence whose premises all checked out. Nothing is wrong with it;
+     * its conclusion is waiting for the attorney. A drafter must not try to "fix" it.
+     */
+    attorneyOnly: boolean;
+  }[];
   judge: Judge["usage"];
 };
 
@@ -79,8 +89,9 @@ export type ValidationSummary = {
 export async function validateDraft(
   backend: Backend,
   draftId: Id<"drafts">,
-  signal?: AbortSignal,
+  options: { signal?: AbortSignal; full?: boolean } = {},
 ): Promise<ValidationSummary> {
+  const { signal, full = false } = options;
   const { convex, secret } = backend;
   const state = await convex.query(api.drafts.get, { draftId });
   if (!state) throw new Error("no such draft");
@@ -100,17 +111,47 @@ export async function validateDraft(
     authorityCites: row.authorityCites,
   }));
 
+  // Rewriting a section clears the verification of its sentences and of no others. Unless a full
+  // pass is asked for, only those are checked again: an unchanged sentence against an unchanged
+  // record gets the same answer, and re-asking costs the attorney time. Sign-off always asks for
+  // a full pass.
+  const kept = new Map<string, SentenceVerification>();
+  if (!full) {
+    for (const row of state.sentences) {
+      if (!row.verification) continue;
+      kept.set(row.sentenceId, {
+        sentenceId: row.sentenceId,
+        declaredKind: row.kind,
+        effectiveKind: row.verification.effectiveKind,
+        status: row.verification.status,
+        checks: row.verification.checks as SentenceVerification["checks"],
+      });
+    }
+  }
+  const pending = sentences.filter((s) => !kept.has(s.id));
+
   const judge = createJevJudge();
-  const verifications = await verifySentences(
-    sentences,
-    { record: convexRecordStore(backend), authorities: await authorityResolver(backend), judge },
-    { ...DEFAULT_OPTIONS, signal },
+  const fresh =
+    pending.length === 0
+      ? []
+      : await verifySentences(
+          pending,
+          {
+            record: convexRecordStore(backend),
+            authorities: await authorityResolver(backend),
+            judge,
+          },
+          { ...DEFAULT_OPTIONS, signal },
+        );
+  const freshById = new Map(fresh.map((v) => [v.sentenceId, v]));
+  const verifications = sentences.map(
+    (s) => (freshById.get(s.id) ?? kept.get(s.id)) as SentenceVerification,
   );
 
   await convex.mutation(api.drafts.recordVerifications, {
     secret,
     draftId,
-    results: verifications.map((v) => ({
+    results: fresh.map((v) => ({
       sentenceId: v.sentenceId,
       verification: { status: v.status, effectiveKind: v.effectiveKind, checks: v.checks },
     })),
@@ -149,6 +190,13 @@ export async function validateDraft(
         reasons: v.checks
           .filter((c) => c.verdict !== "verified")
           .map((c) => `${c.verdict}: ${c.reason}`),
+        attorneyOnly:
+          v.declaredKind === "argument" &&
+          v.checks.every(
+            (c) =>
+              c.verdict === "verified" ||
+              (c.target === "sentence" && c.stage === "code" && c.verdict === "ambiguous"),
+          ),
       })),
     judge: judge.usage,
   };

@@ -329,6 +329,55 @@ describe("verifySentences", () => {
     expect(v.status).toBe("review");
   });
 
+  it("checks the premises of an application sentence and leaves the conclusion to a person", async () => {
+    const modes: string[] = [];
+    const judge = supportsAll();
+    const support = judge.support.bind(judge);
+    judge.support = async (questions, signal) => {
+      modes.push(...questions.map((q) => q.mode));
+      return support(questions, signal);
+    };
+    const [v] = await verifySentences(
+      [
+        {
+          id: "s1",
+          text: "Because Buyer sent no written rejection before April 22, the goods were deemed accepted.",
+          kind: "argument",
+          recordCites: [
+            { docId: "ex-d", quote: "April 22 was the first time we put anything in writing" },
+          ],
+          authorityCites: [],
+        },
+      ],
+      deps(judge),
+    );
+    expect(modes).toEqual(["premise"]);
+    // Supported premises never make the sentence "verified": the inference was not checked.
+    expect(v.status).toBe("review");
+    expect(v.checks.map((c) => c.verdict)).toEqual(["verified", "ambiguous"]);
+    expect(v.checks[0].reason).toMatch(/relies on/);
+    expect(v.checks[0]).not.toHaveProperty("premise");
+  });
+
+  it("blocks an application sentence whose premise is contradicted", async () => {
+    const judge = scriptedJudge(() => ({ choice: "contradicts", confidence: 0.97 }));
+    const [v] = await verifySentences(
+      [
+        {
+          id: "s1",
+          text: "Because Buyer rejected the goods in March, no acceptance occurred.",
+          kind: "argument",
+          recordCites: [
+            { docId: "ex-d", quote: "April 22 was the first time we put anything in writing" },
+          ],
+          authorityCites: [],
+        },
+      ],
+      deps(judge),
+    );
+    expect(v.status).toBe("blocked");
+  });
+
   it("exempts a pure argument", async () => {
     const [v] = await verifySentences(
       [

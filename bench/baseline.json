@@ -2,12 +2,10 @@
   "dataset": "record-faithfulness",
   "datasetVersion": "v0.1",
   "rows": 60,
-  "commit": "edcb87a",
-  "generatedAt": "2026-09-21T20:03:45.098Z",
+  "commit": "17e82e0",
+  "generatedAt": "2026-09-21T20:48:44.958Z",
   "confidenceThreshold": 0.8,
-  "noise": {
-    "unstableRows": 0
-  },
+  "repeats": 3,
   "headline": {
     "missRate": {
       "missed": 2,
@@ -17,6 +15,36 @@
       "held": 0,
       "n": 24
     }
+  },
+  "perRun": [
+    {
+      "missed": 2,
+      "falseHolds": 0,
+      "autoBlocked": 26
+    },
+    {
+      "missed": 2,
+      "falseHolds": 0,
+      "autoBlocked": 26
+    },
+    {
+      "missed": 2,
+      "falseHolds": 0,
+      "autoBlocked": 25
+    }
+  ],
+  "noise": {
+    "unstableRows": 2,
+    "detail": [
+      {
+        "id": "unsupported-04",
+        "statuses": ["review", "blocked"]
+      },
+      {
+        "id": "overstated-01",
+        "statuses": ["blocked", "review"]
+      }
+    ]
   },
   "note": "The floor a change must not fall below. Raise it only by committing better results, never by editing this file to make a run pass."
 }
