@@ -8,6 +8,11 @@ checks each sentence. The draft is shown on pleading paper with a mark beside ev
 verified, blocked, or waiting for the attorney. Click a sentence and the exhibit opens at the words
 it rests on, highlighted.
 
+**Live: [of-record.vercel.app](https://of-record.vercel.app)**. A recorded run plays for anyone, at no cost.
+Running either lane live calls paid models, so it needs an invite link.
+
+![The workspace. Sentence 20 of the draft is selected; the deposition is open at page 38 with the quoted testimony highlighted, and the evidence pane shows that Jev judged the passage to support the sentence with 99% confidence.](docs/workspace.jpg)
+
 This is a work sample by [Dariel Carrion](https://github.com/JohnCari). It is not affiliated with
 any company, the matter in it is fictional, and nothing in it is legal advice.
 
@@ -300,6 +305,7 @@ The full tool list, with what was kept, added and dropped relative to a producti
 pnpm install
 vercel link && vercel integration add convex   # Convex through the Vercel Marketplace
 cp .env.example .env.local                      # then fill it in
+pnpm exec convex env set SERVER_SECRET <the value in .env.local>
 pnpm exec convex dev --once
 pnpm seed                                       # load knowledge/ into Convex
 pnpm dev                                        # Next.js and the eve agent together
@@ -312,6 +318,15 @@ pnpm eval              # agent evals, against the running dev server
 pnpm pipeline          # one deterministic-lane run from the command line
 pnpm authorities       # fetch real opinions from CourtListener (needs a token)
 ```
+
+### Deploying
+
+`vercel.json` runs `convex deploy --cmd 'pnpm build'`, which pushes the Convex functions and injects
+the Convex URL into the build. Next.js inlines that URL, but the eve agent runs as its own service
+and reads it at runtime, so `NEXT_PUBLIC_CONVEX_URL` must also be set as a Vercel environment
+variable. Without it the pages work and every agent tool fails. `vercel env pull` does not reveal
+sensitive variables, so set the production Convex `SERVER_SECRET` from the original value rather
+than from a pulled file.
 
 ## Limitations, and what comes next
 
