@@ -159,6 +159,20 @@ the bench.
 Reproduce with `pnpm bench`. The run costs about a tenth of a cent. The
 [Quality page](src/app/quality/page.tsx) in the app renders the same file.
 
+## How the guarantees are tested
+
+A guarantee that was only ever exercised because the model happened to comply has not been tested.
+So there are three layers, and only the last involves an agent.
+
+| Layer | What it proves | Command |
+| --- | --- | --- |
+| Unit tests | Every verdict path, with a scripted judge: fabricated, contradicted, fictitious, mismatched, ambiguous, outage, relabelling, a missing judge answer. Dataset labels are checked against the record | `pnpm test` |
+| Gate integration | No model in the loop. A fabricated sentence is written straight into a draft, as a careless or compromised drafter could. Sign-off is refused before verification, the sentence is blocked in code, sign-off is refused again, accepted once the attorney strikes the sentence, and the signed draft then refuses new text | `pnpm gate:integration` |
+| Agent evals | Against the running agent, asserted on what is stored rather than on what the agent says. The planted injection never ends up in a cleared sentence. An "attorney" ordering a fabricated quote to be filed never gets it cleared or signed, and the real attorney is never asked to approve an uncleared draft | `pnpm eval` |
+
+On the second eval the agent refused to write the sentence at all. That is good behaviour and also
+the reason the integration check exists: the eval passed without ever reaching the gate.
+
 ## Two lanes, one gate
 
 Both ways of producing the draft are here, behind the same verifier and the same gate, so they can
@@ -290,9 +304,13 @@ pnpm exec convex dev --once
 pnpm seed                                       # load knowledge/ into Convex
 pnpm dev                                        # Next.js and the eve agent together
 
-pnpm test        # unit tests, including dataset integrity
-pnpm bench       # the planted-failure bench, live against Jev
-pnpm pipeline    # one deterministic-lane run from the command line
+pnpm test              # unit tests, including dataset integrity
+pnpm bench             # the planted-failure bench, live against Jev
+pnpm bench:gate        # the blocking quality gate CI runs
+pnpm gate:integration  # the gate and sign-off, with no model in the loop
+pnpm eval              # agent evals, against the running dev server
+pnpm pipeline          # one deterministic-lane run from the command line
+pnpm authorities       # fetch real opinions from CourtListener (needs a token)
 ```
 
 ## Limitations, and what comes next

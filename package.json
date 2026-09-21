@@ -15,7 +15,9 @@
     "pipeline": "node --import tsx scripts/run-pipeline.mts",
     "bench": "node --import tsx bench/run.mts",
     "authorities": "node --import tsx scripts/fetch-authorities.mts",
-    "bench:gate": "node --import tsx bench/gate.mts"
+    "bench:gate": "node --import tsx bench/gate.mts",
+    "eval": "eve eval --strict --url http://localhost:3000",
+    "gate:integration": "node --import tsx scripts/gate-integration.mts"
   },
   "dependencies": {
     "@convex-dev/rate-limiter": "^0.4.0",
