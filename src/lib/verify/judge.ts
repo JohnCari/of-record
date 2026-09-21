@@ -34,6 +34,12 @@ export interface Judge {
     sentences: { id: string; text: string }[],
     signal?: AbortSignal,
   ): Promise<Map<string, KindAnswer>>;
+  /** Probability that each passage answers the query. Used to rerank lexical search results. */
+  relevance(
+    query: string,
+    passages: { id: string; text: string }[],
+    signal?: AbortSignal,
+  ): Promise<Map<string, number>>;
   readonly usage: JudgeUsage;
 }
 
@@ -193,6 +199,38 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
         });
       }
       return answers;
+    },
+
+    async relevance(query, passages, signal) {
+      const scores = new Map<string, number>();
+      for (const batch of chunk(passages, (p) => p.text.length)) {
+        const items = Object.fromEntries(batch.map((p, i) => [`p${i}`, p.text]));
+        const asked = Object.fromEntries(
+          batch.map((_, i) => [
+            `p${i}`,
+            {
+              type: "boolean" as const,
+              instructions: `Does the passage in \`items.p${i}\` directly answer or establish what \`query\` asks for?`,
+              criteria: {
+                true: "The passage itself states the fact, term, testimony or rule the query is looking for",
+                false:
+                  "The passage is only on a related topic, or mentions the subject without establishing it",
+              },
+            },
+          ]),
+        );
+        const result = await evaluate({
+          model,
+          state: { query, items },
+          questions: asked,
+          abortSignal: signal,
+        });
+        record(result);
+        batch.forEach((p, i) => {
+          scores.set(p.id, (result.answers[`p${i}`] as { probability: number }).probability);
+        });
+      }
+      return scores;
     },
   };
 }

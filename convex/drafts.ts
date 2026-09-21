@@ -255,3 +255,17 @@ export const featured = query({
     return draft?._id ?? null;
   },
 });
+
+/** The browser knows its eve session id before it knows the draft the agent created for it. */
+export const bySession = query({
+  args: { sessionId: v.string() },
+  returns: v.union(v.null(), v.id("drafts")),
+  handler: async (ctx, { sessionId }) => {
+    const draft = await ctx.db
+      .query("drafts")
+      .withIndex("by_sessionId", (q) => q.eq("sessionId", sessionId))
+      .order("desc")
+      .first();
+    return draft?._id ?? null;
+  },
+});

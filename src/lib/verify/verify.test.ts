@@ -83,6 +83,9 @@ function scriptedJudge(
     async classify(sentences) {
       return new Map(sentences.map((s) => [s.id, kind(s.text)]));
     },
+    async relevance(_query, passages) {
+      return new Map(passages.map((p) => [p.id, 1]));
+    },
   };
 }
 
@@ -347,6 +350,7 @@ describe("verifySentences", () => {
       usage: { requests: 0, inputTokens: 0, outputTokens: 0 },
       support: async () => new Map(),
       classify: async () => new Map(),
+      relevance: async () => new Map(),
     };
     const [v] = await verifySentences(
       [fact("s1", "x", "April 22 was the first time we put anything in writing")],
