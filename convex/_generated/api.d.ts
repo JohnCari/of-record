@@ -8,13 +8,21 @@
  * @module
  */
 
+import type * as drafts from "../drafts.js";
+import type * as knowledge from "../knowledge.js";
+import type * as lib from "../lib.js";
+
 import type {
   ApiFromModules,
   FilterApi,
   FunctionReference,
 } from "convex/server";
 
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  drafts: typeof drafts;
+  knowledge: typeof knowledge;
+  lib: typeof lib;
+}>;
 
 /**
  * A utility for referencing Convex functions in your app's public API.
@@ -42,4 +50,6 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  rateLimiter: import("@convex-dev/rate-limiter/_generated/component.js").ComponentApi<"rateLimiter">;
+};

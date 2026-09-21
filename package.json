@@ -9,7 +9,9 @@
     "lint": "biome check",
     "format": "biome format --write",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "node --import tsx scripts/seed.mts",
+    "convex:dev": "convex dev"
   },
   "dependencies": {
     "@convex-dev/rate-limiter": "^0.4.0",
