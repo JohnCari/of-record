@@ -1,6 +1,7 @@
 import { type EveMessagePart, useEveAgent } from "eve/react";
 import { CornerDownLeft, Square, Wrench } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import Markdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
@@ -137,15 +138,35 @@ function Part({
 }) {
   if (part.type === "text") {
     if (!part.text.trim()) return null;
+    if (mine) {
+      return (
+        <p className="max-w-[85%] whitespace-pre-wrap rounded-lg bg-primary px-3 py-2 text-sm leading-relaxed text-primary-foreground">
+          {part.text}
+        </p>
+      );
+    }
+    // The associate writes markdown. Element styles are set here rather than pulled from a
+    // typography plugin, so its messages match the rest of the interface.
     return (
-      <p
-        className={cn(
-          "max-w-[85%] whitespace-pre-wrap rounded-lg px-3 py-2 text-sm leading-relaxed",
-          mine ? "bg-primary text-primary-foreground" : "bg-muted",
-        )}
-      >
-        {part.text}
-      </p>
+      <div className="flex max-w-[85%] flex-col gap-2 rounded-lg bg-muted px-3 py-2 text-sm leading-relaxed">
+        <Markdown
+          components={{
+            h1: (props) => <p className="font-medium" {...props} />,
+            h2: (props) => <p className="font-medium" {...props} />,
+            h3: (props) => <p className="font-medium" {...props} />,
+            ul: (props) => <ul className="flex list-disc flex-col gap-1 pl-5" {...props} />,
+            ol: (props) => <ol className="flex list-decimal flex-col gap-1 pl-5" {...props} />,
+            blockquote: (props) => (
+              <blockquote className="border-l-2 border-border pl-3 font-serif" {...props} />
+            ),
+            code: (props) => (
+              <code className="rounded bg-background px-1 text-[0.85em]" {...props} />
+            ),
+          }}
+        >
+          {part.text}
+        </Markdown>
+      </div>
     );
   }
 
