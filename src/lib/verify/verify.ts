@@ -38,13 +38,19 @@ export type VerifyDeps = {
   judge: Judge;
 };
 
-type Pending = { sentenceId: string; check: Check };
+type Pending = { sentenceId: string; check: Check & { premise?: boolean } };
 
 // The confidence is carried on the check itself, so the sentence a person reads stays plain.
 const RELATION_REASON: Record<string, string> = {
   supports: "The cited passage supports the sentence.",
   contradicts: "The cited passage says the opposite of the sentence.",
   says_nothing: "The cited passage is real, but it does not say this.",
+};
+
+const PREMISE_REASON: Record<string, string> = {
+  supports: "The cited passage establishes something this sentence relies on.",
+  contradicts: "The cited passage contradicts something this sentence relies on.",
+  says_nothing: "The cited passage does not bear on anything this sentence relies on.",
 };
 
 const RELATION_VERDICT: Record<string, Verdict> = {
@@ -104,7 +110,7 @@ export async function verifySentences(
       const id = `${sentence.id}:r${citeIndex}`;
       questions.push({
         id,
-        mode: "fact",
+        mode: sentence.kind === "argument" ? "premise" : "fact",
         claim: sentence.text,
         passage: located.context,
       });
@@ -116,6 +122,7 @@ export async function verifySentences(
           verdict: "unsupported",
           evidence,
           reason: "",
+          premise: sentence.kind === "argument",
         },
       });
     }
@@ -197,7 +204,7 @@ export async function verifySentences(
       const id = `${sentence.id}:a${citeIndex}`;
       questions.push({
         id,
-        mode: "law",
+        mode: sentence.kind === "argument" ? "premise" : "law",
         claim: sentence.text,
         passage: located.context,
       });
@@ -209,6 +216,7 @@ export async function verifySentences(
           verdict: "unsupported",
           evidence,
           reason: "",
+          premise: sentence.kind === "argument",
         },
       });
     }
@@ -223,7 +231,9 @@ export async function verifySentences(
     ),
   ]);
 
-  for (const [id, { sentenceId, check }] of pending) {
+  for (const [id, { sentenceId, check: pendingCheck }] of pending) {
+    // `premise` only selects the wording below; it is not part of the stored check.
+    const { premise, ...check } = pendingCheck;
     const answer = support.get(id);
     if (!answer) {
       // No answer is not a pass. Route it to a person.
@@ -240,7 +250,7 @@ export async function verifySentences(
       verdict: RELATION_VERDICT[answer.choice],
       confidence: answer.confidence,
       probabilities: answer.probabilities,
-      reason: RELATION_REASON[answer.choice],
+      reason: (premise ? PREMISE_REASON : RELATION_REASON)[answer.choice],
     });
   }
 
@@ -253,6 +263,22 @@ export async function verifySentences(
     let effectiveKind: SentenceKind = sentence.kind;
     if (sentence.kind === "argument" && assertsFact) effectiveKind = "fact";
     else if (sentence.kind === "argument" && statesLaw) effectiveKind = "law";
+
+    // An application sentence with cites had its premises checked, not its conclusion. Whether
+    // the conclusion follows is legal reasoning, so it always goes to a person. Marking it
+    // verified would claim more than was checked.
+    const cited = sentence.recordCites.length + sentence.authorityCites.length > 0;
+    if (sentence.kind === "argument" && cited) {
+      out.push({
+        target: "sentence",
+        citeIndex: null,
+        verdict: "ambiguous",
+        stage: "code",
+        confidence: null,
+        reason:
+          "Its premises were checked against the cited passages. Whether the conclusion follows from them is a legal judgment, so it is yours.",
+      });
+    }
 
     // Declared fact or law with nothing behind it: blocked, no model involved.
     if (sentence.kind === "fact" && sentence.recordCites.length === 0) {

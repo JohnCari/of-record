@@ -131,7 +131,7 @@ row cannot pose as a verifier miss. The verifier ran on all 60, live against Jev
 | Bad sentences that got through | 2 of 36 | 5.6% | 1.5% to 18.1% |
 | Sound sentences held back | 0 of 24 | 0.0% | 0.0% to 13.8% |
 | Bad sentences blocked with no person involved | 26 of 36 | 72.2% | 56.0% to 84.2% |
-| Sentences whose status changed across 3 identical runs | 0 of 60 | | |
+| Sentences whose status changed across 3 identical runs | 0 of 60, then 2 of 60 | | |
 
 | Kind of failure | n | Cleared | Review | Blocked |
 | --- | --- | --- | --- | --- |
@@ -148,6 +148,13 @@ The two misses are the same mistake. "The powder coating is chipping" was accept
 "Seller's coating *process* was defective", and "Yes, I signed it" was accepted as support for
 "Mr. Hale had *authority* to bind Buyer". Both are inferential leaps a careful lawyer would not
 make and the judge did. That is the failure class to work on next.
+
+**On noise.** The first three identical runs agreed on every sentence. A later three did not: two
+sentences whose confidence sits on the threshold (0.77 and 0.80) moved between "review" and
+"blocked". Both states hold the sentence, and the two counts that matter were identical in all six
+runs: 2 missed, 0 sound sentences held. So Jev is close to deterministic, not deterministic, and
+the build gate takes its tolerance from the spread actually observed in the counts it guards, which
+is zero, rather than from an assumption.
 
 **On the threshold.** The system acts alone only when Jev's confidence is at least 0.8. The sweep
 in the results file shows that 0.95 would have sent both misses to review without holding any sound

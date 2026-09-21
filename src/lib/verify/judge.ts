@@ -4,8 +4,12 @@ export type Relation = "supports" | "contradicts" | "says_nothing";
 
 export type SupportQuestion = {
   id: string;
-  /** fact: does the record passage establish this? law: does the opinion state this rule? */
-  mode: "fact" | "law";
+  /**
+   * fact: does the record passage establish this? law: does the opinion state this rule?
+   * premise: does the passage establish something this application sentence relies on? The
+   * sentence's conclusion is deliberately not asked about; that is the attorney's judgment.
+   */
+  mode: "fact" | "law" | "premise";
   claim: string;
   passage: string;
 };
@@ -54,6 +58,12 @@ const SUPPORT_CRITERIA: Record<SupportQuestion["mode"], Record<Relation, string>
     contradicts:
       "The passage rejects this rule, states the opposite rule, or states it only as a party's argument or a dissenting view",
     says_nothing: "The passage concerns a similar topic but does not state this rule or holding",
+  },
+  premise: {
+    supports:
+      "The passage establishes a fact or states a rule that the sentence relies on as one of its premises",
+    contradicts: "The passage contradicts a fact or rule that the sentence relies on",
+    says_nothing: "The passage does not bear on any fact or rule the sentence relies on",
   },
 };
 
@@ -107,7 +117,10 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
             `c${i}`,
             {
               type: "choice" as const,
-              instructions: `How does the text in \`items.c${i}.passage\` relate to the claim in \`items.c${i}.claim\`? Judge only what the passage itself says.`,
+              instructions:
+                q.mode === "premise"
+                  ? `The sentence in \`items.c${i}.claim\` applies law to facts and draws a conclusion. Ignore whether the conclusion follows. How does the text in \`items.c${i}.passage\` relate to the facts or rules the sentence relies on?`
+                  : `How does the text in \`items.c${i}.passage\` relate to the claim in \`items.c${i}.claim\`? Judge only what the passage itself says.`,
               criteria: SUPPORT_CRITERIA[q.mode],
             },
           ]),

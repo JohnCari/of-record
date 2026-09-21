@@ -39,16 +39,25 @@ export class CourtListenerError extends Error {
   }
 }
 
-export function createCourtListener(options: { token?: string; fetch?: Fetch } = {}) {
+export function createCourtListener(
+  options: { token?: string; fetch?: Fetch; sleep?: (ms: number) => Promise<void> } = {},
+) {
   const doFetch = options.fetch ?? fetch;
+  const sleep =
+    options.sleep ?? ((ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms)));
   const headers: Record<string, string> = { accept: "application/json" };
   if (options.token) headers.authorization = `Token ${options.token}`;
 
-  async function request(path: string, init?: RequestInit): Promise<unknown> {
+  async function request(path: string, init?: RequestInit, attempt = 0): Promise<unknown> {
     const response = await doFetch(`${BASE}${path}`, {
       ...init,
       headers: { ...headers, ...(init?.headers as Record<string, string> | undefined) },
     });
+    if (response.status === 429 && attempt < 4) {
+      const wait = Number(response.headers.get("retry-after")) || 2 ** attempt * 3;
+      await sleep(wait * 1000);
+      return request(path, init, attempt + 1);
+    }
     if (!response.ok) {
       throw new CourtListenerError(
         response.status,
@@ -62,12 +71,12 @@ export function createCourtListener(options: { token?: string; fetch?: Fetch } =
     /** Full-text opinion search. Works without a token, at a lower rate limit. */
     async search(
       query: string,
-      params: { court?: string; limit?: number } = {},
+      params: { court?: string; limit?: number; orderBy?: "score desc" | "citeCount desc" } = {},
     ): Promise<SearchHit[]> {
       const qs = new URLSearchParams({
         q: query,
         type: "o",
-        order_by: "score desc",
+        order_by: params.orderBy ?? "score desc",
         format: "json",
       });
       if (params.court) qs.set("court", params.court);

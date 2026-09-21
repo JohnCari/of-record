@@ -241,8 +241,26 @@ export default function QualityPage() {
             <CardContent className="flex flex-col gap-2 text-sm">
               <p>
                 {results.noise.unstableRows} of {results.noise.of} sentences changed status across{" "}
-                {results.repeats} identical runs. A change in these numbers between two versions is
-                therefore a change in the system, not run-to-run variation.
+                {results.repeats} identical runs.{" "}
+                {results.noise.unstableRows === 0
+                  ? "Earlier runs have shown one or two sentences flip, so this is not a guarantee of determinism."
+                  : "Jev is not perfectly deterministic: a sentence whose confidence sits on the threshold can land on either side of it."}
+              </p>
+              {results.noise.detail.length > 0 && (
+                <ul className="flex list-disc flex-col gap-1 pl-5">
+                  {results.noise.detail.map((row) => (
+                    <li key={row.id}>
+                      <code>{row.id}</code> moved between {row.statuses.join(" and ")}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <p>
+                What did not move: bad sentences missed was{" "}
+                {[...new Set(results.perRun.map((run) => run.missed))].join(" or ")} in every run,
+                and sound sentences held was{" "}
+                {[...new Set(results.perRun.map((run) => run.falseHolds))].join(" or ")}. The build
+                gate allows exactly the spread observed in those two counts and no more.
               </p>
               <p>
                 Verifying all {results.rows} sentences takes about{" "}

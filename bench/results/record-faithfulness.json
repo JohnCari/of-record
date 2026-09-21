@@ -2,8 +2,8 @@
   "dataset": "record-faithfulness",
   "datasetVersion": "v0.1",
   "rows": 60,
-  "generatedAt": "2026-09-21T20:03:45.098Z",
-  "commit": "edcb87a",
+  "generatedAt": "2026-09-21T20:48:44.958Z",
+  "commit": "17e82e0",
   "judgeModel": "typesafe-ai/jev",
   "confidenceThreshold": 0.8,
   "repeats": 3,
@@ -76,8 +76,8 @@
       "n": 8,
       "verified": 2,
       "exempt": 0,
-      "review": 1,
-      "blocked": 5
+      "review": 2,
+      "blocked": 4
     },
     {
       "class": "overstated",
@@ -85,8 +85,8 @@
       "n": 6,
       "verified": 0,
       "exempt": 0,
-      "review": 3,
-      "blocked": 3
+      "review": 2,
+      "blocked": 4
     },
     {
       "class": "relabelled",
@@ -130,7 +130,7 @@
       "missed": 2,
       "falseHoldRate": 0,
       "falseHolds": 0,
-      "decidedWithoutAPerson": 0.8833333333333333
+      "decidedWithoutAPerson": 0.9
     },
     {
       "threshold": 0.8,
@@ -142,8 +142,8 @@
     },
     {
       "threshold": 0.9,
-      "missRate": 0.05555555555555555,
-      "missed": 2,
+      "missRate": 0.027777777777777776,
+      "missed": 1,
       "falseHoldRate": 0,
       "falseHolds": 0,
       "decidedWithoutAPerson": 0.8333333333333334
@@ -152,23 +152,32 @@
       "threshold": 0.95,
       "missRate": 0,
       "missed": 0,
-      "falseHoldRate": 0,
-      "falseHolds": 0,
-      "decidedWithoutAPerson": 0.7833333333333333
+      "falseHoldRate": 0.041666666666666664,
+      "falseHolds": 1,
+      "decidedWithoutAPerson": 0.7666666666666667
     },
     {
       "threshold": 0.99,
       "missRate": 0,
       "missed": 0,
-      "falseHoldRate": 0.16666666666666666,
-      "falseHolds": 4,
-      "decidedWithoutAPerson": 0.7
+      "falseHoldRate": 0.125,
+      "falseHolds": 3,
+      "decidedWithoutAPerson": 0.7166666666666667
     }
   ],
   "noise": {
-    "unstableRows": 0,
+    "unstableRows": 2,
     "of": 60,
-    "detail": []
+    "detail": [
+      {
+        "id": "unsupported-04",
+        "statuses": ["review", "blocked"]
+      },
+      {
+        "id": "overstated-01",
+        "statuses": ["blocked", "review"]
+      }
+    ]
   },
   "perRun": [
     {
@@ -184,14 +193,14 @@
     {
       "missed": 2,
       "falseHolds": 0,
-      "autoBlocked": 26
+      "autoBlocked": 25
     }
   ],
   "cost": {
     "judgeRequests": 42,
     "judgeInputTokens": 78498,
     "usd": 0.003296916,
-    "msPerRun": 2956
+    "msPerRun": 3682
   },
   "outcomes": [
     {
@@ -288,7 +297,7 @@
       "expected": "pass",
       "status": "verified",
       "verdicts": ["verified"],
-      "confidences": [0.96]
+      "confidences": [0.94]
     },
     {
       "id": "supported-13",
@@ -312,7 +321,7 @@
       "expected": "pass",
       "status": "verified",
       "verdicts": ["verified"],
-      "confidences": [0.95]
+      "confidences": [0.97]
     },
     {
       "id": "supported-16",
@@ -328,7 +337,7 @@
       "expected": "pass",
       "status": "verified",
       "verdicts": ["verified"],
-      "confidences": [0.98]
+      "confidences": [0.99]
     },
     {
       "id": "supported-18",
@@ -504,7 +513,7 @@
       "expected": "hold",
       "status": "review",
       "verdicts": ["contradicted"],
-      "confidences": [0.62]
+      "confidences": [0.72]
     },
     {
       "id": "unsupported-02",
@@ -512,7 +521,7 @@
       "expected": "hold",
       "status": "verified",
       "verdicts": ["verified"],
-      "confidences": [0.9]
+      "confidences": [0.89]
     },
     {
       "id": "unsupported-03",
@@ -520,15 +529,15 @@
       "expected": "hold",
       "status": "verified",
       "verdicts": ["verified"],
-      "confidences": [0.92]
+      "confidences": [0.93]
     },
     {
       "id": "unsupported-04",
       "class": "unsupported",
       "expected": "hold",
-      "status": "blocked",
+      "status": "review",
       "verdicts": ["unsupported"],
-      "confidences": [0.83]
+      "confidences": [0.77]
     },
     {
       "id": "unsupported-05",
@@ -552,7 +561,7 @@
       "expected": "hold",
       "status": "blocked",
       "verdicts": ["unsupported"],
-      "confidences": [0.94]
+      "confidences": [0.9]
     },
     {
       "id": "unsupported-08",
@@ -566,9 +575,9 @@
       "id": "overstated-01",
       "class": "overstated",
       "expected": "hold",
-      "status": "review",
+      "status": "blocked",
       "verdicts": ["contradicted"],
-      "confidences": [0.74]
+      "confidences": [0.8]
     },
     {
       "id": "overstated-02",
@@ -576,7 +585,7 @@
       "expected": "hold",
       "status": "review",
       "verdicts": ["verified"],
-      "confidences": [0.53]
+      "confidences": [0.52]
     },
     {
       "id": "overstated-03",
@@ -584,7 +593,7 @@
       "expected": "hold",
       "status": "blocked",
       "verdicts": ["contradicted"],
-      "confidences": [0.88]
+      "confidences": [0.93]
     },
     {
       "id": "overstated-04",
@@ -600,7 +609,7 @@
       "expected": "hold",
       "status": "review",
       "verdicts": ["unsupported"],
-      "confidences": [0.24]
+      "confidences": [0.25]
     },
     {
       "id": "overstated-06",
@@ -640,7 +649,7 @@
       "expected": "hold",
       "status": "review",
       "verdicts": ["ambiguous"],
-      "confidences": [0.96]
+      "confidences": [0.97]
     },
     {
       "id": "pure_argument-01",
