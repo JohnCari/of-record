@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "seed": "node --import tsx scripts/seed.mts",
-    "convex:dev": "convex dev"
+    "convex:dev": "convex dev",
+    "pipeline": "node --import tsx scripts/run-pipeline.mts"
   },
   "dependencies": {
     "@convex-dev/rate-limiter": "^0.4.0",

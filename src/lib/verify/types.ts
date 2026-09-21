@@ -23,6 +23,15 @@ export const draftSentenceSchema = z.object({
   authorityCites: z.array(authorityCiteSchema).default([]),
 });
 
+/**
+ * The same sentence with both cite arrays required. Gemini's structured output rejects a schema
+ * that carries defaults, so the pipeline asks for this shape; tool calling accepts either.
+ */
+export const strictDraftSentenceSchema = draftSentenceSchema.extend({
+  recordCites: z.array(recordCiteSchema),
+  authorityCites: z.array(authorityCiteSchema),
+});
+
 export type RecordCite = z.infer<typeof recordCiteSchema>;
 export type AuthorityCite = z.infer<typeof authorityCiteSchema>;
 export type SentenceKind = z.infer<typeof sentenceKindSchema>;
