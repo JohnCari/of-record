@@ -1,4 +1,5 @@
 import { FileText } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SECTIONS } from "@/lib/drafting/sections";
 import { cn } from "@/lib/utils";
@@ -18,6 +19,16 @@ export function DraftPaper({
   caption: string;
 }) {
   const decided = new Map(adjudications.map((a) => [a.sentenceId, a]));
+  const paper = useRef<HTMLElement>(null);
+
+  // Selection can come from outside the draft ("go to the next open sentence"), so the selected
+  // sentence is brought into view wherever the selection came from.
+  useEffect(() => {
+    if (!selectedId) return;
+    paper.current
+      ?.querySelector(`[data-sentence="${selectedId}"]`)
+      ?.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, [selectedId]);
 
   if (sentences.length === 0) {
     return (
@@ -31,7 +42,10 @@ export function DraftPaper({
   }
 
   return (
-    <article className="pleading mx-auto my-6 max-w-[46rem] rounded-sm py-10 pr-10 shadow-sm ring-1 ring-black/5">
+    <article
+      ref={paper}
+      className="pleading mx-auto my-6 max-w-[46rem] rounded-sm py-10 pr-10 shadow-sm ring-1 ring-black/5"
+    >
       <header className="pleading-line mb-6">
         <div>
           <p className="text-sm">District Court, Arapahoe County, State of Colorado</p>
@@ -56,6 +70,7 @@ export function DraftPaper({
                 <div key={sentence._id} className="pleading-line">
                   <button
                     type="button"
+                    data-sentence={sentence.sentenceId}
                     onClick={() => onSelect(sentence.sentenceId)}
                     aria-pressed={selected}
                     className={cn(

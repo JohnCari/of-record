@@ -80,7 +80,10 @@ flowchart TD
   D[Drafter writes a sentence<br/>kind + cites + verbatim quotes] --> K{Declared kind}
   K -->|fact| Q1[Is the quote really in the cited exhibit?]
   K -->|law| C1[Does the citation resolve to one real case?<br/>CourtListener citation lookup]
-  K -->|argument| A1[Does Jev read a fact or a rule in it?]
+  K -->|argument, no cites| A1[Does Jev read a fact or a rule in it?]
+  K -->|argument applying law to fact| P1[Are its premises supported by the cited passages?]
+  P1 -->|a premise is contradicted| B4
+  P1 -->|premises hold| R
   Q1 -->|no| B[Blocked: fabricated]
   Q1 -->|yes| J[Jev: does the passage support the sentence?]
   C1 -->|no such case| B2[Blocked: fictitious]
@@ -112,6 +115,10 @@ Three details close loopholes that a drafter under pressure will find:
   stricter reading wins.
 - **Outages.** If CourtListener is down, the citation is reported as unavailable and the sentence
   goes to the attorney. An outage is never a finding that a case is fake, and never a pass.
+- **Application sentences.** "Because Buyer sent no written rejection within the inspection
+  period, the goods were deemed accepted" is legal reasoning. The verifier checks its premises
+  against the cited passages and then sends it to the attorney regardless. Whether a conclusion
+  follows is the attorney's judgment, and marking it verified would claim more than was checked.
 - **Dissents.** The resolver prefers the opinion of the court over concurrences and dissents, so a
   rule quoted from a dissent is not handed to the judge as if it were the holding.
 
@@ -216,14 +223,25 @@ draft section by section, verify, make exactly one repair pass, verify again. Th
 each stage and never chooses the next one. One repair pass fixes honest mistakes; a loop that
 retried until the verifier gave in would be optimising against the gate.
 
-First observations, one run each, which supports no conclusion about which lane is better:
+First observations from the recorded production runs, one run each, which supports no conclusion
+about which lane is better:
 
 | | Agentic | Deterministic |
 | --- | --- | --- |
-| Facts section | 11 sentences, all verified | 24 sentences, all verified |
-| Held at first verification | 3 of 10 sentences, fixed by the agent | 1 sentence, fixed by the repair pass |
+| Full motion | 43 sentences | 37 sentences |
+| Verified | 36 | 33 |
+| Waiting for the attorney's judgment | 6 application sentences | 4 application sentences |
+| Blocked at the end | 0 | 0 |
+| Authorities cited, all resolved on CourtListener | 4 | 2 |
 | Planted prompt injection | Ignored, and reported to the attorney unprompted | Ignored |
-| Wall time | 69 s | 130 s |
+| Wall time | 139 s | 176 s |
+
+Both lanes needed work to get here, and the work is instructive. The first agentic full-motion run
+finished a complete draft and then rewrote its argument four times chasing two low-confidence
+checks, so `write_section` now refuses a fourth write of any section: loop control belongs in code.
+The first deterministic run took 306 seconds, most of it repairing sentences that were not broken,
+so sentences waiting only for the attorney are now marked as such and left alone, and independent
+sections are drafted in parallel.
 
 A comparison worth acting on needs many runs per lane on several matters, scored on the share of
 sentences held at first verification, attorney review burden, cost and latency, with intervals.
@@ -274,11 +292,17 @@ provenance as first-class fields (`sources`, `generated`, `verified`, `status`).
 wiki, diffs like code, and needs no bespoke store. A loader parses the bundle into paragraph-level
 passages and seeds Convex.
 
-The record is committed. The authorities are not invented and not committed by hand:
-`pnpm authorities` fetches real opinions from CourtListener into `knowledge/authorities/`, each
-with its source URL and retrieval date. It needs a free CourtListener token, because opinion text
-and citation lookup are not available anonymously. Until it has run, both lanes draft the facts
-section only, and say so, rather than drafting law they cannot verify.
+The twelve authorities in [`knowledge/authorities`](knowledge/authorities) are real Colorado
+appellate opinions, fetched by `pnpm authorities` and committed as retrieved, each with its
+CourtListener URL and retrieval date. Seven began as leads written from memory, which is exactly
+what the drafting agent is forbidden to rely on, so each was held to the agent's own rule: the
+citation had to resolve to exactly one case under a matching name. All seven did. One, *Churchey v.
+Adolph Coors Co.*, was dropped because CourtListener returned a server error for its text; nothing
+was substituted. The rest came from searches ordered by citation count, after relevance ranking
+surfaced opinions that only recite the standard in passing.
+
+Both lanes search this corpus before they search CourtListener, so a demo in front of someone does
+not depend on a rate-limited third party answering quickly.
 
 ## The stack, and why each piece
 
@@ -344,8 +368,16 @@ than from a pulled file.
   judge a second, narrower question ("does the passage state this, or would a reader have to infer
   it?"), then measure on held-out rows.
 - **A held-out split** so thresholds can be chosen on one set and reported on another.
-- **Citation rows in the bench**: fictitious, mismatched, misattributed holding, wrong statute.
+- **Citation rows in the bench**: fictitious, mismatched, misattributed holding, wrong statute. The
+  machinery is tested and the corpus is now real, so these rows are the next addition.
 - **The lane comparison**, run enough times to say something.
+- **The associate's chat replies are not verified.** Only sentences in the draft go through the
+  verifier. When the agent summarises its work it adds courts and years to citations from memory.
+  They were right in every run I checked, which is not the same as checked.
+- **The verifier pulls drafts toward quotation.** A sentence that repeats its source passes most
+  easily, so early drafts copied opinions word for word without quotation marks. The instructions
+  now ask for the drafter's own words or visible quotation marks, but nothing measures prose
+  quality yet.
 - **Statutes and rules.** CourtListener resolves case citations, not C.R.S. sections or C.R.C.P.
   56 itself, which need their own verified source.
 - **De-identification** before the drafter sees the record, scored on both leaked identifiers and
