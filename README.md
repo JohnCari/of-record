@@ -11,7 +11,7 @@ it rests on, highlighted.
 **Live: [of-record.vercel.app](https://of-record.vercel.app)**. A recorded run plays for anyone, at no cost.
 Running either lane live calls paid models, so it needs an invite link.
 
-![The workspace. Sentence 20 of the draft is selected; the deposition is open at page 38 with the quoted testimony highlighted, and the evidence pane shows that Jev judged the passage to support the sentence with 99% confidence.](docs/workspace.jpg)
+![The workspace on a recorded run. The argument section cites real Colorado opinions. Line 36, an application sentence, carries an amber mark: the Answer's admission is highlighted as the premise Jev confirmed, and the evidence pane says that whether the conclusion follows is a legal judgment for the attorney.](docs/workspace.jpg)
 
 This is a work sample by [Dariel Carrion](https://github.com/JohnCari). It is not affiliated with
 any company, the matter in it is fictional, and nothing in it is legal advice.
