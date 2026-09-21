@@ -159,7 +159,7 @@ ${passages.map((p) => p.text).join("\n\n")}
 for (const lead of LEADS) {
   const [result] = await cl.lookup(lead.citation);
   await pause(1200);
-  if (!result || result.status !== 200 || result.clusters.length !== 1) {
+  if (result?.status !== 200 || result.clusters.length !== 1) {
     dropped.push(`${lead.caseName}, ${lead.citation}: lookup status ${result?.status ?? "none"}`);
     continue;
   }

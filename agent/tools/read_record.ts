@@ -14,7 +14,7 @@ export default defineTool({
       matterId: MATTER_ID,
       sourceId: docId,
     });
-    if (!source || source.kind !== "record") {
+    if (source?.kind !== "record") {
       return { found: false as const, message: `The record has no document "${docId}".` };
     }
     return {
