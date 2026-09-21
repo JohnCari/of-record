@@ -7,6 +7,11 @@ updates:
     groups:
       all:
         patterns: ["*"]
+    ignore:
+      # The types must describe the runtime. Node is pinned to 24 in CI and on Vercel, so a newer
+      # major would let code typecheck against APIs the runtime does not have.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:

@@ -17,26 +17,29 @@ describe("record-faithfulness dataset", async () => {
   });
 
   const quoteIsReal = ["supported", "contradicted", "unsupported", "overstated"];
-  it.each(
-    rows.filter((r) => quoteIsReal.includes(r.class)),
-  )("$id quotes words that are really in the cited document", async (row) => {
-    for (const cite of row.sentence.recordCites) {
-      const doc = await record.get(cite.docId);
-      expect(doc, `${row.id}: ${cite.docId}`).not.toBeNull();
-      expect(locateQuote(cite.quote, doc?.passages ?? []).found, `${row.id}: "${cite.quote}"`).toBe(
-        true,
-      );
-    }
-  });
+  it.each(rows.filter((r) => quoteIsReal.includes(r.class)))(
+    "$id quotes words that are really in the cited document",
+    async (row) => {
+      for (const cite of row.sentence.recordCites) {
+        const doc = await record.get(cite.docId);
+        expect(doc, `${row.id}: ${cite.docId}`).not.toBeNull();
+        expect(
+          locateQuote(cite.quote, doc?.passages ?? []).found,
+          `${row.id}: "${cite.quote}"`,
+        ).toBe(true);
+      }
+    },
+  );
 
-  it.each(
-    rows.filter((r) => r.class === "fabricated_quote" || r.class === "wrong_exhibit"),
-  )("$id quotes words that are not in the cited document", async (row) => {
-    for (const cite of row.sentence.recordCites) {
-      const doc = await record.get(cite.docId);
-      expect(doc ? locateQuote(cite.quote, doc.passages).found : false, row.id).toBe(false);
-    }
-  });
+  it.each(rows.filter((r) => r.class === "fabricated_quote" || r.class === "wrong_exhibit"))(
+    "$id quotes words that are not in the cited document",
+    async (row) => {
+      for (const cite of row.sentence.recordCites) {
+        const doc = await record.get(cite.docId);
+        expect(doc ? locateQuote(cite.quote, doc.passages).found : false, row.id).toBe(false);
+      }
+    },
+  );
 
   it("keeps the expected outcome consistent with the class", () => {
     const pass = new Set(["supported", "pure_argument"]);
