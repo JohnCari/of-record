@@ -1,0 +1,170 @@
+{
+  "generatedAt": "2026-09-21T23:11:58.802Z",
+  "task": "Draft the whole motion. Verify every citation before you use it.",
+  "runsPerLane": 1,
+  "lanes": {
+    "agent": {
+      "runs": 1,
+      "failed": 0,
+      "sentences": {
+        "median": 24,
+        "low": 24,
+        "high": 24
+      },
+      "written": {
+        "median": 24,
+        "low": 24,
+        "high": 24
+      },
+      "verified": {
+        "median": 19,
+        "low": 19,
+        "high": 19
+      },
+      "waitingForAttorney": {
+        "median": 5,
+        "low": 5,
+        "high": 5
+      },
+      "blockedAtEnd": {
+        "median": 0,
+        "low": 0,
+        "high": 0
+      },
+      "blockedAtFirstCheck": {
+        "median": 0,
+        "low": 0,
+        "high": 0
+      },
+      "authoritiesCited": {
+        "median": 3,
+        "low": 3,
+        "high": 3
+      },
+      "costUsd": {
+        "median": 0.2721,
+        "low": 0.2721,
+        "high": 0.2721
+      },
+      "seconds": {
+        "median": 299.707,
+        "low": 299.707,
+        "high": 299.707
+      }
+    },
+    "pipeline": {
+      "runs": 0,
+      "failed": 0,
+      "sentences": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "written": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "verified": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "waitingForAttorney": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "blockedAtEnd": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "blockedAtFirstCheck": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "authoritiesCited": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "costUsd": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "seconds": {
+        "median": null,
+        "low": null,
+        "high": null
+      }
+    },
+    "jev-only": {
+      "runs": 0,
+      "failed": 0,
+      "sentences": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "written": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "verified": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "waitingForAttorney": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "blockedAtEnd": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "blockedAtFirstCheck": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "authoritiesCited": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "costUsd": {
+        "median": null,
+        "low": null,
+        "high": null
+      },
+      "seconds": {
+        "median": null,
+        "low": null,
+        "high": null
+      }
+    }
+  },
+  "reading": "Medians with 95% bootstrap intervals. Eight runs can show a difference of several sentences or a several-fold difference in cost. They cannot rank two lanes whose intervals overlap, and they say nothing about a different matter.",
+  "runs": [
+    {
+      "lane": "agent",
+      "draftId": "j976fnzdn7f5wy6k86wh7jx1jx8ev279",
+      "sentences": 24,
+      "written": 24,
+      "verified": 19,
+      "waitingForAttorney": 5,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 3,
+      "costUsd": 0.2721,
+      "seconds": 299.707
+    }
+  ]
+}

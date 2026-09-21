@@ -6,9 +6,8 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MATTER_CAPTION } from "@/lib/drafting/sections";
+import { MATTER_CAPTION, MATTER_DOCKET, MATTER_ID } from "@/lib/drafting/sections";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { AssociateConsole } from "./associate-console";
@@ -21,18 +20,18 @@ import { RecordPanel } from "./record-panel";
 type Lane = "agentic" | "pipeline";
 
 export function Workspace() {
-  const [lane, setLane] = useState<Lane>("agentic");
+  const [lane, setLane] = useState<Lane>("pipeline");
   const [live, setLive] = useState<Partial<Record<Lane, Id<"drafts">>>>({});
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [source, setSource] = useState<{ id: string; quotes: string[] }>({
-    id: "ex-a",
+    id: "doc-78-1",
     quotes: [],
   });
 
   // The agent creates its draft on its first write; the browser finds it by session.
   const sessionDraft = useQuery(api.drafts.bySession, sessionId ? { sessionId } : "skip");
-  const recorded = useQuery(api.drafts.featured, { lane });
+  const recorded = useQuery(api.drafts.featured, { matterId: MATTER_ID, lane });
 
   const liveId = lane === "agentic" ? (sessionDraft ?? live.agentic) : live.pipeline;
   const draftId = liveId ?? recorded ?? null;
@@ -55,11 +54,10 @@ export function Workspace() {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <header className="flex flex-wrap items-center gap-3 border-b bg-card px-3 py-2">
-        <SidebarTrigger />
         <div className="min-w-0">
           <h1 className="truncate font-serif text-base leading-tight">{MATTER_CAPTION}</h1>
           <p className="text-xs text-muted-foreground">
-            A synthetic matter. Every party, date and amount is fictional.
+            {MATTER_DOCKET}, D. Colo. A real case, from public filings on CourtListener.
           </p>
         </div>
         <Tabs
@@ -71,8 +69,8 @@ export function Workspace() {
           className="ml-auto"
         >
           <TabsList>
-            <TabsTrigger value="agentic">Agentic lane</TabsTrigger>
-            <TabsTrigger value="pipeline">Deterministic lane</TabsTrigger>
+            <TabsTrigger value="pipeline">Jev-first pipeline</TabsTrigger>
+            <TabsTrigger value="agentic">Agent</TabsTrigger>
           </TabsList>
         </Tabs>
       </header>
@@ -88,7 +86,7 @@ export function Workspace() {
       )}
 
       <ResizablePanelGroup orientation="vertical" className="min-h-0 flex-1">
-        <ResizablePanel defaultSize="68%" minSize="35%">
+        <ResizablePanel defaultSize="74%" minSize="35%">
           <ResizablePanelGroup orientation="horizontal">
             <ResizablePanel defaultSize="27%" minSize="18%" className="hidden bg-card md:block">
               <RecordPanel
@@ -130,7 +128,7 @@ export function Workspace() {
           </ResizablePanelGroup>
         </ResizablePanel>
         <ResizableHandle withHandle />
-        <ResizablePanel defaultSize="32%" minSize="15%" className="bg-card">
+        <ResizablePanel defaultSize="26%" minSize="12%" className="bg-card">
           {/* Both consoles stay mounted so switching lanes never drops a live agent session. */}
           <div className={lane === "agentic" ? "h-full" : "hidden"}>
             <AssociateConsole onSession={setSessionId} />

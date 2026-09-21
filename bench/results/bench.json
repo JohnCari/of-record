@@ -1,0 +1,1076 @@
+{
+  "datasetVersion": "v0.2",
+  "generatedAt": "2026-09-21T23:01:41.756Z",
+  "commit": "4339f83",
+  "judgeModel": "typesafe-ai/jev",
+  "repeats": 3,
+  "thresholdInUse": 0.8,
+  "thresholdChosenOnDev": 0.5,
+  "dev": {
+    "rows": 37,
+    "sweep": [
+      {
+        "threshold": 0.5,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.8648648648648649
+      },
+      {
+        "threshold": 0.6,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.8648648648648649
+      },
+      {
+        "threshold": 0.7,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.8108108108108109
+      },
+      {
+        "threshold": 0.8,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.8108108108108109
+      },
+      {
+        "threshold": 0.9,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.7837837837837838
+      },
+      {
+        "threshold": 0.95,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.7837837837837838
+      },
+      {
+        "threshold": 0.99,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 3,
+        "falseHoldRate": 0.3333333333333333,
+        "decidedWithoutAPerson": 0.7027027027027027
+      }
+    ]
+  },
+  "test": {
+    "rows": 36,
+    "atChosen": {
+      "missRate": {
+        "missed": 0,
+        "n": 19,
+        "rate": 0,
+        "low": 0,
+        "high": 0.16818436536845052
+      },
+      "falseHoldRate": {
+        "held": 0,
+        "n": 17,
+        "rate": 0,
+        "low": 0,
+        "high": 0.18432366037156456
+      },
+      "autoBlockedShare": {
+        "blocked": 17,
+        "n": 19,
+        "rate": 0.8947368421052632,
+        "low": 0.686054495051583,
+        "high": 0.9706420586049034
+      },
+      "missedIds": [],
+      "falseHoldIds": []
+    },
+    "atInUse": {
+      "missRate": {
+        "missed": 0,
+        "n": 19,
+        "rate": 0,
+        "low": 0,
+        "high": 0.16818436536845052
+      },
+      "falseHoldRate": {
+        "held": 0,
+        "n": 17,
+        "rate": 0,
+        "low": 0,
+        "high": 0.18432366037156456
+      },
+      "autoBlockedShare": {
+        "blocked": 17,
+        "n": 19,
+        "rate": 0.8947368421052632,
+        "low": 0.686054495051583,
+        "high": 0.9706420586049034
+      },
+      "missedIds": [],
+      "falseHoldIds": []
+    },
+    "sweep": [
+      {
+        "threshold": 0.5,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.9444444444444444
+      },
+      {
+        "threshold": 0.6,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.9444444444444444
+      },
+      {
+        "threshold": 0.7,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.9444444444444444
+      },
+      {
+        "threshold": 0.8,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.9444444444444444
+      },
+      {
+        "threshold": 0.9,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.9166666666666666
+      },
+      {
+        "threshold": 0.95,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 0,
+        "falseHoldRate": 0,
+        "decidedWithoutAPerson": 0.9166666666666666
+      },
+      {
+        "threshold": 0.99,
+        "missed": 0,
+        "missRate": 0,
+        "falseHolds": 1,
+        "falseHoldRate": 0.058823529411764705,
+        "decidedWithoutAPerson": 0.8611111111111112
+      }
+    ]
+  },
+  "datasets": {
+    "record-faithfulness": {
+      "rows": 48,
+      "courtOrderLabels": 4,
+      "perClass": [
+        {
+          "class": "supported",
+          "expected": "pass",
+          "n": 16,
+          "cleared": 16,
+          "review": 0,
+          "blocked": 0
+        },
+        {
+          "class": "fabricated_quote",
+          "expected": "hold",
+          "n": 5,
+          "cleared": 0,
+          "review": 0,
+          "blocked": 5
+        },
+        {
+          "class": "wrong_exhibit",
+          "expected": "hold",
+          "n": 4,
+          "cleared": 0,
+          "review": 0,
+          "blocked": 4
+        },
+        {
+          "class": "contradicted",
+          "expected": "hold",
+          "n": 6,
+          "cleared": 0,
+          "review": 0,
+          "blocked": 6
+        },
+        {
+          "class": "unsupported",
+          "expected": "hold",
+          "n": 6,
+          "cleared": 0,
+          "review": 4,
+          "blocked": 2
+        },
+        {
+          "class": "overstated",
+          "expected": "hold",
+          "n": 5,
+          "cleared": 0,
+          "review": 2,
+          "blocked": 3
+        },
+        {
+          "class": "relabelled",
+          "expected": "hold",
+          "n": 3,
+          "cleared": 0,
+          "review": 3,
+          "blocked": 0
+        },
+        {
+          "class": "pure_argument",
+          "expected": "pass",
+          "n": 3,
+          "cleared": 3,
+          "review": 0,
+          "blocked": 0
+        }
+      ],
+      "all": {
+        "missRate": {
+          "missed": 0,
+          "n": 29,
+          "rate": 0,
+          "low": 0,
+          "high": 0.11697359446555587
+        },
+        "falseHoldRate": {
+          "held": 0,
+          "n": 19,
+          "rate": 0,
+          "low": 0,
+          "high": 0.16818436536845052
+        },
+        "autoBlockedShare": {
+          "blocked": 20,
+          "n": 29,
+          "rate": 0.6896551724137931,
+          "low": 0.5076952952728147,
+          "high": 0.8272457551023193
+        },
+        "missedIds": [],
+        "falseHoldIds": []
+      },
+      "noise": {
+        "unstableRows": 0,
+        "of": 48,
+        "detail": []
+      },
+      "perRun": [
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 20
+        },
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 20
+        },
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 20
+        }
+      ],
+      "lookupsUnavailable": [],
+      "outcomes": [
+        {
+          "id": "supported-01",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-02",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [0.97]
+        },
+        {
+          "id": "supported-03",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-04",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [0.99]
+        },
+        {
+          "id": "supported-05",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-06",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-07",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-08",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [0.98]
+        },
+        {
+          "id": "supported-09",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [0.99]
+        },
+        {
+          "id": "supported-10",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-11",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-12",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-13",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [0.98]
+        },
+        {
+          "id": "supported-14",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [0.99]
+        },
+        {
+          "id": "supported-15",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [0.99]
+        },
+        {
+          "id": "supported-16",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "fabricated_quote-01",
+          "class": "fabricated_quote",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "fabricated_quote-02",
+          "class": "fabricated_quote",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "fabricated_quote-03",
+          "class": "fabricated_quote",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "fabricated_quote-04",
+          "class": "fabricated_quote",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "fabricated_quote-05",
+          "class": "fabricated_quote",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "wrong_exhibit-01",
+          "class": "wrong_exhibit",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "wrong_exhibit-02",
+          "class": "wrong_exhibit",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "wrong_exhibit-03",
+          "class": "wrong_exhibit",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "wrong_exhibit-04",
+          "class": "wrong_exhibit",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "contradicted-01",
+          "class": "contradicted",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "contradicted-02",
+          "class": "contradicted",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "contradicted-03",
+          "class": "contradicted",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "contradicted-04",
+          "class": "contradicted",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [0.99]
+        },
+        {
+          "id": "contradicted-05",
+          "class": "contradicted",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "contradicted-06",
+          "class": "contradicted",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "unsupported-01",
+          "class": "unsupported",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["unsupported"],
+          "confidences": [0.88]
+        },
+        {
+          "id": "unsupported-02",
+          "class": "unsupported",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["unsupported"],
+          "confidences": [0.98]
+        },
+        {
+          "id": "unsupported-03",
+          "class": "unsupported",
+          "expected": "hold",
+          "split": "test",
+          "status": "review",
+          "verdicts": ["unsupported"],
+          "confidences": [0.26]
+        },
+        {
+          "id": "unsupported-04",
+          "class": "unsupported",
+          "expected": "hold",
+          "split": "dev",
+          "status": "review",
+          "verdicts": ["verified"],
+          "confidences": [0.4]
+        },
+        {
+          "id": "unsupported-05",
+          "class": "unsupported",
+          "expected": "hold",
+          "split": "dev",
+          "status": "review",
+          "verdicts": ["unsupported"],
+          "confidences": [0.61]
+        },
+        {
+          "id": "unsupported-06",
+          "class": "unsupported",
+          "expected": "hold",
+          "split": "dev",
+          "status": "review",
+          "verdicts": ["unsupported"],
+          "confidences": [0.37]
+        },
+        {
+          "id": "overstated-01",
+          "class": "overstated",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "overstated-02",
+          "class": "overstated",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "overstated-03",
+          "class": "overstated",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "overstated-04",
+          "class": "overstated",
+          "expected": "hold",
+          "split": "dev",
+          "status": "review",
+          "verdicts": ["unsupported"],
+          "confidences": [0.67]
+        },
+        {
+          "id": "overstated-05",
+          "class": "overstated",
+          "expected": "hold",
+          "split": "test",
+          "status": "review",
+          "verdicts": ["verified"],
+          "confidences": [0.28]
+        },
+        {
+          "id": "relabelled-01",
+          "class": "relabelled",
+          "expected": "hold",
+          "split": "dev",
+          "status": "review",
+          "verdicts": ["ambiguous"],
+          "confidences": [0.96]
+        },
+        {
+          "id": "relabelled-02",
+          "class": "relabelled",
+          "expected": "hold",
+          "split": "dev",
+          "status": "review",
+          "verdicts": ["ambiguous"],
+          "confidences": [0.98]
+        },
+        {
+          "id": "relabelled-03",
+          "class": "relabelled",
+          "expected": "hold",
+          "split": "dev",
+          "status": "review",
+          "verdicts": ["ambiguous"],
+          "confidences": [0.97]
+        },
+        {
+          "id": "pure_argument-01",
+          "class": "pure_argument",
+          "expected": "pass",
+          "split": "test",
+          "status": "exempt",
+          "verdicts": [],
+          "confidences": []
+        },
+        {
+          "id": "pure_argument-02",
+          "class": "pure_argument",
+          "expected": "pass",
+          "split": "test",
+          "status": "exempt",
+          "verdicts": [],
+          "confidences": []
+        },
+        {
+          "id": "pure_argument-03",
+          "class": "pure_argument",
+          "expected": "pass",
+          "split": "test",
+          "status": "exempt",
+          "verdicts": [],
+          "confidences": []
+        }
+      ]
+    },
+    "citation-integrity": {
+      "rows": 25,
+      "courtOrderLabels": 0,
+      "perClass": [
+        {
+          "class": "supported",
+          "expected": "pass",
+          "n": 7,
+          "cleared": 7,
+          "review": 0,
+          "blocked": 0
+        },
+        {
+          "class": "fictitious",
+          "expected": "hold",
+          "n": 4,
+          "cleared": 0,
+          "review": 0,
+          "blocked": 4
+        },
+        {
+          "class": "mismatched",
+          "expected": "hold",
+          "n": 4,
+          "cleared": 0,
+          "review": 0,
+          "blocked": 4
+        },
+        {
+          "class": "misattributed_holding",
+          "expected": "hold",
+          "n": 4,
+          "cleared": 0,
+          "review": 0,
+          "blocked": 4
+        },
+        {
+          "class": "conflated",
+          "expected": "hold",
+          "n": 3,
+          "cleared": 0,
+          "review": 0,
+          "blocked": 3
+        },
+        {
+          "class": "wrong_rule",
+          "expected": "hold",
+          "n": 3,
+          "cleared": 0,
+          "review": 0,
+          "blocked": 3
+        }
+      ],
+      "all": {
+        "missRate": {
+          "missed": 0,
+          "n": 18,
+          "rate": 0,
+          "low": 0,
+          "high": 0.1758845505823749
+        },
+        "falseHoldRate": {
+          "held": 0,
+          "n": 7,
+          "rate": 0,
+          "low": 0,
+          "high": 0.35433884297520657
+        },
+        "autoBlockedShare": {
+          "blocked": 18,
+          "n": 18,
+          "rate": 1,
+          "low": 0.8241154494176252,
+          "high": 1
+        },
+        "missedIds": [],
+        "falseHoldIds": []
+      },
+      "noise": {
+        "unstableRows": 0,
+        "of": 25,
+        "detail": []
+      },
+      "perRun": [
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 18
+        },
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 18
+        },
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 18
+        }
+      ],
+      "lookupsUnavailable": [],
+      "outcomes": [
+        {
+          "id": "supported-01",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [0.96]
+        },
+        {
+          "id": "supported-02",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-03",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-04",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-05",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-06",
+          "class": "supported",
+          "expected": "pass",
+          "split": "dev",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "supported-07",
+          "class": "supported",
+          "expected": "pass",
+          "split": "test",
+          "status": "verified",
+          "verdicts": ["verified"],
+          "confidences": [1]
+        },
+        {
+          "id": "fictitious-01",
+          "class": "fictitious",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fictitious"],
+          "confidences": [null]
+        },
+        {
+          "id": "fictitious-02",
+          "class": "fictitious",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fictitious"],
+          "confidences": [null]
+        },
+        {
+          "id": "fictitious-03",
+          "class": "fictitious",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["fictitious"],
+          "confidences": [null]
+        },
+        {
+          "id": "fictitious-04",
+          "class": "fictitious",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fictitious"],
+          "confidences": [null]
+        },
+        {
+          "id": "mismatched-01",
+          "class": "mismatched",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["mismatched"],
+          "confidences": [null]
+        },
+        {
+          "id": "mismatched-02",
+          "class": "mismatched",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["mismatched"],
+          "confidences": [null]
+        },
+        {
+          "id": "mismatched-03",
+          "class": "mismatched",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["mismatched"],
+          "confidences": [null]
+        },
+        {
+          "id": "mismatched-04",
+          "class": "mismatched",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["mismatched"],
+          "confidences": [null]
+        },
+        {
+          "id": "misattributed_holding-01",
+          "class": "misattributed_holding",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["unsupported"],
+          "confidences": [1]
+        },
+        {
+          "id": "misattributed_holding-02",
+          "class": "misattributed_holding",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["unsupported"],
+          "confidences": [0.81]
+        },
+        {
+          "id": "misattributed_holding-03",
+          "class": "misattributed_holding",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["unsupported"],
+          "confidences": [1]
+        },
+        {
+          "id": "misattributed_holding-04",
+          "class": "misattributed_holding",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["contradicted"],
+          "confidences": [1]
+        },
+        {
+          "id": "conflated-01",
+          "class": "conflated",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "conflated-02",
+          "class": "conflated",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "conflated-03",
+          "class": "conflated",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["fabricated"],
+          "confidences": [null]
+        },
+        {
+          "id": "wrong_rule-01",
+          "class": "wrong_rule",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["mismatched", "unsupported"],
+          "confidences": [null, 0.33]
+        },
+        {
+          "id": "wrong_rule-02",
+          "class": "wrong_rule",
+          "expected": "hold",
+          "split": "test",
+          "status": "blocked",
+          "verdicts": ["mismatched", "verified"],
+          "confidences": [null, 0.5]
+        },
+        {
+          "id": "wrong_rule-03",
+          "class": "wrong_rule",
+          "expected": "hold",
+          "split": "dev",
+          "status": "blocked",
+          "verdicts": ["mismatched", "verified"],
+          "confidences": [null, 0.88]
+        }
+      ]
+    }
+  },
+  "cost": {
+    "judgeRequests": 54,
+    "judgeInputTokens": 123120,
+    "usd": 0.00517104,
+    "msPerRun": 26042
+  },
+  "limitations": [
+    "Most rows were written and labelled by the engineer who built the verifier. A few sound rows state facts the court itself found; none was adjudicated by a practising attorney.",
+    "One real matter, in one court. The planted failures are the failure modes the author thought of.",
+    "The held-out half is small, so its intervals are wide. Read the intervals, not the point estimates.",
+    "The record is scanned in places; quotes carry the recognition errors of the source text."
+  ]
+}

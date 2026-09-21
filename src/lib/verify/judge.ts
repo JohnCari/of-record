@@ -1,4 +1,5 @@
 import { experimental_evaluate as evaluate } from "ai";
+import { withRetry } from "./retry";
 
 export type Relation = "supports" | "contradicts" | "says_nothing";
 
@@ -126,12 +127,14 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
           ]),
         );
 
-        const result = await evaluate({
-          model,
-          state: { items },
-          questions: asked,
-          abortSignal: signal,
-        });
+        const result = await withRetry(() =>
+          evaluate({
+            model,
+            state: { items },
+            questions: asked,
+            abortSignal: signal,
+          }),
+        );
         record(result);
         const reported = (
           result.providerMetadata?.typesafe as { confidence?: Record<string, number> } | undefined
@@ -197,12 +200,14 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
           ]),
         );
 
-        const result = await evaluate({
-          model,
-          state: { items },
-          questions: asked,
-          abortSignal: signal,
-        });
+        const result = await withRetry(() =>
+          evaluate({
+            model,
+            state: { items },
+            questions: asked,
+            abortSignal: signal,
+          }),
+        );
         record(result);
         batch.forEach((s, i) => {
           answers.set(s.id, {
@@ -232,12 +237,14 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
             },
           ]),
         );
-        const result = await evaluate({
-          model,
-          state: { query, items },
-          questions: asked,
-          abortSignal: signal,
-        });
+        const result = await withRetry(() =>
+          evaluate({
+            model,
+            state: { query, items },
+            questions: asked,
+            abortSignal: signal,
+          }),
+        );
         record(result);
         batch.forEach((p, i) => {
           scores.set(p.id, (result.answers[`p${i}`] as { probability: number }).probability);

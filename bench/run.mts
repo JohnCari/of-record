@@ -1,24 +1,35 @@
-// Runs the verifier over the planted-failure set, live against Jev, and writes the results.
-//   pnpm bench            three repeats
-//   pnpm bench -- 1       one repeat
+// Runs the verifier over both planted-failure sets, live, and writes bench/results/bench.json.
+// The confidence threshold is chosen on the dev half and reported on the held-out test half.
+//   pnpm bench            three repeats          pnpm bench -- 1     one repeat
 import { execSync } from "node:child_process";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { ruleOfThree, wilson } from "../src/lib/stats/intervals";
+import { createCourtListener } from "../src/lib/courtlistener/client";
+import { courtListenerResolver } from "../src/lib/courtlistener/resolver";
+import { wilson } from "../src/lib/stats/intervals";
 import { createJevJudge } from "../src/lib/verify/judge";
+import { okfAuthorities } from "../src/lib/verify/okf-authorities";
 import { okfRecordStore } from "../src/lib/verify/okf-record";
 import type { Check, SentenceStatus } from "../src/lib/verify/types";
 import { DEFAULT_OPTIONS, statusOf, verifySentences } from "../src/lib/verify/verify";
-import { type BenchRow, DATASET_VERSION, loadDataset } from "./dataset";
+import {
+  type BenchRow,
+  DATASET_VERSION,
+  DATASETS,
+  type DatasetName,
+  loadDataset,
+  splitOf,
+} from "./dataset";
 
-const DATASET = "record-faithfulness";
 const THRESHOLDS = [0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99];
 const repeats = Number(process.argv[2] ?? 3);
+const KNOWLEDGE = join(process.cwd(), "knowledge");
 
 type Outcome = {
   id: string;
   class: string;
   expected: BenchRow["expected"];
+  split: "dev" | "test";
   status: SentenceStatus;
   checks: Check[];
 };
@@ -52,157 +63,196 @@ function score(outcomes: Outcome[]) {
   };
 }
 
-const rows = await loadDataset(DATASET);
-const record = await okfRecordStore(join(process.cwd(), "knowledge"));
-const sentences = rows.map((row) => ({ id: row.id, ...row.sentence }));
-const byId = new Map(rows.map((row) => [row.id, row]));
+const at = (outcomes: Outcome[], threshold: number) =>
+  outcomes.map((o) => ({ ...o, status: statusOf(o.checks, threshold) }));
 
-const runs: Outcome[][] = [];
-const usage = { requests: 0, inputTokens: 0, outputTokens: 0, ms: 0 };
-
-for (let i = 0; i < repeats; i++) {
-  const judge = createJevJudge();
-  const started = Date.now();
-  const verifications = await verifySentences(
-    sentences,
-    { record, authorities: { resolve: async () => ({ status: "not_found" }) }, judge },
-    DEFAULT_OPTIONS,
+const record = await okfRecordStore(KNOWLEDGE);
+const corpus = await okfAuthorities(KNOWLEDGE);
+const resolverFor = () =>
+  courtListenerResolver(
+    createCourtListener({ token: process.env.COURTLISTENER_TOKEN || undefined }),
+    corpus,
   );
-  usage.ms += Date.now() - started;
-  usage.requests += judge.usage.requests;
-  usage.inputTokens += judge.usage.inputTokens;
-  usage.outputTokens += judge.usage.outputTokens;
-  runs.push(
-    verifications.map((v) => {
-      const row = byId.get(v.sentenceId) as BenchRow;
+
+const usage = { requests: 0, inputTokens: 0, ms: 0 };
+const datasets: Record<string, unknown> = {};
+let allDev: Outcome[] = [];
+let allTest: Outcome[] = [];
+
+for (const name of DATASETS) {
+  const rows = await loadDataset(name);
+  const byId = new Map(rows.map((row) => [row.id, row]));
+  const runs: Outcome[][] = [];
+  for (let i = 0; i < repeats; i++) {
+    const judge = createJevJudge();
+    const started = Date.now();
+    const verifications = await verifySentences(
+      rows.map((row) => ({ id: row.id, ...row.sentence })),
+      { record, authorities: resolverFor(), judge },
+      DEFAULT_OPTIONS,
+    );
+    usage.ms += Date.now() - started;
+    usage.requests += judge.usage.requests;
+    usage.inputTokens += judge.usage.inputTokens;
+    runs.push(
+      verifications.map((v) => {
+        const row = byId.get(v.sentenceId) as BenchRow;
+        return {
+          id: row.id,
+          class: row.class,
+          expected: row.expected,
+          split: splitOf(name as DatasetName, row),
+          status: v.status,
+          checks: v.checks,
+        };
+      }),
+    );
+    console.log(`${name} run ${i + 1}/${repeats}: ${Date.now() - started} ms`);
+  }
+
+  const first = runs[0];
+  const unstable = rows
+    .map((row) => ({
+      id: row.id,
+      statuses: [...new Set(runs.map((run) => run.find((o) => o.id === row.id)?.status))],
+    }))
+    .filter((r) => r.statuses.length > 1);
+  // A lookup outage sends a citation to review. That is a hold, but not the hold the row tests,
+  // so it is counted and shown rather than folded silently into the score.
+  const lookupsUnavailable = first
+    .filter((o) => o.checks.some((c) => c.reason.startsWith("could not check")))
+    .map((o) => o.id);
+
+  const classes = [...new Set(rows.map((r) => r.class))];
+  datasets[name] = {
+    rows: rows.length,
+    courtOrderLabels: rows.filter((r) => r.provenance.startsWith("court-order")).length,
+    perClass: classes.map((cls) => {
+      const group = first.filter((o) => o.class === cls);
+      const count = (status: SentenceStatus) => group.filter((o) => o.status === status).length;
       return {
-        id: row.id,
-        class: row.class,
-        expected: row.expected,
-        status: v.status,
-        checks: v.checks,
+        class: cls,
+        expected: group[0].expected,
+        n: group.length,
+        cleared: count("verified") + count("exempt"),
+        review: count("review"),
+        blocked: count("blocked"),
       };
     }),
-  );
-  console.log(`run ${i + 1}/${repeats}: ${Date.now() - started} ms`);
+    all: score(first),
+    noise: { unstableRows: unstable.length, of: rows.length, detail: unstable },
+    perRun: runs.map((run) => {
+      const s = score(run);
+      return {
+        missed: s.missRate.missed,
+        falseHolds: s.falseHoldRate.held,
+        autoBlocked: s.autoBlockedShare.blocked,
+      };
+    }),
+    lookupsUnavailable,
+    outcomes: first.map((o) => ({
+      id: o.id,
+      class: o.class,
+      expected: o.expected,
+      split: o.split,
+      status: o.status,
+      verdicts: o.checks.map((c) => c.verdict),
+      confidences: o.checks.map((c) => c.confidence),
+    })),
+  };
+  allDev = allDev.concat(first.filter((o) => o.split === "dev"));
+  allTest = allTest.concat(first.filter((o) => o.split === "test"));
 }
 
-// Noise: rows whose status differed between repeats of the identical input.
-const unstable = rows
-  .map((row) => ({
-    id: row.id,
-    statuses: [...new Set(runs.map((run) => run.find((o) => o.id === row.id)?.status))],
-  }))
-  .filter((r) => r.statuses.length > 1);
+// Choose the threshold on dev: fewest misses, then fewest false holds, then the lowest threshold,
+// because a lower threshold asks the attorney less often. The test half plays no part in this.
+const sweep = (outcomes: Outcome[]) =>
+  THRESHOLDS.map((threshold) => {
+    const rescored = at(outcomes, threshold);
+    const s = score(rescored);
+    return {
+      threshold,
+      missed: s.missRate.missed,
+      missRate: s.missRate.rate,
+      falseHolds: s.falseHoldRate.held,
+      falseHoldRate: s.falseHoldRate.rate,
+      decidedWithoutAPerson: rescored.filter((o) => o.status !== "review").length / rescored.length,
+    };
+  });
+const devSweep = sweep(allDev);
+const chosen = [...devSweep].sort(
+  (a, b) => a.missed - b.missed || a.falseHolds - b.falseHolds || a.threshold - b.threshold,
+)[0].threshold;
 
-const first = runs[0];
-const classes = [...new Set(rows.map((r) => r.class))];
-const perClass = classes.map((cls) => {
-  const group = first.filter((o) => o.class === cls);
-  const count = (status: SentenceStatus) => group.filter((o) => o.status === status).length;
-  return {
-    class: cls,
-    expected: group[0].expected,
-    n: group.length,
-    verified: count("verified"),
-    exempt: count("exempt"),
-    review: count("review"),
-    blocked: count("blocked"),
-  };
-});
-
-// The threshold only changes how a stored judgment is routed, so the sweep needs no new calls.
-const sweep = THRESHOLDS.map((threshold) => {
-  const rescored = first.map((o) => ({ ...o, status: statusOf(o.checks, threshold) }));
-  const s = score(rescored);
-  const decidedAlone = rescored.filter((o) => o.status !== "review").length / rescored.length;
-  return {
-    threshold,
-    missRate: s.missRate.rate,
-    missed: s.missRate.missed,
-    falseHoldRate: s.falseHoldRate.rate,
-    falseHolds: s.falseHoldRate.held,
-    decidedWithoutAPerson: decidedAlone,
-  };
-});
-
-const headline = score(first);
 const result = {
-  dataset: DATASET,
   datasetVersion: DATASET_VERSION,
-  rows: rows.length,
   generatedAt: new Date().toISOString(),
   commit: execSync("git rev-parse --short HEAD").toString().trim(),
   judgeModel: "typesafe-ai/jev",
-  confidenceThreshold: DEFAULT_OPTIONS.confidenceThreshold,
   repeats,
-  headline,
-  // With zero misses the honest statement is the upper bound, not "0%".
-  missRateUpperBoundIfZero: ruleOfThree(headline.missRate.n),
-  perClass,
-  sweep,
-  noise: { unstableRows: unstable.length, of: rows.length, detail: unstable },
-  perRun: runs.map((run) => {
-    const s = score(run);
-    return {
-      missed: s.missRate.missed,
-      falseHolds: s.falseHoldRate.held,
-      autoBlocked: s.autoBlockedShare.blocked,
-    };
-  }),
+  thresholdInUse: DEFAULT_OPTIONS.confidenceThreshold,
+  thresholdChosenOnDev: chosen,
+  dev: { rows: allDev.length, sweep: devSweep },
+  // The headline. These rows took no part in choosing the threshold.
+  test: {
+    rows: allTest.length,
+    atChosen: score(at(allTest, chosen)),
+    atInUse: score(at(allTest, DEFAULT_OPTIONS.confidenceThreshold)),
+    sweep: sweep(allTest),
+  },
+  datasets,
   cost: {
     judgeRequests: usage.requests,
     judgeInputTokens: usage.inputTokens,
     usd: usage.inputTokens * 0.042e-6,
     msPerRun: Math.round(usage.ms / repeats),
   },
-  outcomes: first.map((o) => ({
-    id: o.id,
-    class: o.class,
-    expected: o.expected,
-    status: o.status,
-    verdicts: o.checks.map((c) => c.verdict),
-    confidences: o.checks.map((c) => c.confidence),
-  })),
   limitations: [
-    "Rows were written by the engineer who built the verifier, not adjudicated by an attorney.",
-    "One synthetic matter in one jurisdiction; the record is short and clean compared with a real file.",
-    "Failures were planted by hand, so they reflect the failure modes the author thought of.",
-    `${rows.length} rows cannot distinguish small differences in rate; read the intervals, not the point estimates.`,
+    "Most rows were written and labelled by the engineer who built the verifier. A few sound rows state facts the court itself found; none was adjudicated by a practising attorney.",
+    "One real matter, in one court. The planted failures are the failure modes the author thought of.",
+    "The held-out half is small, so its intervals are wide. Read the intervals, not the point estimates.",
+    "The record is scanned in places; quotes carry the recognition errors of the source text.",
   ],
 };
 
 await mkdir(join(process.cwd(), "bench/results"), { recursive: true });
 await writeFile(
-  join(process.cwd(), "bench/results", `${DATASET}.json`),
+  join(process.cwd(), "bench/results/bench.json"),
   `${JSON.stringify(result, null, 2)}\n`,
 );
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
-console.log(
-  `\n${DATASET} ${DATASET_VERSION}, ${rows.length} rows, threshold ${DEFAULT_OPTIONS.confidenceThreshold}`,
-);
-console.table(perClass);
-console.log(
-  `miss rate        ${headline.missRate.missed}/${headline.missRate.n} = ${pct(headline.missRate.rate)}  (95% CI ${pct(headline.missRate.low)} to ${pct(headline.missRate.high)})  ${headline.missedIds.join(", ")}`,
-);
-console.log(
-  `false-hold rate  ${headline.falseHoldRate.held}/${headline.falseHoldRate.n} = ${pct(headline.falseHoldRate.rate)}  (95% CI ${pct(headline.falseHoldRate.low)} to ${pct(headline.falseHoldRate.high)})  ${headline.falseHoldIds.join(", ")}`,
-);
-console.log(
-  `auto-blocked     ${headline.autoBlockedShare.blocked}/${headline.autoBlockedShare.n} of bad sentences needed no person`,
-);
-console.log(
-  `noise            ${unstable.length}/${rows.length} rows changed status across ${repeats} identical runs`,
-);
+for (const name of DATASETS) {
+  const d = datasets[name] as {
+    perClass: unknown[];
+    noise: { unstableRows: number; of: number };
+    lookupsUnavailable: string[];
+  };
+  console.log(`\n${name}`);
+  console.table(d.perClass);
+  console.log(
+    `noise ${d.noise.unstableRows}/${d.noise.of} rows changed status across ${repeats} runs; lookups unavailable: ${d.lookupsUnavailable.length}`,
+  );
+}
+console.log("\nthreshold sweep on DEV (used to choose):");
 console.table(
-  sweep.map((s) => ({
+  devSweep.map((s) => ({
     ...s,
     missRate: pct(s.missRate),
     falseHoldRate: pct(s.falseHoldRate),
     decidedWithoutAPerson: pct(s.decidedWithoutAPerson),
   })),
 );
-console.log(
-  `cost             $${result.cost.usd.toFixed(5)} for ${repeats} runs, ${result.cost.msPerRun} ms per run`,
-);
+for (const [label, s] of [
+  [`TEST at ${chosen} (chosen on dev)`, result.test.atChosen],
+  [`TEST at ${DEFAULT_OPTIONS.confidenceThreshold} (in use)`, result.test.atInUse],
+] as const) {
+  console.log(`\n${label}`);
+  console.log(
+    `  missed      ${s.missRate.missed}/${s.missRate.n} = ${pct(s.missRate.rate)} (95% CI ${pct(s.missRate.low)} to ${pct(s.missRate.high)})  ${s.missedIds.join(", ")}`,
+  );
+  console.log(
+    `  false holds ${s.falseHoldRate.held}/${s.falseHoldRate.n} = ${pct(s.falseHoldRate.rate)} (95% CI ${pct(s.falseHoldRate.low)} to ${pct(s.falseHoldRate.high)})  ${s.falseHoldIds.join(", ")}`,
+  );
+}
+console.log(`\ncost $${result.cost.usd.toFixed(4)} for ${repeats} runs of both sets`);

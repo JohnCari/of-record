@@ -40,6 +40,7 @@ export const writeSection = mutation({
         kind: sentenceKind,
         recordCites: v.array(recordCite),
         authorityCites: v.array(authorityCite),
+        origin: v.optional(v.union(v.literal("selected"), v.literal("written"))),
       }),
     ),
   },
@@ -244,15 +245,17 @@ export const get = query({
 });
 
 export const featured = query({
-  args: { lane },
+  args: { matterId: v.string(), lane },
   returns: v.union(v.null(), v.id("drafts")),
   handler: async (ctx, args) => {
-    const draft = await ctx.db
+    const recent = await ctx.db
       .query("drafts")
-      .withIndex("by_featured_and_lane", (q) => q.eq("featured", true).eq("lane", args.lane))
+      .withIndex("by_matterId_and_lane", (q) =>
+        q.eq("matterId", args.matterId).eq("lane", args.lane),
+      )
       .order("desc")
-      .first();
-    return draft?._id ?? null;
+      .take(100);
+    return recent.find((draft) => draft.featured)?._id ?? null;
   },
 });
 
@@ -267,5 +270,38 @@ export const bySession = query({
       .order("desc")
       .first();
     return draft?._id ?? null;
+  },
+});
+
+/** Deletes one draft of a matter with everything attached to it. The caller loops until none remain. */
+export const purgeOne = mutation({
+  args: { secret: v.string(), matterId: v.string() },
+  returns: v.boolean(),
+  handler: async (ctx, { secret, matterId }) => {
+    assertServer(secret);
+    for (const draftLane of ["agentic", "pipeline"] as const) {
+      const draft = await ctx.db
+        .query("drafts")
+        .withIndex("by_matterId_and_lane", (q) => q.eq("matterId", matterId).eq("lane", draftLane))
+        .first();
+      if (!draft) continue;
+      for (const table of ["sentences", "adjudications", "events"] as const) {
+        const index =
+          table === "sentences"
+            ? "by_draftId_and_order"
+            : table === "events"
+              ? "by_draftId"
+              : "by_draftId_and_sentenceId";
+        const rows = await ctx.db
+          .query(table)
+          // biome-ignore lint/suspicious/noExplicitAny: the three tables share a draftId prefix on differently named indexes
+          .withIndex(index as any, (q: any) => q.eq("draftId", draft._id))
+          .take(2000);
+        for (const row of rows) await ctx.db.delete(table, row._id);
+      }
+      await ctx.db.delete("drafts", draft._id);
+      return true;
+    }
+    return false;
   },
 });

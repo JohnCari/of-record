@@ -95,7 +95,10 @@ export function EvidencePanel({
           const failed = check.verdict !== "verified";
           const cite =
             check.target === "record" && check.citeIndex !== null
-              ? shortCite(sentence.recordCites[check.citeIndex]?.docId ?? "")
+              ? shortCite(
+                  sentence.recordCites[check.citeIndex]?.docId ?? "",
+                  check.evidence?.section,
+                )
               : check.target === "authority" && check.citeIndex !== null
                 ? sentence.authorityCites[check.citeIndex]?.caseName
                 : "This sentence";
@@ -113,7 +116,7 @@ export function EvidencePanel({
                     : `Judged by Jev, ${Math.round((check.confidence ?? 0) * 100)}% confident`}
                 </Badge>
               </div>
-              <p className="text-sm text-muted-foreground">{check.reason}</p>
+              {failed && <p className="text-sm text-muted-foreground">{check.reason}</p>}
               {check.evidence && (
                 <div className="rounded-md border bg-card p-3">
                   <p className="mb-1 text-xs text-muted-foreground">

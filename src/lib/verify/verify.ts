@@ -1,5 +1,6 @@
 import type { Judge, SupportQuestion } from "./judge";
 import { locateQuote } from "./locate";
+import { extractRuleCites, opinionMentions } from "./rules";
 import {
   type AuthorityResolver,
   caseNameMatch,
@@ -112,7 +113,8 @@ export async function verifySentences(
         id,
         mode: sentence.kind === "argument" ? "premise" : "fact",
         claim: sentence.text,
-        passage: located.context,
+        // Who wrote a letter, and when, is in the filing's title rather than in the paragraph.
+        passage: `[${doc.title}] ${located.context}`,
       });
       pending.set(id, {
         sentenceId: sentence.id,
@@ -126,6 +128,9 @@ export async function verifySentences(
         },
       });
     }
+
+    // Full text of every opinion this sentence cites and that resolved, for the rule check below.
+    const citedOpinions: string[] = [];
 
     for (const [citeIndex, cite] of sentence.authorityCites.entries()) {
       const base = {
@@ -177,6 +182,8 @@ export async function verifySentences(
         continue;
       }
 
+      citedOpinions.push(authority.passages.map((passage) => passage.text).join(" "));
+
       const located = locateQuote(cite.quote, authority.passages);
       if (!located.found) {
         out.push({
@@ -206,7 +213,7 @@ export async function verifySentences(
         id,
         mode: sentence.kind === "argument" ? "premise" : "law",
         claim: sentence.text,
-        passage: located.context,
+        passage: `[${authority.caseName}, ${authority.citation}] ${located.context}`,
       });
       pending.set(id, {
         sentenceId: sentence.id,
@@ -219,6 +226,23 @@ export async function verifySentences(
           premise: sentence.kind === "argument",
         },
       });
+    }
+
+    // A rule or statute is verified as quoted by a court: whatever provision the sentence names,
+    // one of the opinions it cites has to mention that same provision. Otherwise a real quote from
+    // a real case could be hung on the wrong rule and pass every other check.
+    if (citedOpinions.length > 0) {
+      for (const rule of extractRuleCites(sentence.text)) {
+        if (citedOpinions.some((opinion) => opinionMentions(rule, opinion))) continue;
+        out.push({
+          target: "sentence",
+          citeIndex: null,
+          verdict: "mismatched",
+          stage: "code",
+          confidence: null,
+          reason: `The sentence cites ${rule.text}, but no opinion it cites mentions that provision.`,
+        });
+      }
     }
   }
 
@@ -247,7 +271,10 @@ export async function verifySentences(
     }
     (checks.get(sentenceId) as Check[]).push({
       ...check,
-      verdict: RELATION_VERDICT[answer.choice],
+      // An application sentence always goes to the attorney. A cite that does not bear on it is
+      // something for them to see, not grounds to block: only a contradicted premise blocks.
+      verdict:
+        premise && answer.choice === "says_nothing" ? "ambiguous" : RELATION_VERDICT[answer.choice],
       confidence: answer.confidence,
       probabilities: answer.probabilities,
       reason: (premise ? PREMISE_REASON : RELATION_REASON)[answer.choice],

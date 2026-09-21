@@ -1,50 +1,77 @@
 {
-  "dataset": "record-faithfulness",
-  "datasetVersion": "v0.1",
-  "rows": 60,
-  "commit": "17e82e0",
-  "generatedAt": "2026-09-21T20:48:44.958Z",
-  "confidenceThreshold": 0.8,
-  "repeats": 3,
-  "headline": {
-    "missRate": {
-      "missed": 2,
-      "n": 36
-    },
-    "falseHoldRate": {
-      "held": 0,
-      "n": 24
+  "datasetVersion": "v0.2",
+  "thresholdInUse": 0.8,
+  "test": {
+    "rows": 36,
+    "atInUse": {
+      "missRate": {
+        "missed": 0,
+        "n": 19,
+        "rate": 0,
+        "low": 0,
+        "high": 0.16818436536845052
+      },
+      "falseHoldRate": {
+        "held": 0,
+        "n": 17,
+        "rate": 0,
+        "low": 0,
+        "high": 0.18432366037156456
+      },
+      "autoBlockedShare": {
+        "blocked": 17,
+        "n": 19,
+        "rate": 0.8947368421052632,
+        "low": 0.686054495051583,
+        "high": 0.9706420586049034
+      },
+      "missedIds": [],
+      "falseHoldIds": []
     }
   },
-  "perRun": [
-    {
-      "missed": 2,
-      "falseHolds": 0,
-      "autoBlocked": 26
+  "datasets": {
+    "record-faithfulness": {
+      "rows": 48,
+      "perRun": [
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 20
+        },
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 20
+        },
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 20
+        }
+      ],
+      "lookupsUnavailable": []
     },
-    {
-      "missed": 2,
-      "falseHolds": 0,
-      "autoBlocked": 26
-    },
-    {
-      "missed": 2,
-      "falseHolds": 0,
-      "autoBlocked": 25
+    "citation-integrity": {
+      "rows": 25,
+      "perRun": [
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 18
+        },
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 18
+        },
+        {
+          "missed": 0,
+          "falseHolds": 0,
+          "autoBlocked": 18
+        }
+      ],
+      "lookupsUnavailable": []
     }
-  ],
-  "noise": {
-    "unstableRows": 2,
-    "detail": [
-      {
-        "id": "unsupported-04",
-        "statuses": ["review", "blocked"]
-      },
-      {
-        "id": "overstated-01",
-        "statuses": ["blocked", "review"]
-      }
-    ]
   },
   "note": "The floor a change must not fall below. Raise it only by committing better results, never by editing this file to make a run pass."
 }

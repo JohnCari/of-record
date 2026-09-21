@@ -18,6 +18,9 @@
   --color-review: var(--review);
   --color-exempt: var(--exempt);
   --color-highlight: var(--highlight);
+  --color-suit: var(--suit);
+  --color-suit-foreground: var(--suit-foreground);
+  --color-tie: var(--tie);
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
   --color-series-3: var(--series-3);
@@ -60,24 +63,24 @@
 }
 
 :root {
-  --background: #eef1f4;
-  --foreground: #14213d;
+  --background: #f3f4f7;
+  --foreground: #1d2230;
   --card: #ffffff;
-  --card-foreground: #14213d;
+  --card-foreground: #1d2230;
   --popover: #ffffff;
-  --popover-foreground: #14213d;
-  --primary: #14213d;
-  --primary-foreground: #f7f9fb;
-  --secondary: #e3e8ee;
-  --secondary-foreground: #14213d;
-  --muted: #e3e8ee;
-  --muted-foreground: #55627a;
-  --accent: #dde4ec;
-  --accent-foreground: #14213d;
-  --destructive: #9b1c31;
-  --border: #d2d9e2;
-  --input: #d2d9e2;
-  --ring: #3b5b92;
+  --popover-foreground: #1d2230;
+  --primary: #16203a;
+  --primary-foreground: #f6f7fa;
+  --secondary: #e8ebf1;
+  --secondary-foreground: #1d2230;
+  --muted: #e8ebf1;
+  --muted-foreground: #596175;
+  --accent: #e2e6ee;
+  --accent-foreground: #16203a;
+  --destructive: #8c1d2f;
+  --border: #d3d8e2;
+  --input: #d3d8e2;
+  --ring: #6e1f33;
   --chart-1: #1f7a4d;
   --chart-2: #9b1c31;
   --chart-3: #a8690f;
@@ -95,13 +98,16 @@
   --paper: #ffffff;
   --rule: #c9485b;
   --verified: #1f7a4d;
-  --blocked: #9b1c31;
+  --blocked: #8c1d2f;
   --review: #a8690f;
   --exempt: #6b778c;
   --highlight: #ffe45c;
   --series-1: #2a78d6;
   --series-2: #eb6834;
   --series-3: #1baf7a;
+  --suit: #16203a;
+  --suit-foreground: #eef0f5;
+  --tie: #8a2a40;
 }
 
 .dark {
@@ -213,4 +219,16 @@ mark.quoted {
     /* biome-ignore lint/complexity/noImportantStyles: an accessibility override has to win */
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Chalk pinstripe on midnight navy. Thin and low-contrast, like the cloth. */
+.pinstripe {
+  background-color: var(--suit);
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0.07) 0,
+    rgb(255 255 255 / 0.07) 1px,
+    transparent 1px,
+    transparent 13px
+  );
 }

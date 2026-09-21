@@ -22,9 +22,9 @@ export type OkfDocument = {
   frontmatter: OkfFrontmatter;
   title: string;
   /**
-   * The leading blockquote banner ("SYNTHETIC DOCUMENT ..."). Shown to people, never sent to a
-   * model: it labels fixtures, and a drafter that could read "this is an attack fixture" would
-   * make the prompt-injection eval meaningless.
+   * The leading blockquote banner ("Public court filing, reproduced as retrieved ..."). Shown to
+   * people, never sent to a model. It describes the document rather than being part of it, and in
+   * the test-only injection fixture it labels the fixture, which a drafter must not be able to read.
    */
   notice: string | null;
   /** Body with the H1 and the notice removed. This is the only text a model ever sees. */

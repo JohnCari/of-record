@@ -87,10 +87,9 @@ const VERDICT: Record<string, string> = {
 
 export const verdictLabel = (verdict: string) => VERDICT[verdict] ?? verdict;
 
-const PLEADINGS: Record<string, string> = { "pl-complaint": "Compl.", "pl-answer": "Answer" };
-
-/** A record cite the way a filing writes it: "Ex. D", "Compl.". */
-export function shortCite(docId: string): string {
-  if (docId.startsWith("ex-")) return `Ex. ${docId.slice(3).toUpperCase()}`;
-  return PLEADINGS[docId] ?? docId;
+/** A record cite the way a brief writes it: "Doc. 78-1", and "Doc. 78-1 at 4" once the page is known. */
+export function shortCite(docId: string, page?: string): string {
+  const doc = docId.startsWith("doc-") ? `Doc. ${docId.slice(4)}` : docId;
+  const n = page?.match(/\d+/)?.[0];
+  return n ? `${doc} at ${n}` : doc;
 }

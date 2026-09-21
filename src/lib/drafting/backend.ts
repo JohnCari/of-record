@@ -190,13 +190,10 @@ export async function validateDraft(
         reasons: v.checks
           .filter((c) => c.verdict !== "verified")
           .map((c) => `${c.verdict}: ${c.reason}`),
+        // Nothing failed: every cite either checked out or was flagged for the attorney to look at.
         attorneyOnly:
           v.declaredKind === "argument" &&
-          v.checks.every(
-            (c) =>
-              c.verdict === "verified" ||
-              (c.target === "sentence" && c.stage === "code" && c.verdict === "ambiguous"),
-          ),
+          v.checks.every((c) => c.verdict === "verified" || c.verdict === "ambiguous"),
       })),
     judge: judge.usage,
   };

@@ -1,7 +1,8 @@
 // Fetches real Colorado opinions from CourtListener into knowledge/authorities/ as OKF documents.
 // Nothing here is written by hand or by a model: the text is what CourtListener returns.
 //   pnpm authorities          then: pnpm seed
-import { mkdir, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createCourtListener, opinionPassages } from "../src/lib/courtlistener/client";
 import { caseNameMatch, NAME_MATCH } from "../src/lib/verify/sources";
@@ -16,6 +17,28 @@ if (!token) {
 // forbidden to rely on, so each is held to the agent's rule: the citation must resolve to exactly
 // one case and the resolved name must match. A lead that fails is dropped and reported.
 const LEADS = [
+  // The forum is federal, so the summary judgment standard comes from the Supreme Court and the
+  // Tenth Circuit. Colorado law governs the contract, so the contract cases are Colorado's.
+  {
+    topic: "summary-judgment-standard",
+    caseName: "Celotex Corp. v. Catrett",
+    citation: "477 U.S. 317",
+  },
+  {
+    topic: "summary-judgment-standard",
+    caseName: "Anderson v. Liberty Lobby, Inc.",
+    citation: "477 U.S. 242",
+  },
+  {
+    topic: "nonmoving-party-burden",
+    caseName: "Matsushita Electric Industrial Co. v. Zenith Radio Corp.",
+    citation: "475 U.S. 574",
+  },
+  {
+    topic: "nonmoving-party-burden",
+    caseName: "Adler v. Wal-Mart Stores, Inc.",
+    citation: "144 F.3d 664",
+  },
   {
     topic: "summary-judgment-standard",
     caseName: "Churchey v. Adolph Coors Co.",
@@ -157,6 +180,13 @@ ${passages.map((p) => p.text).join("\n\n")}
 }
 
 for (const lead of LEADS) {
+  // CourtListener throttles hard. An opinion already on disk is kept rather than fetched again.
+  const existing = join(dir, `${slug(lead.caseName)}.md`);
+  if (existsSync(existing)) {
+    index.push(`* [${lead.caseName}](${slug(lead.caseName)}.md) - ${lead.citation}, ${lead.topic}`);
+    console.log(`on disk  ${lead.caseName}, ${lead.citation}`);
+    continue;
+  }
   const [result] = await cl.lookup(lead.citation);
   await pause(1200);
   if (result?.status !== 200 || result.clusters.length !== 1) {
@@ -181,7 +211,7 @@ for (const lead of LEADS) {
   });
 }
 
-for (const { topic, q } of SEARCHES) {
+for (const { topic, q } of process.argv.includes("--search") ? SEARCHES : []) {
   const hits = await cl.search(q, { court: COLORADO, limit: 8, orderBy: "citeCount desc" });
   await pause(1200);
   let kept = 0;
@@ -203,10 +233,20 @@ for (const { topic, q } of SEARCHES) {
   }
 }
 
-await writeFile(join(dir, "index.md"), `# Authorities\n\n${index.join("\n")}\n`);
+// The index lists everything on disk, including opinions kept from earlier runs.
+const listed: string[] = [];
+for (const file of (await readdir(dir))
+  .filter((f) => f.endsWith(".md") && f !== "index.md")
+  .sort()) {
+  const text = await readFile(join(dir, file), "utf8");
+  const title = text.match(/^title: "(.*)"$/m)?.[1] ?? file;
+  const citation = text.match(/^citation: "(.*)"$/m)?.[1] ?? "";
+  listed.push(`* [${title}](${file}) - ${citation}`);
+}
+await writeFile(join(dir, "index.md"), `# Authorities\n\n${listed.join("\n")}\n`);
 for (const line of dropped) console.log(`dropped  ${line}`);
 console.log(
-  `\n${index.length} opinions written to knowledge/authorities, ${dropped.length} dropped. Run pnpm seed to load them.`,
+  `\n${listed.length} opinions on disk; ${index.length} handled this run to knowledge/authorities, ${dropped.length} dropped. Run pnpm seed to load them.`,
 );
 
 function rank(type: string): number {

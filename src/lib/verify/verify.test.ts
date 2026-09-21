@@ -12,20 +12,21 @@ import {
 import type { DraftSentence } from "./types";
 import { DEFAULT_OPTIONS, statusOf, verifySentences } from "./verify";
 
-const passages = (texts: string[], section = "Page 38"): Passage[] =>
+const passages = (texts: string[], section = "Page 2"): Passage[] =>
   texts.map((text, index) => ({ index, section, text }));
 
+// Real text from the record: the Escrow Agreement, Doc. 228-1, with its recognition error kept.
 const DEPO = passages([
-  "38:15 Q. Before your email of April 22, 2025, did Tumbleweed Ridge send Cottonwood Gulch any written notice rejecting any of the frames?",
-  "38:18 A. No. April 22 was the first time we put anything in writing.",
+  '1.1 Deposit of Funds. Pursuant to the Purchase Agreement, Escrow Agent shall retain an amount equal to $650,000.00 (the "Deposit") out of the Excess Funds to be paid to Seller at Closing, which amount shal! be deposited into a separate escrow account governed by this Agreement.',
+  "In the absence of written instructions from Alberta and Granite, the Escrow Agent will, at its discretion, invest the Cash Funds as set forth in clauses (i) or (ii) below. Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta.",
 ]);
 
 const record: RecordStore = {
   async get(docId) {
-    return docId === "ex-d"
+    return docId === "doc-228-1"
       ? {
-          id: "ex-d",
-          title: "Exhibit D: Deposition of Desmond Hale",
+          id: "doc-228-1",
+          title: "Doc. 228-1: Escrow Agreement",
           passages: DEPO,
         }
       : null;
@@ -91,7 +92,7 @@ function scriptedJudge(
 
 const supportsAll = () => scriptedJudge(() => ({ choice: "supports", confidence: 0.97 }));
 
-const fact = (id: string, text: string, quote: string, docId = "ex-d"): DraftSentence => ({
+const fact = (id: string, text: string, quote: string, docId = "doc-228-1"): DraftSentence => ({
   id,
   text,
   kind: "fact",
@@ -101,20 +102,29 @@ const fact = (id: string, text: string, quote: string, docId = "ex-d"): DraftSen
 
 describe("locateQuote", () => {
   it("matches across typography and line wraps, not across rewording", () => {
-    expect(normalize("“No.”  April\n22")).toBe('"No." April 22');
-    expect(locateQuote("April 22 was the first time we put anything in writing", DEPO).found).toBe(
-      true,
-    );
-    expect(locateQuote("April 22 was the first time we wrote anything down", DEPO).found).toBe(
-      false,
-    );
+    expect(normalize("“Deposit”  out\nof")).toBe('"Deposit" out of');
+    expect(
+      locateQuote(
+        "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
+        DEPO,
+      ).found,
+    ).toBe(true);
+    expect(
+      locateQuote(
+        "Escrow Agent shall pay all interest earned on the Cash Funds each month to Alberta",
+        DEPO,
+      ).found,
+    ).toBe(false);
   });
 
   it("allows an ellipsis inside one passage and refuses to stitch two passages together", () => {
-    expect(locateQuote("April 22 was ... anything in writing", DEPO).found).toBe(true);
-    expect(locateQuote("any written notice ... April 22 was the first time", DEPO).found).toBe(
-      false,
-    );
+    expect(
+      locateQuote("Escrow Agent shall disburse ... on a monthly basis to Alberta", DEPO).found,
+    ).toBe(true);
+    expect(
+      locateQuote("a separate escrow account ... Escrow Agent shall disburse all interest", DEPO)
+        .found,
+    ).toBe(false);
   });
 
   it("refuses a quote too short to anchor anything", () => {
@@ -123,9 +133,12 @@ describe("locateQuote", () => {
     expect(!result.found && result.reason).toMatch(/at least 4/);
   });
 
-  it("gives the judge the question along with the answer", () => {
-    const result = locateQuote("April 22 was the first time we put anything in writing", DEPO);
-    expect(result.found && result.context).toMatch(/any written notice rejecting/);
+  it("gives the judge the paragraph before the quoted one", () => {
+    const result = locateQuote(
+      "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
+      DEPO,
+    );
+    expect(result.found && result.context).toMatch(/a separate escrow account/);
   });
 });
 
@@ -160,14 +173,14 @@ describe("verifySentences", () => {
       [
         fact(
           "s1",
-          "Buyer sent no written rejection before April 22, 2025.",
-          "April 22 was the first time we put anything in writing",
+          "The escrow agent was to pay the interest on the escrowed funds to Alberta each month.",
+          "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
         ),
       ],
       deps(supportsAll()),
     );
     expect(v.status).toBe("verified");
-    expect(v.checks[0].evidence?.section).toBe("Page 38");
+    expect(v.checks[0].evidence?.section).toBe("Page 2");
   });
 
   it("blocks a fabricated quote in code, without asking the judge", async () => {
@@ -176,8 +189,8 @@ describe("verifySentences", () => {
       [
         fact(
           "s1",
-          "Buyer rejected the goods on March 3, 2025.",
-          "we rejected the frames in writing on March 3",
+          "The funds were to be released to Alberta automatically on March 1, 2009.",
+          "the Cash Funds shall be released to Alberta automatically on March 1, 2009",
         ),
       ],
       deps(judge),
@@ -204,8 +217,8 @@ describe("verifySentences", () => {
       [
         fact(
           "s1",
-          "Buyer rejected the goods in writing in March 2025.",
-          "April 22 was the first time we put anything in writing",
+          "The escrow agent was to pay the interest on the escrowed funds to Granite.",
+          "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
         ),
       ],
       deps(judge),
@@ -223,8 +236,8 @@ describe("verifySentences", () => {
       [
         fact(
           "s1",
-          "Buyer knew of the defect in March.",
-          "April 22 was the first time we put anything in writing",
+          "Alberta delivered every tenant estoppel certificate on time.",
+          "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
         ),
       ],
       deps(judge),
@@ -267,6 +280,52 @@ describe("verifySentences", () => {
     expect(judge.asked).toEqual(["s3:a0"]);
   });
 
+  it("blocks a real quote from a real case hung on the wrong rule", async () => {
+    const law = (id: string, text: string): DraftSentence => ({
+      id,
+      text,
+      kind: "law",
+      recordCites: [],
+      authorityCites: [
+        {
+          citation: "841 P.2d 1053",
+          caseName: "W. Distrib. Co. v. Diodosio",
+          quote: "appropriate only when there is no genuine issue of material fact",
+        },
+      ],
+    });
+    const withRule: ResolvedCitation = {
+      status: "found",
+      authority: {
+        ...(found as Extract<ResolvedCitation, { status: "found" }>).authority,
+        passages: passages(
+          [
+            "Under C.R.C.P. 56(c), summary judgment is appropriate only when there is no genuine issue of material fact.",
+          ],
+          "II. Standard",
+        ),
+      },
+    };
+    const [right, wrong] = await verifySentences(
+      [
+        law(
+          "s1",
+          "Under C.R.C.P. 56(c), summary judgment requires the absence of a genuine issue of material fact.",
+        ),
+        law(
+          "s2",
+          "Under C.R.C.P. 12(b)(5), summary judgment requires the absence of a genuine issue of material fact.",
+        ),
+      ],
+      deps(supportsAll(), { "841 P.2d 1053": withRule }),
+    );
+    expect(right.status).toBe("verified");
+    expect(wrong.status).toBe("blocked");
+    const ruleCheck = wrong.checks.find((check) => check.verdict === "mismatched");
+    expect(ruleCheck).toMatchObject({ stage: "code", target: "sentence" });
+    expect(ruleCheck?.reason).toMatch(/C\.R\.C\.P\. 12\(b\)\(5\)/);
+  });
+
   it("routes an ambiguous citation to review", async () => {
     const [v] = await verifySentences(
       [
@@ -296,7 +355,7 @@ describe("verifySentences", () => {
       [
         {
           id: "s1",
-          text: "Buyer paid nothing.",
+          text: "Alberta never delivered the certificates.",
           kind: "fact",
           recordCites: [],
           authorityCites: [],
@@ -317,7 +376,7 @@ describe("verifySentences", () => {
       [
         {
           id: "s1",
-          text: "Buyer rejected the goods on March 3, 2025.",
+          text: "The funds were to be released to Alberta automatically on March 1, 2009.",
           kind: "argument",
           recordCites: [],
           authorityCites: [],
@@ -341,10 +400,14 @@ describe("verifySentences", () => {
       [
         {
           id: "s1",
-          text: "Because Buyer sent no written rejection before April 22, the goods were deemed accepted.",
+          text: "Because the agreement directs the interest to Alberta, Granite has no claim to it.",
           kind: "argument",
           recordCites: [
-            { docId: "ex-d", quote: "April 22 was the first time we put anything in writing" },
+            {
+              docId: "doc-228-1",
+              quote:
+                "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
+            },
           ],
           authorityCites: [],
         },
@@ -365,10 +428,14 @@ describe("verifySentences", () => {
       [
         {
           id: "s1",
-          text: "Because Buyer rejected the goods in March, no acceptance occurred.",
+          text: "Because the agreement directs the interest to Granite, Alberta has no claim to it.",
           kind: "argument",
           recordCites: [
-            { docId: "ex-d", quote: "April 22 was the first time we put anything in writing" },
+            {
+              docId: "doc-228-1",
+              quote:
+                "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
+            },
           ],
           authorityCites: [],
         },
@@ -376,6 +443,31 @@ describe("verifySentences", () => {
       deps(judge),
     );
     expect(v.status).toBe("blocked");
+  });
+
+  it("flags, but does not block, an application sentence with a cite that does not bear on it", async () => {
+    const judge = scriptedJudge(() => ({ choice: "says_nothing", confidence: 0.95 }));
+    const [v] = await verifySentences(
+      [
+        {
+          id: "s1",
+          text: "Because the certificates disclosed a dispute, the condition for release was not met.",
+          kind: "argument",
+          recordCites: [
+            {
+              docId: "doc-228-1",
+              quote:
+                "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
+            },
+          ],
+          authorityCites: [],
+        },
+      ],
+      deps(judge),
+    );
+    expect(v.status).toBe("review");
+    expect(v.checks[0].verdict).toBe("ambiguous");
+    expect(v.checks[0].reason).toMatch(/does not bear/);
   });
 
   it("exempts a pure argument", async () => {
@@ -402,7 +494,13 @@ describe("verifySentences", () => {
       relevance: async () => new Map(),
     };
     const [v] = await verifySentences(
-      [fact("s1", "x", "April 22 was the first time we put anything in writing")],
+      [
+        fact(
+          "s1",
+          "x",
+          "Escrow Agent shall disburse all interest earned on the Cash Funds on a monthly basis to Alberta",
+        ),
+      ],
       deps(silent),
     );
     expect(v.status).toBe("review");

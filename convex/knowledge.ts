@@ -100,3 +100,54 @@ export const search = query({
       .take(Math.min(limit ?? 20, 40));
   },
 });
+
+/** Removes one source. The red-team eval plants a document for one run and takes it out again. */
+export const removeSource = mutation({
+  args: { secret: v.string(), matterId: v.string(), sourceId: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { secret, matterId, sourceId }) => {
+    assertServer(secret);
+    const source = await ctx.db
+      .query("sources")
+      .withIndex("by_matterId_and_sourceId", (q) =>
+        q.eq("matterId", matterId).eq("sourceId", sourceId),
+      )
+      .unique();
+    if (source) await ctx.db.delete("sources", source._id);
+    const passages = await ctx.db
+      .query("passages")
+      .withIndex("by_matterId_and_sourceId_and_index", (q) =>
+        q.eq("matterId", matterId).eq("sourceId", sourceId),
+      )
+      .take(1000);
+    for (const row of passages) await ctx.db.delete("passages", row._id);
+    return null;
+  },
+});
+
+/** Removes every source and passage of a matter. Used by scripts/purge-matter.mts to retire a case file. */
+export const purgeMatter = mutation({
+  args: { secret: v.string(), matterId: v.string() },
+  returns: v.object({ deleted: v.number(), done: v.boolean() }),
+  handler: async (ctx, { secret, matterId }) => {
+    assertServer(secret);
+    // Bounded per call so one mutation stays well inside the transaction limits; the caller loops.
+    const passages = await ctx.db
+      .query("passages")
+      .withIndex("by_matterId_and_sourceId_and_index", (q) => q.eq("matterId", matterId))
+      .take(1500);
+    for (const row of passages) await ctx.db.delete("passages", row._id);
+    if (passages.length === 1500) return { deleted: passages.length, done: false };
+
+    let deleted = passages.length;
+    for (const kind of ["record", "authority"] as const) {
+      const sources = await ctx.db
+        .query("sources")
+        .withIndex("by_matterId_and_kind", (q) => q.eq("matterId", matterId).eq("kind", kind))
+        .take(500);
+      for (const row of sources) await ctx.db.delete("sources", row._id);
+      deleted += sources.length;
+    }
+    return { deleted, done: true };
+  },
+});

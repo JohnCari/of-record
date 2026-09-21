@@ -1,0 +1,783 @@
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 1 of
+                                       16
+
+
+
+
+            UNITED STATES DISTRICT COURT
+            FOR THE DISTRICT OF COLORADO
+            -----------------------------------------------------X
+            GRANITE SOUTHLANDS TOWN CENTER, LLC
+                                                                     09 CV 799 (SJ)
+                                      Plaintiff,
+                                                                     MEMORANDUM
+                    -v-                                              AND ORDER
+
+            ALBERTA TOWN CENTER and
+            LAND TITLE GUARANTEE COMPANY.
+                                       Defendants.
+            -----------------------------------------------------X
+            A P P E A R A N C E S:
+
+            FULBRIGHT & JAWARSKI LLP
+            370 Seventeenth St. 600 Congress Ave., Suite 2150
+            Denver, CO 80202
+            By:    Osborne J. Dykes, III
+                   Benjamin M. Vetter
+                   Windy B. McCracken
+
+            600 Congress Ave., Suite 2400
+            Austin, TX 78701
+            By:    Paul Trahan
+            Counsel for Plaintiff
+
+            Attorneys for Plaintiff
+
+            ROBINSON WATERS & O’DORISIO, P.C.
+            1099 18th Street, Suite 2600
+            Denver, CO 80202
+            By:   Stephen L. Waters
+                  Kimberly A. Bruetsch
+
+            Attorneys for Defendant Land Title Guarantee
+
+            JONES & Keller, P.C.
+            1999 Broadway, Suite 3150
+            By:   Stuart N. Bennett
+                  Kenneth B. Danielsen
+
+            Attorney for Defendant Alberta Town Center, LLC
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 2 of
+                                       16
+
+
+
+
+            JOHNSON, Senior District Judge:
+
+                     Presently before the Court is a contract dispute between Granite Southlands
+
+            Town Center, LLC (“Plaintiff” or “Granite”) and Alberta Town Center, LLC
+
+            (“Defendant” or “Alberta”). The matter came before the Court on a bench trial held on
+
+            February 14, 2011. 1 In dispute is which party is entitled to the $650,000 plus accrued
+
+            interest that had been placed in escrow pursuant to the purchase and sale of a large
+
+            commercial property in Aurora, Colorado.                   Faced with conflicting claims for the
+
+            amount in escrow, the escrow agent, Land Title Guarantee (“Land Title” or the
+
+            “Escrow Agent”), refused to release the funds to either Granite or Alberta. 2
+
+            Consequently, Granite filed suit against Alberta and added Land Title as a nominal
+
+            defendant. 3     After the trial both parties submitted proposed findings of fact and
+
+            conclusions of law. Upon consideration of the evidence presented at the bench trial
+
+            and the entire record, including the exhibits submitted, the Court makes the following
+
+            Findings of Fact and Conclusions of Law.
+
+            1
+             The bench trial followed the denial of Alberta’s motion for partial summary judgment by United States
+            District Judge Weinsheink. (See Docket Entry (“DE”) 107, J. Weinsheink’s Order, dated Feb. 9, 2010.)
+            Testifying on behalf of Granite were: Christopher C. Silva (“Silva”), an employee of Blackrock; Land
+            Title executive, Thomas Blake (“Blake”); Peter M. Cudlip (“Cudlip”), a partner at Alberta; and Angela
+            Kravolec (“Kravolec”). Testifying on behalf of Alberta was Donald Provost (“Provost), a partner at
+            Alberta.
+            2
+             Plaintiff’s (“Pl.’s”) Exhibit (“Ex.”) 36 (letter from Land Title to the parties dated Marc. 6, 2009); see
+            also Trial Transcript (“Tr.”) 137 (Blake Testimony).
+            3
+             Granite filed its Original Complaint against Alberta on April 8, 2009, seeking a declaratory judgment
+            that it is entitled to the escrowed funds as well as damages in form of attorneys’ fees and cost. On
+            September 19, 2009, Granite amended the complaint to add fraudulent claims against Alberta’s
+            principals. Those claims were dismissed by Judge Weinshienk on December 29, 2009, and the principals
+            are no longer parties in this action. (DE 85 Judge Weinsheink’s Order, dated Dec. 29, 2009 (“J.
+            Weinsheink’s December 29 Order.”)
+
+                                                        2
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 3 of
+                                       16
+
+
+
+
+                                                                   I.
+
+                                                    FINDINGS OF FACT
+
+
+            1. On September 22, 2005, Granite and Alberta executed a Forward Purchase and
+               Sale Agreement (“the FPSA”) 4 for a 450,000-square-foot two-story retail shopping
+               center located in Aurora, Colorado known as the Southlands Town Center (the
+               “Property”). 5 At that time, the Property was still under development and the FPSA
+               was meant to serve as a means to finance the construction of the Property. The
+               parties initially expected to close on the transaction shortly after construction of the
+               Property was completed in October 2006. Due to financing issues, however, the
+               closing was extended to December 12, 2008 (the “December Closing Date”). 6
+
+            2. Section 8.1(k)(i) of the FPSA required Alberta to execute and deliver to Granite, as
+               a precondition or condition precedent to Granite’s obligation to close, certain
+               “tenant estoppel certificates” by which the tenants of the Town Center would
+               warrant certain information about their leases. 7 Specifically, under Section
+               8.1(k)(1) Alberta was required to deliver estoppels from any individual tenant
+               “occupying more than 10% of the rentable square feet” of the Property, and
+               collectively from tenants “who together occupy at least 75% of the total number of
+               rentable square feet . . . . (collectively, the ‘Required Estoppels’).” 8
+
+
+
+
+            4
+             DE 126, Stip at 8; see also Pl.’s Ex. 1, FPSA; Tr. 54 (Silva Testimony); Tr. 150 (Blake Testimony). As
+            Silva explained, a Forward Purchase and Sale Agreement governs the purchase of a property at a later
+            date. Like all futures contracts, one of the advantages of such an arrangement is that it allows the buyer
+            the ability to set the price at the time of contracting, with the hopes that the value of the property would
+            appreciate before the buyer actually acquires title. (Tr. 57, 86.)
+            5
+             DE 126, Final Pretrial Order, Stipulation (“Stip.”) at 8; Tr. 42, 67 (Silva Testimony); Tr. 142 (Provost
+            Testimony).
+            6
+                Pl.’s Ex. 14, FPSA, Fourteenth Amendment; Tr. 166 (Provost); Tr. 215 (Cudlip Testimony).
+            7
+              DE 126, Final Pretrial Order Stip. at 8; Pl.’s Ex. 1, FPSA, Article VIII, Buyer’s Conditions Precedent
+            to Closing, § 8.1(k)(i); see also Tr. 10, 206 (Cudlip Testimony).
+            8
+                Pl’s Ex. 1, FPSA, Article VIII, Buyer’s Conditions Precedent to Closing, § 8.1(k)(i) (emphasis added).
+
+
+                                                        3
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 4 of
+                                       16
+
+
+
+
+            3. The FPSA further specified that the Required Estoppels were to be in the form
+               attached to the FPSA as Exhibit H (the “Required Form”). 9 The Required Form
+               includes, in relevant part, the following four delineated paragraphs:
+
+                       4.   Tenant is currently obligated to pay annual base rental in monthly installment of $___ per
+                            month and monthly installments of annual base rental have been paid through. . . . Tenant
+                            has no claim or defense against Landlord under the Lease and is asserting no offsets or
+                            credit against rent or additional rent. Tenant has not claim against Landlord for any
+                            security deposit or other deposit except $___ which security deposit was paid pursuant to
+                            the Lease.
+                       5.   Landlord has performed all of its obligations, if any, required to have been performed by
+                            Landlord prior to the date hereof under the Lease, including, if required under the Lease,
+                            making any repairs required to be made by Landlord. . . .
+                       6.   There is no existing defense, offset, lien or claim or counterclaim by or in favor of the
+                            undersigned or of Landlord under the Lease or against the obligations of the undersigned
+                            under the Lease . . . and Tenant is not contesting any such obligations, rentals or charges.
+                       7.   There is no default now existing on the part of the undersigned or of the Landlord under the
+                            Lease, and there is no event which with notice or the passage of time or both would
+                            constitute a default of the undersigned or of Landlord under the Lease. 10
+
+            4. Pursuant to its duty under the FPSA to secure tenant estoppel certificates within 30-
+               days of the closing date, Alberta secured a set of tenant estoppel certificates in
+               preparation for the May 2008 closing (the “2008 Estoppels”). 11 The parties later
+               agreed to further postpone the closing date to December 15, 2008, with the
+               understanding that Alberta would secure updated tenant estoppels for the December
+               Closing Date. 12
+
+            5. Prior to the December Closing Date, in November 2008, Alberta attempted to
+               deliver the identical 2008 Estoppels to Granite. Granite rejected those estoppels on
+               the grounds that the certificates were more than six-months old.13 Due to financing
+
+            9
+             Pl.’s Ex. 1, FPSA Article VII, Construction of the Buildings Other Seller’s Covenants; Other Seller
+            Covenants at § 7.2 (i).
+            10
+                Pl.’s Ex. 46, FPSA, Ex. H.
+            11
+                 Tr. 9, 10; Pl.’s Ex. 24, Cinema’s May 2008 Estoppel Certificate (the “2008 Cinema Estoppel”).
+            12
+                 Pl.’s Ex. 1, FPSA, 14th Amendment.
+            13
+              Tr. 6 (Silva Testimony). Sometime in November 2008, Granite informed Alberta that it was no longer
+            interested in pursuing structured debt financing to close on the transaction, and wanted to execute a
+
+                                                         4
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 5 of
+                                       16
+
+
+
+
+                   issues, however, the parties could not further postpone closing and decided to
+                   proceed with the closing even when it became clear that Alberta would not be able
+                   to timely deliver updated tenant estoppels Granite for the December Closing Date.
+
+            6. Even though the parties had to move forward with the closing, they amended the
+               FPSA on December 8, 2008 to address the issue of stale estoppels: the Fifteenth
+               Amendment to Amendment and Agreement and Termination Agreement (the
+               “Fifteenth Amendment”). 14 The parties agreed, as part of the Fifteenth
+               Amendment, to place $650,000 of the closing funds into an escrow account
+               maintained by an escrow agent. Alberta, in turn, was obligated to provide updated
+               estoppels on or before March 1, 2009. 15
+
+            7. The Fifteenth Amendment provided Granite with the right to object to any tenant
+               estoppel certificate if such certificate:
+
+                       is not in the form required under Section 7.2(i) or has been materially and adversely modified
+                       from that form, or (ii) indicates the continuing existence of an actual material default of the
+                       landlord under the applicable Lease, or (iii) correctly indicates that the Lease includes terms and
+                       provisions that are inconsistent with the Approved Leasing Guidelines or terms and provision
+                       that are inconsistent with the applicable lease delivered to Buyer by delivering a written notice
+                       of objections. . . . 16
+
+
+            8. However, the Fifteenth Amendment also restrained Granite’s ability to object to a
+               delivered tenant estoppel, providing in relevant part:
+
+                       Buyer may not object to . . . .“[a]ny Tenant Estoppel Certificate delivered to Buyer on or after
+                       the date that is 30 days before the Closing Date for a Tenant Estoppel Certificate that is
+                       substantially similar to the Tenant Estoppel Certificate for that tenant executed in or about May
+                       2008 and previously delivered to Buyer. 17
+
+
+            straight purchase of the asset pursuant to the FPSA (Tr. 170–71, Provost Testimony).
+            14
+                 DE 126, Stip at 8; see also Pl.’s Ex. 17 at 17a-001, Fifteenth Amendment, Recitals at ¶ A.
+            15
+             DE 126, Final Pretrial Order, Stip. at 9.
+            16
+                 Pl.’s Ex. 17, Fifteenth Amendment of the FPSA, § 2(c) at 17a-003.
+            17
+              Id. Alberta, in its motion for partial summary judgment submits that the 2009 Cinema Estoppel at
+            issue here was substantially similar to the 2008 Cinema Estoppel. In denying the motion, J. Weinsheink
+            considered and rejected this claim, and this Court does not disturb her findings. (DE 107, J.
+
+                                                         5
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 6 of
+                                       16
+
+
+
+
+            9. With respect to the $650,000 to be placed in escrow, the Fifteenth Amendment,
+               provides in relevant part:
+
+                       “If, prior to the Closing date, Seller object fails to deliver the Required Estoppels, (x) Seller
+                       shall be obligated to continue to use commercially reasonable efforts to obtain the Required
+                       Estoppels after the Closing, and (y) Escrow Holder shall retain Six Hundred Fifty Thousand
+                       and No/100 Dollars ($650,000.00) of the Excess Funds at Closing (“Estoppel Holdback”). . . .
+                       Upon Seller’s delivery of the Required Estoppels to Buyer, Buyer shall instruct Escrow Holder
+                       by written notice to Escrow Holder to deliver the Estoppel Holdback to Seller. . . . and (ii)
+                       should Seller fail to deliver the Required Estoppels to Buyer . . . on March 1, 2009, Buyer and
+                       Seller agree Escrow Holder Shall Deliver the Entire Estoppel Holdback to Buyer upon written
+                       notice to Escrow Holder from Buyer , and the amount of the Estoppel Holdback shall be
+                       deemed to have been forfeited by Seller. 18
+
+
+            10. On the December Closing Date, Granite and Alberta executed a Release and
+                Termination Agreement which expressly provided that “notwithstanding anything
+                to the contrary contained herein, any obligations of the Parties under the following
+                agreements are expressly not released or waived” inclusive of Alberta’s obligation,
+                under Section 8.1(k) of the FPSA, to deliver tenant estoppel certificates, at or after
+                the closing, dated within 30 days of the closing of the Town Center. 19
+
+            11. On the December Closing Date, pursuant to the terms of the Fifteenth Amendment,
+                Alberta and Granite, along with Land Title, also executed an escrow agreement (the
+                “Escrow Agreement”), which provides that “Upon Alberta’s delivery of the
+                Required Estoppels to Granite, Granite shall instruct Escrow Holder by written
+                notice to deliver the Cash Funds to Alberta. . . . 20 The Escrow Agreement also
+                provides that the “Escrow Agent shall disburse Cash Funds in accordance with the
+
+
+
+
+            Weinsheink’s Feb. 09, 2010 Order at 7–9.) Thus, as explained more fully in Part II below, to the extent
+            that Alberta’s defense to this action is that the 2009 Cinema Estoppel’s reference to a cracked foundation
+            is not material because the Cinema’s 2009 is “substantially similar,” to the Cinema’s 2008 certificate,
+            this Court rejects it.
+            18
+             Pl.’s Ex. 17, the Fifteenth Amendment, § 4.1 Purchase Price at 17a-004.
+            19
+                 Pl.’s Ex. 18, Release and Termination Agreement at 005; Tr. 61 (Silva Testimony).
+            20
+             Pl.’s Ex. 20, the Escrow Agreement, § 3.2 Disbursement of Cash Funds and Holdback at 20-003.
+
+
+                                                        6
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 7 of
+                                       16
+
+
+
+
+                   final order, judgment or decree of any court of competent jurisdiction which may
+                   be filed, entered, or issued.” 21
+
+            12. Before the March 1, 2009 deadline, Alberta timely delivered to Granite eighty-five
+                (85) tenant estoppels covering for tenants that together occupy at least 75% of the
+                total number of rentable square feet, and including an updated tenant estoppel from
+                the Colorado Cinema Group, LLC (the “Cinema”)—the only Town Center tenant
+                occupying more than 10% of the rentable square footage of the Property (the “2009
+                Cinema Estoppel”). 22
+
+            13. Granite timely objected to nine (9) of these delivered tenant estoppels—among
+                which was the 2009 Cinema Estoppel—on the grounds that said estoppels were not
+                “[i]n accordance with Section 8.1(k)(ii) of the FPSA,” and “for reasons apparent
+                from the face of the certificates.” 23 The Cinema’s Estoppel is the only disputed
+                estoppel at issue here because it is the only tenant that leases more than 10% of the
+                rentable square footage, and with respect to the balance of the eight, Alberta has
+                complied with the 75% threshold of delivering tenant estoppels regardless of
+                whether they are accepted or not. 24
+
+            14. The 2009 Cinema Estoppel included language that discloses to Granite for the first
+                time the existence of a cracked foundation and structural defects in the portion of
+                the Property that Cinema leases. 25
+
+            15. Alberta was aware of Cinema’s concerns as early as six-months prior to closing,
+                and had, in fact, hired engineers and lawyers to investigate and address the issue. 26
+
+            21
+                 Id. at §3.3 Court Order.
+            22
+              DE 126, Final Pretrial Order, Stip at 10; Pl.’s Ex. K, letter from Alberta to Granite (providing notice of
+            the delivery of the Required Estoppels); Pl.’s Ex. 23, the 2009 Cinema Estoppel.
+            23
+              Pl.’s Ex. 30, email from Granite’s counsel to Alberta’s counsel dated Feb. 24, 2009 (objecting to nine
+            tenant certificates; Pl.’s Ex. 34, email from Granite’s counsel to Alberta’s counsel dated Marc. 3, 2009
+            (explaining that it was rejecting estoppels for the reasons permitted by the FPSA).
+            24
+             The “at least 75%” requirement is not at issue in present dispute. (See DE 107, J. Weinsheink’s
+            December Order at FN1.
+            25
+                 Pl.’s Ex. 23, the 2009 Cinema Estoppel.
+            26
+                 Tr. 187, 204, 222–24, 229 (Cudlip Testimony); Tr. 237 (Kralovec Testimony); Def.’s Ex. 116-004
+
+                                                           7
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 8 of
+                                       16
+
+
+
+
+            16. Other provisions of the FPSA raised by the parties include the following:
+
+                   (i) Section 5.1 of the FPSA specified that “Buyer acknowledges, understands and
+                           agrees . . . (iii) except as expressly set forth herein and except for those
+                           warranties expressly set forth, or implied by law, in the Deed or other
+                           documents, delivered to at the Closing, the Property is being sold to Buyer
+                           on the Closing date in its then ‘AS IS, WHERE IS’ condition,” with all
+                           faults. 27
+                   (ii) Furthermore, Section 5.3(c) also specified that “Buyer’s right to access the
+                           Property and perform additional test and inspections is in no way to be
+                           inferred or interpreted as Buyer’s right to prohibited Granite from
+                           terminating the agreement “as a result of any matter related to the condition
+                           of the Property.” 28
+                   (iii)Section 7.2(f) of the FPSA addressed Alberta’s obligations to Granite in the
+                           event of a “Change in Condition” providing, “Seller shall promptly notify
+                           Buyer of any change in any condition with respect to the Property or any
+                           portion of thereof or of any event or circumstance of which Seller has
+                           knowledge subsequent to the date of this Agreement which (a) makes any
+                           representation or warranty of the Seller to Buyer under this Agreement
+                           untrue or misleading, or (b) makes any covenant or agreement of Seller
+                           under this Agreement incapable of being performed.” 29
+
+            17. In this action, Granite contends that the 2009 Cinema Estoppel materially and
+                adversely diverges in from the FPSA’s Required Form. Furthermore, in its
+                divergence, it discloses for the first time a cracked foundation and structural
+
+            and Pl.’s Ex. 47-001 (email between Alberta employees discussing request of Ground Engineering
+            “research a sonar study of the cinema foundations,” dated June 20, 2008); Pl. Ex. 42 (letter from Ground
+            to Alberta on foundations research, dated Sept. 8, 2008); Pl.’s Ex. 56 (Town Center requesting proposals
+            for engineering services related to some of the cinema’s structural issue, dated Nov. 19, 2008); Pl.’s Ex.
+            65 (letter from Alberta’s counsel to Cinema’s counsel disputing responsibility for cracked foundation,
+            dated Dec. 18, 2008).
+            27
+                 Pl. Ex. 1, FPSA, Article V, Inspection, §5.1.
+            28
+                 Pl.’s Ex. 1, FPSA, Article V, Inspection, §5.3(c).
+            29
+                 Pl.’s Ex. 1, FPSA, Article VII, Construction of the Buildings; Other Seller Covenants, §7.2(f) at 023.
+
+
+                                                          8
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 9 of
+                                       16
+
+
+
+
+                   defects, exposing Granite to potential claims by the Town Center’s anchor tenant—
+                   thus depriving Granite of the very protection it had bargained for under the terms of
+                   the Fifteenth Amendment and the Escrow Agreement.
+
+            18. Alberta contends that Granite had no right to object to the estoppel because Granite
+                was aware of the cracked foundation issue ahead of the closing which, in any event,
+                is not a material issue because it is not an actual landlord default. 30 Alberta also
+                asserts that the Estoppel Holdback was not meant to protect Granite against future
+                tenant claims in the event that Alberta failed to deliver valid or “clean” tenant
+                estoppels. Rather, Alberta maintains, the Estoppel Holdback’s only purpose was to
+                ensure timely delivery of the Required Estoppels, which Alberta has undisputedly
+                done, and hence it should prevail in this action. 31
+
+                                                         II.
+                                                 CONCLUSIONS OF LAW
+
+                       The sole claim before this Court is for a breach of contract based on the parties’
+
+            conflicting interpretations of the FPSA as it pertains to the issue of whether the 2009
+
+            Cinema Estoppel fulfilled Alberta’s obligations under the FPSA. The parties do not
+
+            dispute that Colorado contract law applies.
+
+                       “Under Colorado law, contracts should be interpreted consistently with the
+
+            well-established principles of contractual interpretation.” Level 3 Communications,
+
+            LLC v. Liebert Corp., 535 F.3d 1146, 1154 (10th Cir.) (citing Allstate Ins. Co. v.
+
+            Huizar, 52 P.3d 816, 819 (Colo.2002). “A court’s primary obligation is to effectuate
+
+            the intent of the contracting parties according to the plain language and meaning of the
+
+            contract.” Albright v. McDermond, 14 P.3d 318, 322 (Colo. 2000).                          “Absent an
+
+            30
+              Def.’s Ex. 66 (email from Cudlip to Provost stating that Granite was aware of the cracked foundation,
+            dated Feb. 24, 2009).
+            31
+                 Tr. 28, 29, 171 (Provost Testimony).
+
+                                                        9
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 10 of
+                                       16
+
+
+
+
+             indication the parties chose to deviate from plain meaning, the instrument’s language
+
+             must be examined and construed in harmony with the plain and generally accepted
+
+             meaning of the words used. In other words, common usage prevails, and strained
+
+             constructions should be avoided.”       Level 3, 535 F.3d at 1154.       As a rule, the
+
+             interpretation of contract and whether it is ambiguous are both a question of law. Pub.
+
+             Serv. v. Meadow Island Ditch Co. No. 2, 132 P.3d 333, 339 (Colo. 2006). A contract
+
+             is ambiguous if it is “reasonably susceptible to more than one interpretation,” and parol
+
+             or extrinsic evidence is conditionally admitted to determine whether it is ambiguous.
+
+             Level 3, 535 F.3d at 1155.
+
+                    As an initial matter, the Court rejects Alberta’s argument that Granite could not,
+
+             per the parties’ Closing Agreement, properly object to the 2009 Cinema Estoppel
+
+             because it was “substantially similar” to the 2008 estoppel provided by the Cinema. As
+
+             noted in footnote 17, supra, Judge Weinsheink has already found that the 2008 and
+
+             2009 Cinema estoppels are not “substantially similar.” It follows then that the Closing
+
+             Agreement does not control.
+
+                    Here, there is no dispute that as provided for in FPSA Section 8.1(k)(ii),
+
+             Granite could properly object to the 2009 Cinema Estoppel is if the estoppel:
+
+                      (1) is not the form required by Exhibit H of the FPSA or has been materially
+                  and adversely modified from that form;
+                      (2) indicates the continued existence of an actual material default of the
+                  landlord under the applicable lease; or
+                      (3) correctly indicates that the tenant’s lease includes terms and provisions
+                  inconsistent with the lease delivered to Granite.
+
+
+
+                                                10
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 11 of
+                                       16
+
+
+
+
+                     Thus, under the common sense meaning of the word “or” Granite was well
+
+             within its rights to object if just one of the above conditions were met.
+
+                     The purpose of the tenant estoppels was to protect Granite from potential
+
+             claims from tenants. A review of Paragraphs 4–7 of Exhibit H, as noted more fully in
+
+             paragraph 3 of the Court’s fact findings, shows that Granite wanted tenants to warrant,
+
+             in sum: (i) that the tenant had no existing claim or defense against the landlord under
+
+             the existing lease; (ii) that the landlord had perform all of its obligations; (iii) that the
+
+             tenant had no defense, offsets, and claims against a new landlord, and (iv) did not
+
+             know of any existing default or event that could constitute default in the future.
+
+                     Based upon the Court’s fact findings, the Court concludes that disclosure of the
+
+             Cinema’s cracked foundation was both “material” and “adverse.” First, there is no
+
+             question that the 2009 Cinema Estoppel was modified from the Required Form in at
+
+             least four (4) ways—the most significant of which being the disclosure of the Cinema’s
+
+             cracked foundation and structural defects, which exposes Granite to potential claims of
+
+             liability by the Property’s anchor tenant. The parties negotiated the Tenant Estoppel in
+
+             the original FPSA and the provision survived the numerous amendments to the
+
+             FPSA—indicating the importance that clean tenant estoppels played in the closing of
+
+             the transaction. 32 Exposure to potential claims such as a tenant’s assertion that the
+
+
+             32
+               The Court specifically credited Silva’s testimony that the purpose of the estoppel was to provide
+             “some security in the event that there was a problem with some of these estoppels (Tr. 66), and found
+             Provost’s testimony that a cracked foundation would not material to him as a buyer, is simply not
+             credible. (Tr. 181–82, 192.)
+
+
+                                                      11
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 12 of
+                                       16
+
+
+
+
+             building itself is faulty deprives Granite of the very protection it bargained for in the
+
+             original Tenant Estoppel, and in the subsequent Estoppel Holdback—potential tenant
+
+             claims for problems that existed prior to closing. 33 See Level 3, 535 F.3d at 1154
+
+             (stating that “in construing a contract courts must also ‘consider the subject matter, the
+
+             object of making it, the sense in which the parties naturally understood it at the time it
+
+             was made, and the purposes and objects to be accomplished thereby. . . .’” (quoting
+
+             Total Petroleum, Inc. v. Farrar, 787 P.2d 164, 167 (Colo. 1990)).
+
+                      Alberta contends that the 2009 Cinema Estoppel provides only notice of an
+
+             incomplete investigation concerning which party is responsible for repairing cracks in
+
+             the Cinema building foundation, rather than notice of an existing landlord default.
+
+             Specifically, Alberta argues that under the express terms of the separate lease
+
+             agreement between the Cinema and Alberta, it is the Cinema that is financially
+
+             responsible for repairs to the Cinema building; Alberta thus has no obligation to repair
+
+             the Cinema’s cracked foundation.
+
+                      The record shows, however, that there is a genuine difference of opinion
+
+             between the Cinema and Alberta concerning who is ultimately liable for the Cinema’s
+
+             foundation problems. For example, while there is evidence in the record that Alberta
+
+             believed that that the Cinema bore the duty for any structural defects, the record also
+
+
+
+             33
+               Silva testified that the Cinema is by far the Town Center’s largest tenant as it occupies 72,000 square
+             feet of the 420,000 square feet of the Property, and its lease, which ran until 2026, generated nearly two
+             million dollars in annual revenue for the landlord. (Tr. 7, 14, 15, 10, 59.)
+
+
+                                                       12
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 13 of
+                                       16
+
+
+
+
+             shows that the Cinema contested this position. 34                    Furthermore, notwithstanding
+
+             Alberta’s claims, the record also shows that Alberta nevertheless took steps to
+
+             investigate the issue and retained legal counsel in connection with this dispute with the
+
+             Cinema. 35 Having already retained legal counsel in its dispute with the Cinema, the
+
+             Court’s must reject Alberta’s position that the cracked foundation immaterial.
+
+             Whatever the ultimate merits of a potential claim against Granite by the Cinema,
+
+             Granite will still have to defend it. This expenditure of resources on a tenant condition
+
+             existing prior to the December Closing Date, even if Granite ultimately prevails, is
+
+             precisely what the tenant estoppels provision in the FPSA intended.
+
+                      The Court also rejects Alberta’s arguments that other provisions of the FPSA
+
+             overcome the validity of Granite’s objections to the 2009 Cinema Estoppel.
+
+             Specifically, Alberta contends that the disclosure of the cracked foundation was not
+
+             material or adverse because: (i) Granite had an unconditional duty to close pursuant to
+
+             the FPSA’s “AS IS, WHERE IS” and termination provisions—which bar Granite from
+
+             terminating the deal based upon the condition of the Property; (ii) Alberta did not make
+
+
+
+             34
+               Def.’s Exs. 49–51; Pl.’s Ex. No. 39-001 (email from the Cinema to Alberta stating that it was the
+             Cinema’s position that the cracked foundation “is the responsibility of the landlord to correct,” dated
+             Sept. 16, 2008.)
+             35
+               Tr. 187, 204, 222–24, 229 (Cudlip Testimony); Tr. 237 (Kralovec Testimony); Def.’s Ex. 116-004 and
+             Pl.’s Ex. 47-001 (email between Alberta employees discussing request of Ground Engineering “research
+             a sonar study of the cinema foundations,” dated June 20, 2008); Pl. Ex. 42 (letter from Ground
+             Engineering to Alberta on its foundations research on the Property, dated Sept. 8, 2008); Pl.’s Ex. 56
+             (Town Center requesting proposals for engineering services related to some of the cinema’s structural
+             issue, dated Nov. 19, 2008); Pl.’s Ex. 65, (letter from Alberta’s counsel to Cinema’s counsel disputing
+             responsibility for cracked foundation, dated Dec. 18, 2008).
+
+
+                                                       13
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 14 of
+                                       16
+
+
+
+
+             any representations or warranties to Granite concerning the condition of the Property;
+
+             (iii) the FPSA provides Granite with a defense if a defect exists because Granite
+
+             purchased from Alberta all the relevant warranties and guarantees from third-parties
+
+             who participated in the construction of the Property; and (iv) finally, in any event,
+
+             Granite was well aware of the cracked foundation issue. 36
+
+                     The Court finds none of these contentions persuasive. First, Alberta’s reliance
+
+             on As Is/Where Is and termination provisions of the FPSA is misplaced.             Those
+
+             provisions operate to constrain Granite from suing Alberta post-closing with respect to
+
+             the condition of the Property. They do not directly bear on the operative issues here:
+
+             namely, Alberta’s obligation and failure to deliver updated Required Estoppels wherein
+
+             tenants affirm, among other things, that there were no existing issues or potential
+
+             claims/defenses against the landlord; and Granite’s remedy for Alberta’s failure to do
+
+             so. It follows then that Court is bound to construe the As Is/Where Is and termination
+
+             provisions in harmony with the controlling Fifteenth Amendment of the FPSA and the
+
+             Escrow Agreement. See Pepcol Mfg. Corp. v Denver Union Corp., 687 P.2d 1310,
+
+             1313–14 (Colo. 1984) (an integrated contract in the first instance is to be interpreted in
+
+             its entirety with the end view of seeking to harmonize and to give effect to all
+
+             provisions so that none will be rendered meaningless); see also Level 3, 535 F.3d at
+
+             1154 (noting that is a general principle of contract interpretation that “while every
+
+             relevant provision must be considered and given effect, ‘a more specific provision
+
+
+             36
+              Tr. 50, 162 (Provost Testimony).
+
+                                                 14
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 15 of
+                                       16
+
+
+
+
+             controls the effect of general provisions.’”) ((citing E-470 Pub. Highwayu Auth. v.
+
+             Jagow, 30 P.3d 798, 801 (Colo. Ct. App. 2001) aff’d, 49 P.3d 1151 (Colo. 2002)).
+
+                     Second, concerning Alberta’s argument on Granite’s potential remedies and the
+
+             lack of actual landlord default, even assuming the warranties/guarantees Granite
+
+             assumed under the FPSA would ensure a successful defense of a potential claim for the
+
+             Cinema’s structural problems, the time and expense of defending against a problem
+
+             that existed prior to the December Closing Date is not what Granite bargained for.
+
+                     Finally, concerning Alberta’s claim of Granite’s knowledge of the cracked
+
+             foundation, the record shows that Alberta was aware of the cracked foundation at least
+
+             six-months prior to the December Closing Date. While Alberta might have conveyed
+
+             this information to Granite’s representatives orally, there is simply no evidence in the
+
+             record that Alberta ever provided Granite with notice of this issue. 37
+
+                     Accordingly, the Court finds that the 2009 Cinema Estoppel modified in
+
+             “material” and “adverse” ways from the Required Form. As such, Granite was not
+
+             required to accept the 2009 Cinema Estoppel, and is entitled to the funds in escrow.
+
+
+
+
+             37
+              Tr. 73 (Silva Testimony); Tr. 204, 229 (Cudlip Testimony); Tr. 230–31, 236–37 (Kralovec
+             Testimony).
+
+                                                    15
+Case 1:09-cv-00799-SJJ -KLM Document 195 Filed 09/02/11 USDC Colorado Page 16 of
+                                       16
+
+
+
+
+                                                  CONCLUSION
+
+                    Based on the foregoing, the Court finds in favor of Granite on its breach of
+
+             contract claim. Accordingly, it is
+
+                    ORDERED that the Clerk of Court shall enter judgment in favor of Plaintiff
+             Granite Southlands Center, LLC and against Defendant Alberta Town Center, LLC.
+
+
+             This ruling makes it unnecessary to discuss any other issues raised by the parties.
+
+
+
+
+                    SO ORDERED.
+
+             DATED:         September 02, 2011                    __________/s/____________
+                            Brooklyn, New York                     Sterling Johnson, Jr. U.S.D.J.
+
+
+
+
+                                                  16
+

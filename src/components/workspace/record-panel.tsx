@@ -1,14 +1,19 @@
 import { useQuery } from "convex/react";
-import { ShieldAlert } from "lucide-react";
+import { ExternalLink, Landmark } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MATTER_ID } from "@/lib/drafting/sections";
 import { api } from "../../../convex/_generated/api";
 import { Quoted } from "./quoted";
-import { shortCite } from "./status";
 
 export function RecordPanel({
   sourceId,
@@ -33,15 +38,18 @@ export function RecordPanel({
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="border-b p-2">
-        <Tabs value={sourceId} onValueChange={onSelect}>
-          <TabsList className="h-auto w-full flex-wrap justify-start">
+        <Select value={sourceId} onValueChange={onSelect}>
+          <SelectTrigger className="w-full" aria-label="Record document">
+            <SelectValue placeholder="Choose a filing" />
+          </SelectTrigger>
+          <SelectContent>
             {(sources ?? []).map((s) => (
-              <TabsTrigger key={s.sourceId} value={s.sourceId} title={s.title}>
-                {shortCite(s.sourceId)}
-              </TabsTrigger>
+              <SelectItem key={s.sourceId} value={s.sourceId}>
+                {s.title}
+              </SelectItem>
             ))}
-          </TabsList>
-        </Tabs>
+          </SelectContent>
+        </Select>
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
@@ -52,9 +60,22 @@ export function RecordPanel({
               <h2 className="font-serif text-lg leading-snug">{source.title}</h2>
               {source.notice && (
                 <Alert>
-                  <ShieldAlert aria-hidden />
-                  <AlertTitle>Not shown to any model</AlertTitle>
-                  <AlertDescription>{source.notice}</AlertDescription>
+                  <Landmark aria-hidden />
+                  <AlertTitle>About this filing</AlertTitle>
+                  <AlertDescription>
+                    {source.notice}
+                    {source.url && (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-1 inline-flex items-center gap-1 underline underline-offset-4"
+                      >
+                        Open the original on CourtListener{" "}
+                        <ExternalLink className="size-3" aria-hidden />
+                      </a>
+                    )}
+                  </AlertDescription>
                 </Alert>
               )}
               {source.passages.map((passage, i) => {

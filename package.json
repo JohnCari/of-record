@@ -1,5 +1,5 @@
 {
-  "name": "of-record",
+  "name": "rossrecall",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,8 +16,11 @@
     "bench": "node --import tsx bench/run.mts",
     "authorities": "node --import tsx scripts/fetch-authorities.mts",
     "bench:gate": "node --import tsx bench/gate.mts",
+    "bench:lanes": "node --import tsx bench/lanes.mts",
     "eval": "eve eval --strict --url http://localhost:3000",
-    "gate:integration": "node --import tsx scripts/gate-integration.mts"
+    "gate:integration": "node --import tsx scripts/gate-integration.mts",
+    "matter": "node --import tsx scripts/fetch-matter.mts",
+    "jev:check": "node --import tsx scripts/jev-check.mts"
   },
   "dependencies": {
     "@convex-dev/rate-limiter": "^0.4.0",
@@ -28,7 +31,6 @@
     "eve": "^0.63.0",
     "lucide-react": "^1.47.0",
     "next": "16.3.5",
-    "next-themes": "^0.4.6",
     "radix-ui": "^1.6.7",
     "react": "19.3.0",
     "react-dom": "19.3.0",

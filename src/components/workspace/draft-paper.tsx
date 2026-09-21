@@ -1,7 +1,7 @@
 import { FileText } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { SECTIONS } from "@/lib/drafting/sections";
+import { MATTER_COURT, MATTER_DOCKET, MOTION_TITLE, SECTIONS } from "@/lib/drafting/sections";
 import { cn } from "@/lib/utils";
 import { type Adjudication, type Sentence, STANDING, shortCite, standingOf } from "./status";
 
@@ -37,7 +37,7 @@ export function DraftPaper({
       <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
         <FileText className="size-8 text-muted-foreground" aria-hidden />
         <p className="max-w-sm text-sm text-muted-foreground">
-          Nothing drafted yet. Start a run below, or open the recorded run to see a finished draft.
+          Nothing drafted yet. Start a run below.
         </p>
       </div>
     );
@@ -50,9 +50,10 @@ export function DraftPaper({
     >
       <header className="pleading-line mb-6">
         <div>
-          <p className="text-sm">District Court, Arapahoe County, State of Colorado</p>
+          <p className="text-sm">{MATTER_COURT}</p>
           <p className="font-semibold">{caption}</p>
-          <p className="mt-3 text-center font-semibold">Plaintiff's Motion for Summary Judgment</p>
+          <p className="text-sm">{MATTER_DOCKET}</p>
+          <p className="mt-3 text-center font-semibold">{MOTION_TITLE}</p>
         </div>
       </header>
 
@@ -112,9 +113,19 @@ export function DraftPaper({
 /** Citations in the form a filing uses, after the sentence they support. */
 function Cites({ sentence }: { sentence: Sentence }) {
   const cites = [
-    ...sentence.recordCites.map((c) => shortCite(c.docId)),
+    ...sentence.recordCites.map((c, i) =>
+      shortCite(
+        c.docId,
+        // The page comes from where the verifier actually found the quote, not from the drafter.
+        sentence.verification?.checks.find((k) => k.target === "record" && k.citeIndex === i)
+          ?.evidence?.section,
+      ),
+    ),
     ...sentence.authorityCites.map((c) => `${c.caseName}, ${c.citation}`),
   ];
   if (cites.length === 0) return null;
-  return <span className="pl-1 text-[0.9em] text-[#55627a]"> ({cites.join("; ")}.)</span>;
+  // Two quotes from one page are one cite on the page, as in a brief.
+  return (
+    <span className="pl-1 text-[0.9em] text-[#55627a]"> ({[...new Set(cites)].join("; ")}.)</span>
+  );
 }

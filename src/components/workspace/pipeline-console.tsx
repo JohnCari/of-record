@@ -39,8 +39,8 @@ export function PipelineConsole({
           <Play aria-hidden /> {running ? "Running" : "Run the pipeline"}
         </Button>
         <p className="text-sm text-muted-foreground">
-          A fixed sequence in code. The model fills in each stage and never chooses the next one.
-          About two minutes.
+          Jev selects the facts and the rules, code quotes them, and Gemini writes only the
+          sentences that apply one to the other. Under a minute, about a cent.
         </p>
       </div>
       <ScrollArea className="min-h-0 flex-1">
@@ -62,7 +62,12 @@ export function PipelineConsole({
                 )}
               >
                 {event.label}
-                {event.detail && <span className="text-muted-foreground">. {event.detail}</span>}
+                {/* A stage reports what it found when the next one starts. */}
+                {event.type === "error"
+                  ? event.detail && <span className="text-muted-foreground">. {event.detail}</span>
+                  : events[i + 1]?.detail && (
+                      <span className="text-muted-foreground">. {events[i + 1].detail}</span>
+                    )}
               </span>
             </li>
           ))}

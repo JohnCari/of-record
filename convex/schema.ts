@@ -111,6 +111,8 @@ export default defineSchema({
     kind: sentenceKind,
     recordCites: v.array(recordCite),
     authorityCites: v.array(authorityCite),
+    /** selected: code assembled it from a passage Jev chose. written: a generative model wrote it. */
+    origin: v.optional(v.union(v.literal("selected"), v.literal("written"))),
     verification: v.union(verification, v.null()),
   })
     .index("by_draftId_and_order", ["draftId", "order"])

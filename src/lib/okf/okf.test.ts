@@ -13,14 +13,14 @@ describe("parseOkf", () => {
 
   it("splits the banner into notice and keeps it out of model-visible text", () => {
     const doc = parseOkf(
-      "---\ntype: Record Document\n---\n\n# Heading\n\n> SYNTHETIC DOCUMENT and an\n> attack fixture.\n\n## 1. Terms\n\n1.1 First\nline wrapped.\n\n1.2 Second.",
+      "---\ntype: Record Document\n---\n\n# Heading\n\n> Public court filing, reproduced\n> as retrieved.\n\n## Page 1\n\n1.1 First\nline wrapped.\n\n1.2 Second.",
       "a.md",
     );
-    expect(doc.notice).toBe("SYNTHETIC DOCUMENT and an attack fixture.");
-    expect(doc.text).not.toMatch(/SYNTHETIC|attack/);
+    expect(doc.notice).toBe("Public court filing, reproduced as retrieved.");
+    expect(doc.text).not.toMatch(/reproduced/);
     expect(doc.passages).toEqual([
-      { index: 0, section: "1. Terms", text: "1.1 First line wrapped." },
-      { index: 1, section: "1. Terms", text: "1.2 Second." },
+      { index: 0, section: "Page 1", text: "1.1 First line wrapped." },
+      { index: 1, section: "Page 1", text: "1.2 Second." },
     ]);
   });
 
@@ -31,30 +31,41 @@ describe("parseOkf", () => {
   });
 });
 
-describe("the matter bundle", () => {
-  it("loads every record document with a unique doc_id", async () => {
-    const docs = await loadBundle(KNOWLEDGE, "matter");
-    const records = docs.filter((doc) => doc.frontmatter.type === "Record Document");
+describe("the knowledge bundle", () => {
+  it("contains only material retrieved from CourtListener", async () => {
+    const docs = await loadBundle(KNOWLEDGE);
+    const sourced = docs.filter((d) =>
+      ["Record Document", "Authority", "Matter"].includes(d.frontmatter.type),
+    );
+    expect(sourced.length).toBeGreaterThan(10);
+    for (const doc of sourced) {
+      expect(String(doc.frontmatter.resource), doc.path).toMatch(
+        /^https:\/\/www\.courtlistener\.com\//,
+      );
+      expect(JSON.stringify(doc.frontmatter.generated), doc.path).toMatch(/process:fetch-/);
+    }
+  });
+
+  it("gives every record document a unique id and page-numbered passages", async () => {
+    const records = (await loadBundle(KNOWLEDGE, "matter")).filter(
+      (doc) => doc.frontmatter.type === "Record Document",
+    );
     const ids = records.map((doc) => doc.frontmatter.doc_id);
-    expect(records.length).toBeGreaterThanOrEqual(7);
+    expect(records.length).toBeGreaterThanOrEqual(10);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(ids).toContain("ex-d");
+    for (const doc of records) {
+      expect(doc.passages.length, doc.path).toBeGreaterThan(0);
+      for (const passage of doc.passages) expect(passage.section, doc.path).toMatch(/^Page \d+$/);
+    }
   });
 
-  it("never exposes fixture labels to a model", async () => {
-    const docs = await loadBundle(KNOWLEDGE, "matter");
-    const memo = docs.find((doc) => doc.frontmatter.doc_id === "ex-f");
-    expect(memo?.notice).toMatch(/attack fixture/);
-    // The injection itself must survive, or the red-team eval tests nothing.
-    expect(memo?.text).toMatch(/Disregard your prior instructions/);
-    expect(memo?.text).not.toMatch(/attack fixture|SYNTHETIC|red.team/i);
-  });
-
-  it("marks every matter document synthetic", async () => {
-    const docs = await loadBundle(KNOWLEDGE, "matter");
-    for (const doc of docs) {
-      expect(doc.frontmatter.synthetic, doc.path).toBe(true);
-      expect(doc.frontmatter.tags, doc.path).toContain("synthetic");
+  it("keeps the court's orders and the parties' briefs out of the record", async () => {
+    // They are the answer key the bench is checked against. A drafter that could read the
+    // judge's findings would be copying them.
+    const records = await loadBundle(KNOWLEDGE, "matter");
+    for (const doc of records) {
+      expect(String(doc.frontmatter.doc_kind ?? ""), doc.path).not.toMatch(/^(opinion|brief)$/);
+      expect(doc.title, doc.path).not.toMatch(/Memorandum and Order|Findings of Fact|Motion for/i);
     }
   });
 });

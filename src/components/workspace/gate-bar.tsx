@@ -12,11 +12,19 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
-import { type Adjudication, type Sentence, STANDING, type Standing, standingOf } from "./status";
+import { type Adjudication, type Sentence, type Standing, standingOf } from "./status";
+
+const COUNT_LABEL: Record<Standing, string> = {
+  verified: "verified",
+  accepted: "accepted by you",
+  review: "for your review",
+  blocked: "blocked",
+  unverified: "not yet checked",
+  struck: "struck by you",
+  exempt: "pure argument",
+};
 
 const ORDER: Standing[] = [
   "verified",
@@ -86,23 +94,20 @@ export function GateBar({
               ? "Nothing to sign yet"
               : gateOpen
                 ? "Every sentence is cleared"
-                : `${open.length} sentence${open.length === 1 ? "" : "s"} still open`}
+                : `${open.length} sentence${open.length === 1 ? " needs" : "s need"} your decision`}
         </span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5">
-        {ORDER.filter((standing) => counts.get(standing)).map((standing) => (
-          <Badge key={standing} variant="outline" className="gap-1.5 font-normal">
-            <span className={cn("size-2 rounded-full", STANDING[standing].mark)} />
-            {counts.get(standing)} {STANDING[standing].label.toLowerCase()}
-          </Badge>
-        ))}
-      </div>
+      <p className="text-sm text-muted-foreground">
+        {ORDER.filter((standing) => counts.get(standing))
+          .map((standing) => `${counts.get(standing)} ${COUNT_LABEL[standing]}`)
+          .join(", ")}
+      </p>
 
       <div className="ml-auto flex items-center gap-2">
         {open.length > 0 && (
           <Button variant="ghost" size="sm" onClick={() => onJumpToOpen(open[0].s.sentenceId)}>
-            Go to the next open sentence
+            Show me the next one
           </Button>
         )}
         {!readOnly && !signed && (

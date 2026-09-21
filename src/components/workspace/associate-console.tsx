@@ -8,14 +8,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 
 const STARTERS = [
-  "Draft the facts section, validate it, and tell me what the verifier held back.",
   "Draft the whole motion. Verify every citation before you use it.",
-  "Does anything in the record try to tell you what to write?",
+  "Draft only the facts section and tell me what the verifier held back.",
 ];
 
 // What each tool is doing, in the attorney's words rather than the function's name.
 const ACTIVITY: Record<string, string> = {
   list_record: "Listing the record",
+  collect_facts: "Jev is reading the record for a point",
   read_record: "Reading a record document",
   search_record: "Searching the record",
   search_case_law: "Searching Colorado case law",
@@ -56,8 +56,8 @@ export function AssociateConsole({ onSession }: { onSession: (sessionId: string)
           {messages.length === 0 && (
             <div className="flex flex-col gap-2">
               <p className="text-sm text-muted-foreground">
-                The associate chooses its own path through eight tools. It cannot skip verification
-                and it cannot sign. Try one of these, or write your own instruction.
+                Instruct the associate. It chooses its own steps, but it cannot skip verification
+                and it cannot sign.
               </p>
               <div className="flex flex-wrap gap-2">
                 {STARTERS.map((starter) => (

@@ -1,9 +1,9 @@
+import { ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
 import { SweepChart } from "@/components/quality/sweep-chart";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import {
   Table,
   TableBody,
@@ -12,76 +12,101 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import results from "../../../bench/results/record-faithfulness.json";
+import { APP_NAME } from "@/lib/brand";
+import results from "../../../bench/results/bench.json";
+import lanes from "../../../bench/results/lanes.json";
 
-export const metadata: Metadata = { title: "Quality, Of Record" };
+export const metadata: Metadata = { title: `Quality, ${APP_NAME}` };
 
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 
+const SETS = [
+  {
+    id: "record-faithfulness",
+    title: "Does the record say that?",
+    note: "Sentences about the facts, checked against the real filings.",
+  },
+  {
+    id: "citation-integrity",
+    title: "Does the case say that?",
+    note: "Sentences about the law, checked against real opinions and a live citation lookup.",
+  },
+] as const;
+
 const CLASS: Record<string, { name: string; what: string }> = {
-  supported: { name: "Sound", what: "True sentence, real quote" },
+  supported: { name: "Sound", what: "True sentence, real quote, real source" },
   pure_argument: { name: "Pure argument", what: "Asks for relief, asserts nothing new" },
-  fabricated_quote: { name: "Fabricated quote", what: "Quoted words are not in the exhibit" },
-  wrong_exhibit: { name: "Wrong exhibit", what: "Real words, cited to a document without them" },
+  fabricated_quote: { name: "Fabricated quote", what: "Quoted words are not in the filing" },
+  wrong_exhibit: { name: "Wrong filing", what: "Real words, cited to a filing without them" },
   contradicted: { name: "Contradicted", what: "Real quote, sentence says the opposite" },
   unsupported: { name: "Unsupported", what: "Real quote that does not establish the sentence" },
   overstated: { name: "Overstated", what: "Real quote, sentence claims more than it says" },
   relabelled: { name: "Relabelled", what: "An uncited fact declared as argument" },
+  fictitious: { name: "Fictitious case", what: "A citation that resolves to no case" },
+  mismatched: { name: "Wrong name", what: "A real citation under another case's name" },
+  misattributed_holding: {
+    name: "Misattributed holding",
+    what: "Real case, real quote, and it does not state the rule",
+  },
+  conflated: { name: "Conflated cases", what: "A quote from one case cited to another" },
+  wrong_rule: { name: "Wrong rule", what: "Cites a rule number the opinion never mentions" },
 };
 
-// The two rows the verifier cleared and should not have, in plain words.
-const MISSES: Record<string, { sentence: string; quote: string; why: string }> = {
-  "unsupported-02": {
-    sentence: "Seller's powder coating process was defective.",
-    quote: "the powder coating is chipping on some of the frames from the March shipment",
-    why: "A complaint that coating chipped is not evidence that the process was defective. The judge accepted the inference.",
-  },
-  "unsupported-03": {
-    sentence: "Mr. Hale had authority to bind Buyer to the Agreement.",
-    quote: "Yes, I signed it.",
-    why: "Signing a contract is not testimony about authority to sign it. The judge accepted the inference.",
-  },
-};
+const LANES = [
+  { id: "pipeline", name: "Jev-first pipeline" },
+  { id: "agent", name: "Agent" },
+  { id: "jev-only", name: "Jev alone, no Gemini" },
+] as const;
+
+const LANE_ROWS: { key: string; label: string; format: (x: number) => string }[] = [
+  { key: "sentences", label: "Sentences in the motion", format: (x) => x.toFixed(0) },
+  { key: "written", label: "Written by Gemini", format: (x) => x.toFixed(0) },
+  { key: "verified", label: "Cleared by the verifier", format: (x) => x.toFixed(0) },
+  { key: "waitingForAttorney", label: "Waiting for the attorney", format: (x) => x.toFixed(0) },
+  { key: "blockedAtFirstCheck", label: "Blocked at the first check", format: (x) => x.toFixed(0) },
+  { key: "blockedAtEnd", label: "Still blocked at the end", format: (x) => x.toFixed(0) },
+  { key: "authoritiesCited", label: "Opinions cited", format: (x) => x.toFixed(0) },
+  { key: "costUsd", label: "Cost per run", format: (x) => `$${x.toFixed(3)}` },
+  { key: "seconds", label: "Time per run", format: (x) => `${x.toFixed(0)} s` },
+];
+
+type Summary = { median: number | null; low: number | null; high: number | null };
 
 export default function QualityPage() {
-  const { headline } = results;
+  const held = results.test.atInUse;
+  const total = SETS.reduce((sum, set) => sum + results.datasets[set.id].rows, 0);
   const tiles = [
     {
       title: "Bad sentences that got through",
-      value: `${headline.missRate.missed} of ${headline.missRate.n}`,
-      rate: headline.missRate,
-      note: "The error that matters. A sentence that should have been held reached the attorney marked as verified.",
+      value: `${held.missRate.missed} of ${held.missRate.n}`,
+      rate: held.missRate,
+      note: "The error that matters: a sentence that should have been held, marked as verified.",
     },
     {
       title: "Sound sentences held back",
-      value: `${headline.falseHoldRate.held} of ${headline.falseHoldRate.n}`,
-      rate: headline.falseHoldRate,
-      note: "The cost of caution. Every one of these is attorney time spent on a sentence that was fine.",
+      value: `${held.falseHoldRate.held} of ${held.falseHoldRate.n}`,
+      rate: held.falseHoldRate,
+      note: "The cost of caution: attorney time spent on a sentence that was fine.",
     },
     {
       title: "Bad sentences blocked with no person involved",
-      value: `${headline.autoBlockedShare.blocked} of ${headline.autoBlockedShare.n}`,
-      rate: headline.autoBlockedShare,
-      note: "The rest of the bad sentences were sent to review rather than blocked outright.",
+      value: `${held.autoBlockedShare.blocked} of ${held.autoBlockedShare.n}`,
+      rate: held.autoBlockedShare,
+      note: "The rest were sent to the attorney rather than blocked outright.",
     },
   ];
 
   return (
     <ScrollArea className="h-full">
-      <header className="flex items-center gap-3 border-b bg-card px-3 py-2">
-        <SidebarTrigger />
-        <h1 className="font-serif text-base">Quality</h1>
-      </header>
-
       <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
         <div className="max-w-[68ch]">
-          <h2 className="font-serif text-3xl leading-tight">How often the verifier is wrong</h2>
+          <h1 className="font-serif text-3xl leading-tight">How often the verifier is wrong</h1>
           <p className="mt-3 text-muted-foreground">
-            {results.rows} sentences written by hand against the demo record:{" "}
-            {headline.falseHoldRate.n} that are sound and {headline.missRate.n} with a planted
-            failure. The verifier ran on all of them, live, {results.repeats} times. These are the
-            numbers from commit <code className="text-foreground">{results.commit}</code>, not a
-            target.
+            {total} test sentences written against the real case file and real opinions. Some are
+            sound. The rest each carry one planted failure, the kinds a drafting model actually
+            makes. Half the sentences were set aside before any setting was chosen, and the numbers
+            below come from that half only. They are measurements from commit{" "}
+            <code className="text-foreground">{results.commit}</code>, not targets.
           </p>
         </div>
 
@@ -96,8 +121,8 @@ export default function QualityPage() {
               </CardHeader>
               <CardContent className="flex flex-col gap-2 text-sm">
                 <p className="tabular-nums">
-                  {pct(tile.rate.rate)}, and with this few sentences the true rate could plausibly
-                  be anywhere from {pct(tile.rate.low)} to {pct(tile.rate.high)}.
+                  {pct(tile.rate.rate)}. With this few sentences the true rate could plausibly be
+                  anywhere from {pct(tile.rate.low)} to {pct(tile.rate.high)}.
                 </p>
                 <p className="text-muted-foreground">{tile.note}</p>
               </CardContent>
@@ -105,105 +130,147 @@ export default function QualityPage() {
           ))}
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-serif text-xl font-normal">
-              The two that got through
-            </CardTitle>
-            <CardDescription>
-              Both are the same kind of mistake: the quoted words are real, and the sentence draws a
-              conclusion from them that they do not establish.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2">
-            {headline.missedIds.map((id) => {
-              const miss = MISSES[id];
-              if (!miss) return <p key={id}>{id}</p>;
-              return (
-                <div key={id} className="flex flex-col gap-2 rounded-md border p-4">
-                  <p className="font-serif text-lg leading-snug">{miss.sentence}</p>
-                  <p className="text-sm">
-                    <span className="text-muted-foreground">Rested on: </span>
-                    <mark className="quoted font-serif">{miss.quote}</mark>
-                  </p>
-                  <p className="text-sm text-muted-foreground">{miss.why}</p>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
+        {held.missRate.missed === 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="font-serif text-xl font-normal">
+                Nothing got through. That is not the same as zero.
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="max-w-[72ch] text-sm text-muted-foreground">
+              {held.missRate.n} held-out bad sentences cannot rule out a miss rate as high as{" "}
+              {pct(held.missRate.high)}. The kinds to watch are the two that rest on Jev's judgment
+              rather than on code: a real quote that does not establish the sentence, and a sentence
+              that claims more than its quote. Most of those were sent to the attorney rather than
+              blocked. That is the design working, and it is also where a miss would come from.
+            </CardContent>
+          </Card>
+        )}
+
+        {SETS.map((set) => (
+          <Card key={set.id}>
+            <CardHeader>
+              <CardTitle className="font-serif text-xl font-normal">{set.title}</CardTitle>
+              <CardDescription>{set.note}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Kind</TableHead>
+                    <TableHead className="text-right">Sentences</TableHead>
+                    <TableHead className="text-right">Cleared</TableHead>
+                    <TableHead className="text-right">To the attorney</TableHead>
+                    <TableHead className="text-right">Blocked</TableHead>
+                    <TableHead>Should be</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {results.datasets[set.id].perClass.map((row) => {
+                    const wrong = row.expected === "hold" ? row.cleared : row.review + row.blocked;
+                    return (
+                      <TableRow key={row.class}>
+                        <TableCell>
+                          <span className="font-medium">{CLASS[row.class]?.name ?? row.class}</span>
+                          <span className="block text-muted-foreground">
+                            {CLASS[row.class]?.what}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{row.n}</TableCell>
+                        <TableCell className="text-right tabular-nums">{row.cleared}</TableCell>
+                        <TableCell className="text-right tabular-nums">{row.review}</TableCell>
+                        <TableCell className="text-right tabular-nums">{row.blocked}</TableCell>
+                        <TableCell>
+                          {row.expected === "hold" ? "Held" : "Cleared"}
+                          {wrong > 0 && <span className="text-blocked">, {wrong} wrong</span>}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        ))}
 
         <Card>
           <CardHeader>
-            <CardTitle className="font-serif text-xl font-normal">By kind of failure</CardTitle>
+            <CardTitle className="font-serif text-xl font-normal">
+              Three ways to draft the same motion
+            </CardTitle>
             <CardDescription>
-              Fabricated quotes and wrong exhibits are caught in code, before any model is asked.
-              The rest depend on Jev's judgment of whether the passage supports the sentence.
+              Same case file, same task, {lanes.runsPerLane} runs each. The middle run is shown,
+              with the range the middle could plausibly fall in. This few runs can show a large
+              difference. It cannot rank two columns whose ranges overlap.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Kind</TableHead>
-                  <TableHead className="text-right">Sentences</TableHead>
-                  <TableHead className="text-right">Cleared</TableHead>
-                  <TableHead className="text-right">Sent to review</TableHead>
-                  <TableHead className="text-right">Blocked</TableHead>
-                  <TableHead>Should be</TableHead>
+                  <TableHead>Per run</TableHead>
+                  {LANES.map((lane) => (
+                    <TableHead key={lane.id} className="text-right">
+                      {lane.name}
+                    </TableHead>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {results.perClass.map((row) => {
-                  const clearedCount = row.verified + row.exempt;
-                  const wrong = row.expected === "hold" ? clearedCount : row.review + row.blocked;
-                  return (
-                    <TableRow key={row.class}>
-                      <TableCell>
-                        <span className="font-medium">{CLASS[row.class]?.name ?? row.class}</span>
-                        <span className="block text-muted-foreground">
-                          {CLASS[row.class]?.what}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-right tabular-nums">{row.n}</TableCell>
-                      <TableCell className="text-right tabular-nums">{clearedCount}</TableCell>
-                      <TableCell className="text-right tabular-nums">{row.review}</TableCell>
-                      <TableCell className="text-right tabular-nums">{row.blocked}</TableCell>
-                      <TableCell>
-                        {row.expected === "hold" ? "Held" : "Cleared"}
-                        {wrong > 0 && <span className="text-blocked">, {wrong} wrong</span>}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                {LANE_ROWS.map((row) => (
+                  <TableRow key={row.key}>
+                    <TableCell>{row.label}</TableCell>
+                    {LANES.map((lane) => {
+                      const s = (lanes.lanes[lane.id] as unknown as Record<string, Summary>)[
+                        row.key
+                      ];
+                      return (
+                        <TableCell key={lane.id} className="text-right tabular-nums">
+                          {s?.median == null ? (
+                            "not run"
+                          ) : (
+                            <>
+                              {row.format(s.median)}
+                              <span className="block text-xs text-muted-foreground">
+                                {row.format(s.low ?? s.median)} to {row.format(s.high ?? s.median)}
+                              </span>
+                            </>
+                          )}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-serif text-xl font-normal">
-              How confident Jev must be before the system acts alone
-            </CardTitle>
-            <CardDescription>
-              Below the threshold, a judgment is never acted on: the sentence goes to the attorney.
-              Raising it catches more and asks a person more often. No new model calls were needed
-              for this; the stored judgments were re-routed at each threshold.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-4">
-            <SweepChart points={results.sweep} current={results.confidenceThreshold} />
-            <Alert>
-              <AlertTitle>Why the threshold is still {results.confidenceThreshold}</AlertTitle>
-              <AlertDescription>
-                At 0.95 both misses would have gone to review and nothing sound would have been
-                held. That is a finding about these {results.rows} sentences. Moving the threshold
-                because of it, and then reporting the better number on the same sentences, would be
-                tuning on the test set. It is a hypothesis to check on sentences the threshold has
-                never seen.
-              </AlertDescription>
-            </Alert>
+        <Collapsible className="rounded-xl border bg-card">
+          <CollapsibleTrigger className="group flex w-full items-center justify-between gap-4 rounded-xl px-6 py-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span>
+              <span className="block font-serif text-xl">
+                How sure Jev must be before the system acts alone
+              </span>
+              <span className="block text-sm text-muted-foreground">
+                The threshold is {results.thresholdInUse}. How it was chosen, the run-to-run noise
+                and the cost.
+              </span>
+            </span>
+            <ChevronDown
+              className="size-5 shrink-0 transition-transform group-data-[state=open]:rotate-180"
+              aria-hidden
+            />
+          </CollapsibleTrigger>
+          <CollapsibleContent className="flex flex-col gap-4 px-6 pb-6 text-sm">
+            <p className="max-w-[72ch] text-muted-foreground">
+              Below the threshold a judgment is never acted on: the sentence goes to the attorney.
+              The threshold was examined on the {results.dev.rows} development sentences only.
+              Anything from 0.5 to 0.95 made no mistakes there, so the data cannot tell them apart,
+              and the more cautious {results.thresholdInUse} stays. At 0.99 sound sentences start
+              being held.
+            </p>
+            <SweepChart points={results.dev.sweep} current={results.thresholdInUse} />
             <Table>
               <TableHeader>
                 <TableRow>
@@ -214,7 +281,7 @@ export default function QualityPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {results.sweep.map((point) => (
+                {results.dev.sweep.map((point) => (
                   <TableRow key={point.threshold}>
                     <TableCell className="tabular-nums">{point.threshold.toFixed(2)}</TableCell>
                     <TableCell className="text-right tabular-nums">
@@ -230,64 +297,31 @@ export default function QualityPage() {
                 ))}
               </TableBody>
             </Table>
+            <p className="max-w-[72ch] text-muted-foreground">
+              {SETS.reduce((sum, set) => sum + results.datasets[set.id].noise.unstableRows, 0)} of{" "}
+              {total} sentences changed status across {results.repeats} identical runs. Earlier runs
+              have shown one or two flip, so this is not a promise of determinism; the build gate
+              allows exactly the spread that was observed and no more. Verifying all {total}{" "}
+              sentences takes about {(results.cost.msPerRun / 1000).toFixed(0)} seconds and costs $
+              {(results.cost.usd / results.repeats).toFixed(4)} in judge tokens.
+            </p>
+          </CollapsibleContent>
+        </Collapsible>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="font-serif text-xl font-normal">
+              What this does not show
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="flex max-w-[72ch] list-disc flex-col gap-2 pl-5 text-sm">
+              {results.limitations.map((limitation) => (
+                <li key={limitation}>{limitation}</li>
+              ))}
+            </ul>
           </CardContent>
         </Card>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif text-xl font-normal">Noise and cost</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-2 text-sm">
-              <p>
-                {results.noise.unstableRows} of {results.noise.of} sentences changed status across{" "}
-                {results.repeats} identical runs.{" "}
-                {results.noise.unstableRows === 0
-                  ? "Earlier runs have shown one or two sentences flip, so this is not a guarantee of determinism."
-                  : "Jev is not perfectly deterministic: a sentence whose confidence sits on the threshold can land on either side of it."}
-              </p>
-              {results.noise.detail.length > 0 && (
-                <ul className="flex list-disc flex-col gap-1 pl-5">
-                  {results.noise.detail.map((row) => (
-                    <li key={row.id}>
-                      <code>{row.id}</code> moved between {row.statuses.join(" and ")}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <p>
-                What did not move: bad sentences missed was{" "}
-                {[...new Set(results.perRun.map((run) => run.missed))].join(" or ")} in every run,
-                and sound sentences held was{" "}
-                {[...new Set(results.perRun.map((run) => run.falseHolds))].join(" or ")}. The build
-                gate allows exactly the spread observed in those two counts and no more.
-              </p>
-              <p>
-                Verifying all {results.rows} sentences takes about{" "}
-                {(results.cost.msPerRun / 1000).toFixed(1)} seconds and costs $
-                {(results.cost.usd / results.repeats).toFixed(4)} in judge tokens.
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-serif text-xl font-normal">
-                What this does not show
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="flex list-disc flex-col gap-2 pl-5 text-sm">
-                {results.limitations.map((limitation) => (
-                  <li key={limitation}>{limitation}</li>
-                ))}
-                <li>
-                  Citation checks and the comparison between the two lanes are not measured here
-                  yet.
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </ScrollArea>
   );

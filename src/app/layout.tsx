@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, Source_Serif_4 } from "next/font/google";
-import { AppShell } from "@/components/app-shell";
+import { AppHeader } from "@/components/app-header";
+import { APP_NAME, APP_TAGLINE } from "@/lib/brand";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -18,21 +19,17 @@ const sourceSerif = Source_Serif_4({
 });
 
 export const metadata: Metadata = {
-  title: "Of Record",
-  description:
-    "A litigation drafting demo in which every sentence is checked against the record and the cited opinion before an attorney sees it.",
+  title: APP_NAME,
+  description: `${APP_TAGLINE} A litigation drafting demo on a real federal case, with every sentence checked against the record and the cited opinion.`,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${plex.variable} ${sourceSerif.variable} h-full antialiased`}
-      suppressHydrationWarning
-    >
-      <body className="h-full font-sans">
+    <html lang="en" className={`${plex.variable} ${sourceSerif.variable} h-full antialiased`}>
+      <body className="flex h-full flex-col font-sans">
         <Providers>
-          <AppShell>{children}</AppShell>
+          <AppHeader />
+          <main className="min-h-0 flex-1">{children}</main>
         </Providers>
       </body>
     </html>

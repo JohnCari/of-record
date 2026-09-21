@@ -3,7 +3,8 @@
 // at the verifier and at sign-off. Exits non-zero if either lets it through.
 //   pnpm gate:integration
 import { api } from "../convex/_generated/api";
-import { getBackend, MATTER_ID, validateDraft } from "../src/lib/drafting/backend";
+import { getBackend, validateDraft } from "../src/lib/drafting/backend";
+import { MATTER_ID } from "../src/lib/drafting/sections";
 
 const backend = getBackend();
 const { convex, secret } = backend;
@@ -20,21 +21,26 @@ await convex.mutation(api.drafts.writeSection, {
   sectionOrder: 0,
   sentences: [
     {
-      text: "Buyer shall pay each invoice in full within thirty days after the invoice date.",
+      text: "The Escrow Agreement required the escrow agent to retain $650,000.00 out of the funds to be paid to the seller at closing.",
       kind: "fact",
       recordCites: [
         {
-          docId: "ex-a",
+          docId: "doc-228-1",
           quote:
-            "Buyer shall pay each invoice in full within thirty (30) days after the invoice date.",
+            'Escrow Agent shall retain an amount equal to $650,000.00 (the "Deposit") out of the Excess Funds to be paid to Seller at Closing',
         },
       ],
       authorityCites: [],
     },
     {
-      text: "Tumbleweed Ridge rejected the goods in writing on March 3, 2025.",
+      text: "Mr. Cudlip stated that Granite waived its right to object to the estoppels.",
       kind: "fact",
-      recordCites: [{ docId: "ex-d", quote: "we rejected the frames in writing on March 3" }],
+      recordCites: [
+        {
+          docId: "doc-75-1",
+          quote: "Granite waived any right to object to the tenant estoppel certificates",
+        },
+      ],
       authorityCites: [],
     },
   ],
@@ -65,7 +71,7 @@ await convex.mutation(api.drafts.adjudicate, {
   sentenceId: "facts-2",
   decision: "strike",
   by: "gate-integration",
-  reason: "The quoted words are not in the deposition.",
+  reason: "The quoted words are not in the affidavit.",
 });
 const final = await convex.mutation(api.drafts.sign, { secret, draftId, by: "gate-integration" });
 if (!final.signed)
