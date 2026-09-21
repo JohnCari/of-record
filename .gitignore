@@ -30,8 +30,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files: real values never committed, the empty template is
 .env*
+!.env.example
+
+# eve build output and local workflow state
+.eve
+.output
 
 # vercel
 .vercel

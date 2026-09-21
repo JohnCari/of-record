@@ -1,3 +1,5 @@
+# pnpm runs no install scripts unless the package is listed here.
 allowBuilds:
-  sharp: false
-  unrs-resolver: false
+  esbuild: false # its postinstall swaps bin/esbuild for the raw binary, which breaks the pnpm shim; the JS shim finds @esbuild/linux-x64 on its own
+  sharp: true
+  unrs-resolver: true
