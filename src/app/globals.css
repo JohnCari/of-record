@@ -18,6 +18,9 @@
   --color-review: var(--review);
   --color-exempt: var(--exempt);
   --color-highlight: var(--highlight);
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -96,6 +99,9 @@
   --review: #a8690f;
   --exempt: #6b778c;
   --highlight: #ffe45c;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
 }
 
 .dark {
@@ -137,6 +143,9 @@
   --review: #e6a93c;
   --exempt: #9aa8c0;
   --highlight: #ffe45c;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
 }
 
 @layer base {
