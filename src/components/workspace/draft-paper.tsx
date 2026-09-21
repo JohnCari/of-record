@@ -27,7 +27,9 @@ export function DraftPaper({
     if (!selectedId) return;
     paper.current
       ?.querySelector(`[data-sentence="${selectedId}"]`)
-      ?.scrollIntoView({ block: "center", behavior: "smooth" });
+      // Instant, not smooth: the record pane scrolls to its highlight a moment later, and Chrome
+      // lets a second scrollIntoView cancel a smooth scroll that is still under way.
+      ?.scrollIntoView({ block: "center" });
   }, [selectedId]);
 
   if (sentences.length === 0) {
