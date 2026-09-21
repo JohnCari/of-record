@@ -5,7 +5,7 @@ import { currentDraft, logEvent } from "../lib/draft";
 
 export default defineTool({
   description:
-    "Verify every sentence of the draft against the record and the cited opinions. Returns the sentences that were blocked or sent to review, each with the reason. Mandatory after any write.",
+    "Verify every sentence of the draft against the record and the cited opinions. Returns the sentences that were blocked or sent to review, each with the reason. A problem marked attorneyOnly is an application sentence whose premises checked out: leave it alone, it is waiting for the attorney. Mandatory after any write.",
   inputSchema: z.object({}),
   outputSchema: z.object({
     counts: z.object({
@@ -21,6 +21,7 @@ export default defineTool({
         status: z.string(),
         text: z.string(),
         reasons: z.array(z.string()),
+        attorneyOnly: z.boolean(),
       }),
     ),
   }),
@@ -31,7 +32,7 @@ export default defineTool({
   },
   async execute(_input, ctx) {
     const { backend, draftId } = await currentDraft(ctx.session.id);
-    const summary = await validateDraft(backend, draftId, ctx.abortSignal);
+    const summary = await validateDraft(backend, draftId, { signal: ctx.abortSignal });
     await logEvent(
       backend,
       draftId,

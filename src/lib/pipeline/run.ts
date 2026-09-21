@@ -236,48 +236,52 @@ export async function runPipeline(
         `Draft the "${SECTIONS.find((s) => s.id === sectionId)?.title}" section.${extra}\n\n# FACTS AVAILABLE\n${factList}\n\n# VERIFIED AUTHORITIES\n${authorityList}`,
       );
 
-    for (const sectionId of plan) {
-      await stage(`drafting ${sectionId}`);
-      const { sentences } = await draftSection(sectionId);
+    // The sections share inputs and do not depend on one another, so they are drafted together.
+    await stage(`drafting ${plan.join(", ")}`);
+    const drafted = await Promise.all(plan.map((sectionId) => draftSection(sectionId)));
+    for (const [i, sectionId] of plan.entries()) {
       await convex.mutation(api.drafts.writeSection, {
         secret,
         draftId,
         sectionId,
         sectionOrder: SECTIONS.findIndex((s) => s.id === sectionId),
-        sentences,
+        sentences: drafted[i].sentences,
       });
     }
 
     // 5. Verify, then exactly one repair pass. A loop that retries until the verifier gives in
     //    would be optimising against the gate; one pass fixes honest mistakes and then stops.
     await stage("verifying every sentence");
-    let summary = await validateDraft(backend, draftId, signal);
+    let summary = await validateDraft(backend, draftId, { signal });
 
-    const failed = new Set(summary.problems.map((p) => p.sentenceId.split("-")[0] as SectionId));
-    if (failed.size > 0) {
-      await stage(
-        "repairing sentences the verifier held back",
-        `${summary.problems.length} sentences`,
+    // Application sentences waiting for the attorney are not mistakes, so they are not repaired.
+    const fixable = summary.problems.filter((p) => !p.attorneyOnly);
+    const failed = [...new Set(fixable.map((p) => p.sentenceId.split("-")[0] as SectionId))];
+    if (failed.length > 0) {
+      await stage("repairing sentences the verifier held back", `${fixable.length} sentences`);
+      const repaired = await Promise.all(
+        failed.map((sectionId) => {
+          const notes = fixable
+            .filter((p) => p.sentenceId.startsWith(`${sectionId}-`))
+            .map((p) => `- "${p.text}" was held back: ${p.reasons.join("; ")}`)
+            .join("\n");
+          return draftSection(
+            sectionId,
+            `\n\nA verifier held back these sentences from your previous draft. Fix each by quoting exactly and claiming only what the quote supports, or leave it out:\n${notes}`,
+          );
+        }),
       );
-      for (const sectionId of failed) {
-        const notes = summary.problems
-          .filter((p) => p.sentenceId.startsWith(`${sectionId}-`))
-          .map((p) => `- "${p.text}" was held back: ${p.reasons.join("; ")}`)
-          .join("\n");
-        const { sentences } = await draftSection(
-          sectionId,
-          `\n\nA verifier held back these sentences from your previous draft. Fix each by quoting exactly and claiming only what the quote supports, or leave it out:\n${notes}`,
-        );
+      for (const [k, sectionId] of failed.entries()) {
         await convex.mutation(api.drafts.writeSection, {
           secret,
           draftId,
           sectionId,
           sectionOrder: SECTIONS.findIndex((s) => s.id === sectionId),
-          sentences,
+          sentences: repaired[k].sentences,
         });
       }
       await stage("verifying the repaired draft");
-      summary = await validateDraft(backend, draftId, signal);
+      summary = await validateDraft(backend, draftId, { signal });
     }
 
     const judgeInput = judge.usage.inputTokens + summary.judge.inputTokens;

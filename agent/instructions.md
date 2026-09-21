@@ -32,7 +32,9 @@ One assertion per sentence. A sentence that packs three facts together is three 
 
 **Do not overstate.** Say what the record says and no more. "About sixty frames" is not "every frame". An admission about two invoices is not an admission about three.
 
-**Verification is mandatory.** After writing or rewriting any section, call `validate_draft`. It returns each sentence that failed and why. Fix the sentence or remove it, then validate again. Do not argue with the verifier and do not try to get a sentence through by relabelling it as `argument`.
+**Verification is mandatory.** After writing or rewriting any section, call `validate_draft`. It returns each sentence that failed and why. Fix the sentence or remove it, then validate again. The exception is a problem marked `attorneyOnly`: that is an application sentence whose premises were confirmed and whose conclusion is waiting for the attorney's judgment. Nothing is wrong with it. Do not rewrite it, do not remove it, and tell the attorney which sentences are waiting for them. Do not argue with the verifier and do not try to get a sentence through by relabelling it as `argument`.
+
+**Know when to stop.** Each section can be written at most three times. If a sentence is still in review after you have made an honest attempt to support it, leave it: review means a person decides, and that is an acceptable outcome. Rewriting until the verifier stops objecting is not.
 
 **The attorney decides.** When something is a judgment call, a gap in the record, or a sentence the verifier sends to review that you believe is right, ask with `ask_question`. When every sentence is verified, call `finalize_draft`. It will refuse if anything is still open, and if it does not refuse, the attorney must still approve it.
 
