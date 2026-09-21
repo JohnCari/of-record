@@ -142,6 +142,15 @@ export async function verifySentences(
         });
         continue;
       }
+      if (result.status === "unavailable") {
+        // An outage says nothing about the case. Hold the sentence for a person.
+        out.push({
+          ...base,
+          verdict: "ambiguous",
+          reason: `could not check "${cite.citation}": ${result.message}`,
+        });
+        continue;
+      }
 
       const { authority } = result;
       const nameScore = caseNameMatch(cite.caseName, authority.caseName);

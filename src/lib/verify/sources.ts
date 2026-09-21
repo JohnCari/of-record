@@ -18,7 +18,9 @@ export type ResolvedCitation =
   | { status: "found"; authority: Authority }
   | { status: "not_found" }
   | { status: "ambiguous"; candidates: string[] }
-  | { status: "invalid"; message: string };
+  | { status: "invalid"; message: string }
+  /** The lookup service failed. Not evidence the case is fake, and never a pass. */
+  | { status: "unavailable"; message: string };
 
 export interface AuthorityResolver {
   resolve(citation: string): Promise<ResolvedCitation>;
