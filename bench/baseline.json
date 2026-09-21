@@ -1,0 +1,22 @@
+{
+  "dataset": "record-faithfulness",
+  "datasetVersion": "v0.1",
+  "rows": 60,
+  "commit": "edcb87a",
+  "generatedAt": "2026-09-21T20:03:45.098Z",
+  "confidenceThreshold": 0.8,
+  "noise": {
+    "unstableRows": 0
+  },
+  "headline": {
+    "missRate": {
+      "missed": 2,
+      "n": 36
+    },
+    "falseHoldRate": {
+      "held": 0,
+      "n": 24
+    }
+  },
+  "note": "The floor a change must not fall below. Raise it only by committing better results, never by editing this file to make a run pass."
+}
