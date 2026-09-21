@@ -4,6 +4,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { createCourtListener, opinionPassages } from "../src/lib/courtlistener/client";
+import { caseNameMatch, NAME_MATCH } from "../src/lib/verify/sources";
 
 const token = process.env.COURTLISTENER_TOKEN;
 if (!token) {
@@ -11,32 +12,67 @@ if (!token) {
   process.exit(1);
 }
 
-// What the motion needs authority for. Each query is a lead; the verifier still checks every cite.
-const QUERIES = [
+// Leads, not facts. Each was written from memory, which is exactly what the drafting agent is
+// forbidden to rely on, so each is held to the agent's rule: the citation must resolve to exactly
+// one case and the resolved name must match. A lead that fails is dropped and reported.
+const LEADS = [
+  {
+    topic: "summary-judgment-standard",
+    caseName: "Churchey v. Adolph Coors Co.",
+    citation: "759 P.2d 1336",
+  },
+  {
+    topic: "summary-judgment-standard",
+    caseName: "Westin Operator, LLC v. Groh",
+    citation: "347 P.3d 606",
+  },
+  {
+    topic: "nonmoving-party-burden",
+    caseName: "Continental Air Lines, Inc. v. Keenan",
+    citation: "731 P.2d 708",
+  },
+  {
+    topic: "nonmoving-party-burden",
+    caseName: "Civil Service Commission v. Pinder",
+    citation: "812 P.2d 645",
+  },
+  {
+    topic: "breach-of-contract-elements",
+    caseName: "Western Distributing Co. v. Diodosio",
+    citation: "841 P.2d 1053",
+  },
+  {
+    topic: "contract-interpretation",
+    caseName: "Ad Two, Inc. v. City & County of Denver",
+    citation: "9 P.3d 373",
+  },
+  {
+    topic: "contract-interpretation",
+    caseName: "USI Properties East, Inc. v. Simpson",
+    citation: "938 P.2d 168",
+  },
+];
+
+// Searches fill topics the leads do not cover. Ordered by how often a case is cited, because
+// relevance ranking surfaced opinions that merely recite the standard in passing.
+const SEARCHES = [
+  {
+    topic: "acceptance-of-goods",
+    q: '"acceptance" goods "rejection" "reasonable time" "Uniform Commercial Code"',
+  },
+  {
+    topic: "breach-of-contract-elements",
+    q: '"breach of contract" "elements" "performance by the plaintiff" "failure to perform"',
+  },
   {
     topic: "summary-judgment-standard",
     q: '"summary judgment" "genuine issue" "material fact" "drastic remedy"',
   },
-  {
-    topic: "nonmoving-party-burden",
-    q: '"summary judgment" "nonmoving party" "specific facts" "genuine issue for trial"',
-  },
-  {
-    topic: "breach-of-contract-elements",
-    q: '"breach of contract" elements "existence of a contract" "performance by the plaintiff"',
-  },
-  {
-    topic: "acceptance-of-goods",
-    q: '"acceptance of goods" "effective rejection" "reasonable opportunity to inspect"',
-  },
-  {
-    topic: "contract-interpretation",
-    q: '"unambiguous" contract "enforced as written" "plain meaning"',
-  },
 ];
 const COLORADO = "colo coloctapp";
-const PER_QUERY = 4;
+const PER_SEARCH = 2;
 const RANK = ["lead-opinion", "majority-opinion", "combined-opinion", "unanimous-opinion"];
+const pause = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const cl = createCourtListener({ token });
 const dir = join(process.cwd(), "knowledge/authorities");
@@ -48,70 +84,129 @@ const slug = (name: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 60);
-const yamlString = (value: string) => JSON.stringify(value);
 const seen = new Set<number>();
 const index: string[] = [];
+const dropped: string[] = [];
 
-for (const { topic, q } of QUERIES) {
-  const hits = await cl.search(q, { court: COLORADO, limit: PER_QUERY * 2 });
-  let kept = 0;
-  for (const hit of hits) {
-    if (kept >= PER_QUERY || seen.has(hit.clusterId) || !hit.citations[0]) continue;
-    const opinions = await Promise.all(
-      hit.opinionIds.map((id) => cl.opinionText(id).catch(() => null)),
-    );
-    const best = opinions
-      .filter((o): o is { type: string; text: string } => o !== null && o.text.length > 0)
-      .sort((a, b) => rank(a.type) - rank(b.type))[0];
-    if (!best) continue;
-    const passages = opinionPassages(best.text);
-    if (passages.length < 5) continue;
+async function save(entry: {
+  topic: string;
+  clusterId: number;
+  caseName: string;
+  citation: string;
+  url: string;
+  court: string;
+  dateFiled: string;
+  opinionIds: number[];
+  how: string;
+}): Promise<boolean> {
+  if (seen.has(entry.clusterId)) return false;
+  const opinions = [];
+  for (const id of entry.opinionIds) {
+    opinions.push(await cl.opinionText(id).catch(() => null));
+    await pause(700);
+  }
+  const best = opinions
+    .filter((o): o is { type: string; text: string } => o !== null && o.text.length > 0)
+    .sort((a, b) => rank(a.type) - rank(b.type))[0];
+  const passages = best ? opinionPassages(best.text) : [];
+  if (!best || passages.length < 5) {
+    dropped.push(`${entry.caseName}, ${entry.citation}: no usable opinion text`);
+    return false;
+  }
 
-    seen.add(hit.clusterId);
-    kept += 1;
-    const file = `${slug(hit.caseName)}.md`;
-    const retrieved = new Date().toISOString();
-    await writeFile(
-      join(dir, file),
-      `---
+  seen.add(entry.clusterId);
+  const file = `${slug(entry.caseName)}.md`;
+  const retrieved = new Date().toISOString();
+  const q = (value: string) => JSON.stringify(value);
+  await writeFile(
+    join(dir, file),
+    `---
 type: Authority
-title: ${yamlString(hit.caseName)}
-description: ${yamlString(`${hit.court} opinion filed ${hit.dateFiled}, retrieved from CourtListener for the topic "${topic}".`)}
-tags: [authority, colorado, ${topic}]
+title: ${q(entry.caseName)}
+description: ${q(`Colorado appellate opinion retrieved from CourtListener for the topic "${entry.topic}".`)}
+tags: [authority, colorado, ${entry.topic}]
 status: stable
-authority_id: cl-${hit.clusterId}
-citation: ${yamlString(hit.citations[0])}
-all_citations: ${JSON.stringify(hit.citations)}
-court: ${yamlString(hit.court)}
-date_filed: ${yamlString(hit.dateFiled)}
-opinion_type: ${yamlString(best.type)}
+authority_id: cl-${entry.clusterId}
+citation: ${q(entry.citation)}
+court: ${q(entry.court)}
+date_filed: ${q(entry.dateFiled)}
+opinion_type: ${q(best.type)}
+selected_by: ${q(entry.how)}
 doc_kind: opinion
-resource: ${hit.url}
+resource: ${entry.url}
 generated: { by: process:fetch-authorities, at: ${retrieved} }
 sources:
   - id: courtlistener
-    resource: ${hit.url}
+    resource: ${entry.url}
     title: CourtListener, Free Law Project
     last_modified: ${retrieved}
 ---
 
-# ${hit.caseName}
+# ${entry.caseName}
 
 > Public-domain court opinion, reproduced as retrieved from CourtListener on ${retrieved.slice(0, 10)}. Not edited.
 
 ${passages.map((p) => p.text).join("\n\n")}
 `,
-    );
-    index.push(
-      `* [${hit.caseName}](${file}) - ${hit.citations[0]}, ${hit.court} (${hit.dateFiled.slice(0, 4)}), ${topic}`,
-    );
-    console.log(`${topic}: ${hit.caseName}, ${hit.citations[0]} (${passages.length} paragraphs)`);
+  );
+  index.push(`* [${entry.caseName}](${file}) - ${entry.citation}, ${entry.topic}`);
+  console.log(
+    `kept     ${entry.caseName}, ${entry.citation} (${passages.length} paragraphs, ${entry.topic})`,
+  );
+  return true;
+}
+
+for (const lead of LEADS) {
+  const [result] = await cl.lookup(lead.citation);
+  await pause(1200);
+  if (!result || result.status !== 200 || result.clusters.length !== 1) {
+    dropped.push(`${lead.caseName}, ${lead.citation}: lookup status ${result?.status ?? "none"}`);
+    continue;
+  }
+  const [cluster] = result.clusters;
+  if (caseNameMatch(lead.caseName, cluster.caseName) < NAME_MATCH) {
+    dropped.push(`${lead.caseName}, ${lead.citation}: that citation is ${cluster.caseName}`);
+    continue;
+  }
+  await save({
+    topic: lead.topic,
+    clusterId: cluster.id,
+    caseName: cluster.caseName,
+    citation: result.normalized[0] ?? lead.citation,
+    url: cluster.url,
+    court: "Colorado",
+    dateFiled: "",
+    opinionIds: cluster.opinionIds,
+    how: "lead verified by citation lookup and name match",
+  });
+}
+
+for (const { topic, q } of SEARCHES) {
+  const hits = await cl.search(q, { court: COLORADO, limit: 8, orderBy: "citeCount desc" });
+  await pause(1200);
+  let kept = 0;
+  for (const hit of hits) {
+    // A caption that runs to a paragraph is a sign of an unusual procedural posture; skip it.
+    if (kept >= PER_SEARCH || !hit.citations[0] || hit.caseName.length > 70) continue;
+    const ok = await save({
+      topic,
+      clusterId: hit.clusterId,
+      caseName: hit.caseName,
+      citation: hit.citations[0],
+      url: hit.url,
+      court: hit.court,
+      dateFiled: hit.dateFiled,
+      opinionIds: hit.opinionIds,
+      how: `search ordered by citation count: ${q}`,
+    });
+    if (ok) kept += 1;
   }
 }
 
 await writeFile(join(dir, "index.md"), `# Authorities\n\n${index.join("\n")}\n`);
+for (const line of dropped) console.log(`dropped  ${line}`);
 console.log(
-  `\n${index.length} opinions written to knowledge/authorities. Run pnpm seed to load them.`,
+  `\n${index.length} opinions written to knowledge/authorities, ${dropped.length} dropped. Run pnpm seed to load them.`,
 );
 
 function rank(type: string): number {

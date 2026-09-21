@@ -105,11 +105,15 @@ describe("courtListenerResolver", () => {
 
   it("never turns an outage into a finding about the case", async () => {
     for (const status of [401, 429, 500]) {
+      const waits: number[] = [];
       const cl = createCourtListener({
         fetch: fakeFetch({ "citation-lookup": { status, body: { detail: "x" } } }),
+        sleep: async (ms) => void waits.push(ms),
       });
       const result = await courtListenerResolver(cl).resolve("759 P.2d 1336");
       expect(result.status).toBe("unavailable");
+      // A throttle is retried with backoff before giving up; other failures are not retried.
+      expect(waits.length).toBe(status === 429 ? 4 : 0);
     }
   });
 

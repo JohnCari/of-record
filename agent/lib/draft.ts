@@ -38,3 +38,16 @@ export async function logEvent(
     detail,
   });
 }
+
+/** How many times each section may be written in one session. Loop control lives in code. */
+export const MAX_WRITES_PER_SECTION = 3;
+
+const writeCounts = defineState("of-record.writes", () => ({}) as Record<string, number>);
+
+/** Counts a write and says whether it is allowed. */
+export function countWrite(sectionId: string): { allowed: boolean; used: number } {
+  const used = (writeCounts.get()[sectionId] ?? 0) + 1;
+  if (used > MAX_WRITES_PER_SECTION) return { allowed: false, used: used - 1 };
+  writeCounts.update((counts) => ({ ...counts, [sectionId]: used }));
+  return { allowed: true, used };
+}

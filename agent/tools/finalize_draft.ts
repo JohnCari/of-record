@@ -21,7 +21,7 @@ export default defineTool({
   label: { start: () => "Submit for attorney sign-off" },
   approval: async ({ session }) => {
     const { backend, draftId } = await currentDraft(session.id);
-    const summary = await validateDraft(backend, draftId);
+    const summary = await validateDraft(backend, draftId, { full: true });
     if (summary.gate.open) return "user-approval";
 
     const open = summary.gate.blocking.map((b) => `${b.sentenceId} (${b.status})`).join(", ");

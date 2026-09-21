@@ -11,6 +11,7 @@ type Results = {
   datasetVersion: string;
   rows: number;
   noise: { unstableRows: number };
+  perRun: { missed: number; falseHolds: number }[];
   headline: { missRate: { missed: number; n: number }; falseHoldRate: { held: number; n: number } };
 };
 
@@ -29,12 +30,16 @@ if (results.rows !== rows.length) {
   );
 }
 
-// Tolerance comes from measurement, not taste. Identical runs produced identical statuses, so the
-// allowance for noise is the number of rows that were observed to flip: none.
-const tolerance = baseline.noise.unstableRows;
+// Tolerance comes from measurement, not taste. Jev is not perfectly deterministic: rows whose
+// confidence sits on the threshold flip between "review" and "blocked" from run to run. Both of
+// those hold the sentence, so what matters is how much the guarded counts themselves moved across
+// identical baseline runs. That observed spread is the allowance, per metric.
+const spread = (values: number[]) => Math.max(...values) - Math.min(...values);
+const missedTolerance = spread(baseline.perRun.map((run) => run.missed));
+const heldTolerance = spread(baseline.perRun.map((run) => run.falseHolds));
 
 const missed = results.headline.missRate.missed;
-const allowedMissed = baseline.headline.missRate.missed + tolerance;
+const allowedMissed = baseline.headline.missRate.missed + missedTolerance;
 if (missed > allowedMissed) {
   failures.push(
     `bad sentences that got through rose from ${baseline.headline.missRate.missed} to ${missed}`,
@@ -42,7 +47,7 @@ if (missed > allowedMissed) {
 }
 
 const held = results.headline.falseHoldRate.held;
-const allowedHeld = baseline.headline.falseHoldRate.held + tolerance;
+const allowedHeld = baseline.headline.falseHoldRate.held + heldTolerance;
 if (held > allowedHeld) {
   failures.push(
     `sound sentences held back rose from ${baseline.headline.falseHoldRate.held} to ${held}`,
@@ -55,5 +60,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 console.log(
-  `Quality gate: passed. Missed ${missed}/${results.headline.missRate.n} (baseline ${baseline.headline.missRate.missed}), held ${held}/${results.headline.falseHoldRate.n} (baseline ${baseline.headline.falseHoldRate.held}), noise tolerance ${tolerance}.`,
+  `Quality gate: passed. Missed ${missed}/${results.headline.missRate.n} (baseline ${baseline.headline.missRate.missed}), held ${held}/${results.headline.falseHoldRate.n} (baseline ${baseline.headline.falseHoldRate.held}). Observed run-to-run spread: missed ${missedTolerance}, held ${heldTolerance}.`,
 );

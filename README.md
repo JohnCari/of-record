@@ -8,6 +8,11 @@ checks each sentence. The draft is shown on pleading paper with a mark beside ev
 verified, blocked, or waiting for the attorney. Click a sentence and the exhibit opens at the words
 it rests on, highlighted.
 
+**Live: [of-record.vercel.app](https://of-record.vercel.app)**. A recorded run plays for anyone, at no cost.
+Running either lane live calls paid models, so it needs an invite link.
+
+![The workspace on a recorded run. The argument section cites real Colorado opinions. Line 36, an application sentence, carries an amber mark: the Answer's admission is highlighted as the premise Jev confirmed, and the evidence pane says that whether the conclusion follows is a legal judgment for the attorney.](docs/workspace.jpg)
+
 This is a work sample by [Dariel Carrion](https://github.com/JohnCari). It is not affiliated with
 any company, the matter in it is fictional, and nothing in it is legal advice.
 
@@ -75,7 +80,10 @@ flowchart TD
   D[Drafter writes a sentence<br/>kind + cites + verbatim quotes] --> K{Declared kind}
   K -->|fact| Q1[Is the quote really in the cited exhibit?]
   K -->|law| C1[Does the citation resolve to one real case?<br/>CourtListener citation lookup]
-  K -->|argument| A1[Does Jev read a fact or a rule in it?]
+  K -->|argument, no cites| A1[Does Jev read a fact or a rule in it?]
+  K -->|argument applying law to fact| P1[Are its premises supported by the cited passages?]
+  P1 -->|a premise is contradicted| B4
+  P1 -->|premises hold| R
   Q1 -->|no| B[Blocked: fabricated]
   Q1 -->|yes| J[Jev: does the passage support the sentence?]
   C1 -->|no such case| B2[Blocked: fictitious]
@@ -107,6 +115,10 @@ Three details close loopholes that a drafter under pressure will find:
   stricter reading wins.
 - **Outages.** If CourtListener is down, the citation is reported as unavailable and the sentence
   goes to the attorney. An outage is never a finding that a case is fake, and never a pass.
+- **Application sentences.** "Because Buyer sent no written rejection within the inspection
+  period, the goods were deemed accepted" is legal reasoning. The verifier checks its premises
+  against the cited passages and then sends it to the attorney regardless. Whether a conclusion
+  follows is the attorney's judgment, and marking it verified would claim more than was checked.
 - **Dissents.** The resolver prefers the opinion of the court over concurrences and dissents, so a
   rule quoted from a dissent is not handed to the judge as if it were the holding.
 
@@ -126,7 +138,7 @@ row cannot pose as a verifier miss. The verifier ran on all 60, live against Jev
 | Bad sentences that got through | 2 of 36 | 5.6% | 1.5% to 18.1% |
 | Sound sentences held back | 0 of 24 | 0.0% | 0.0% to 13.8% |
 | Bad sentences blocked with no person involved | 26 of 36 | 72.2% | 56.0% to 84.2% |
-| Sentences whose status changed across 3 identical runs | 0 of 60 | | |
+| Sentences whose status changed across 3 identical runs | 0 of 60, then 2 of 60 | | |
 
 | Kind of failure | n | Cleared | Review | Blocked |
 | --- | --- | --- | --- | --- |
@@ -143,6 +155,13 @@ The two misses are the same mistake. "The powder coating is chipping" was accept
 "Seller's coating *process* was defective", and "Yes, I signed it" was accepted as support for
 "Mr. Hale had *authority* to bind Buyer". Both are inferential leaps a careful lawyer would not
 make and the judge did. That is the failure class to work on next.
+
+**On noise.** The first three identical runs agreed on every sentence. A later three did not: two
+sentences whose confidence sits on the threshold (0.77 and 0.80) moved between "review" and
+"blocked". Both states hold the sentence, and the two counts that matter were identical in all six
+runs: 2 missed, 0 sound sentences held. So Jev is close to deterministic, not deterministic, and
+the build gate takes its tolerance from the spread actually observed in the counts it guards, which
+is zero, rather than from an assumption.
 
 **On the threshold.** The system acts alone only when Jev's confidence is at least 0.8. The sweep
 in the results file shows that 0.95 would have sent both misses to review without holding any sound
@@ -204,14 +223,25 @@ draft section by section, verify, make exactly one repair pass, verify again. Th
 each stage and never chooses the next one. One repair pass fixes honest mistakes; a loop that
 retried until the verifier gave in would be optimising against the gate.
 
-First observations, one run each, which supports no conclusion about which lane is better:
+First observations from the recorded production runs, one run each, which supports no conclusion
+about which lane is better:
 
 | | Agentic | Deterministic |
 | --- | --- | --- |
-| Facts section | 11 sentences, all verified | 24 sentences, all verified |
-| Held at first verification | 3 of 10 sentences, fixed by the agent | 1 sentence, fixed by the repair pass |
+| Full motion | 43 sentences | 37 sentences |
+| Verified | 36 | 33 |
+| Waiting for the attorney's judgment | 6 application sentences | 4 application sentences |
+| Blocked at the end | 0 | 0 |
+| Authorities cited, all resolved on CourtListener | 4 | 2 |
 | Planted prompt injection | Ignored, and reported to the attorney unprompted | Ignored |
-| Wall time | 69 s | 130 s |
+| Wall time | 139 s | 176 s |
+
+Both lanes needed work to get here, and the work is instructive. The first agentic full-motion run
+finished a complete draft and then rewrote its argument four times chasing two low-confidence
+checks, so `write_section` now refuses a fourth write of any section: loop control belongs in code.
+The first deterministic run took 306 seconds, most of it repairing sentences that were not broken,
+so sentences waiting only for the attorney are now marked as such and left alone, and independent
+sections are drafted in parallel.
 
 A comparison worth acting on needs many runs per lane on several matters, scored on the share of
 sentences held at first verification, attorney review burden, cost and latency, with intervals.
@@ -262,11 +292,17 @@ provenance as first-class fields (`sources`, `generated`, `verified`, `status`).
 wiki, diffs like code, and needs no bespoke store. A loader parses the bundle into paragraph-level
 passages and seeds Convex.
 
-The record is committed. The authorities are not invented and not committed by hand:
-`pnpm authorities` fetches real opinions from CourtListener into `knowledge/authorities/`, each
-with its source URL and retrieval date. It needs a free CourtListener token, because opinion text
-and citation lookup are not available anonymously. Until it has run, both lanes draft the facts
-section only, and say so, rather than drafting law they cannot verify.
+The twelve authorities in [`knowledge/authorities`](knowledge/authorities) are real Colorado
+appellate opinions, fetched by `pnpm authorities` and committed as retrieved, each with its
+CourtListener URL and retrieval date. Seven began as leads written from memory, which is exactly
+what the drafting agent is forbidden to rely on, so each was held to the agent's own rule: the
+citation had to resolve to exactly one case under a matching name. All seven did. One, *Churchey v.
+Adolph Coors Co.*, was dropped because CourtListener returned a server error for its text; nothing
+was substituted. The rest came from searches ordered by citation count, after relevance ranking
+surfaced opinions that only recite the standard in passing.
+
+Both lanes search this corpus before they search CourtListener, so a demo in front of someone does
+not depend on a rate-limited third party answering quickly.
 
 ## The stack, and why each piece
 
@@ -300,6 +336,7 @@ The full tool list, with what was kept, added and dropped relative to a producti
 pnpm install
 vercel link && vercel integration add convex   # Convex through the Vercel Marketplace
 cp .env.example .env.local                      # then fill it in
+pnpm exec convex env set SERVER_SECRET <the value in .env.local>
 pnpm exec convex dev --once
 pnpm seed                                       # load knowledge/ into Convex
 pnpm dev                                        # Next.js and the eve agent together
@@ -313,6 +350,15 @@ pnpm pipeline          # one deterministic-lane run from the command line
 pnpm authorities       # fetch real opinions from CourtListener (needs a token)
 ```
 
+### Deploying
+
+`vercel.json` runs `convex deploy --cmd 'pnpm build'`, which pushes the Convex functions and injects
+the Convex URL into the build. Next.js inlines that URL, but the eve agent runs as its own service
+and reads it at runtime, so `NEXT_PUBLIC_CONVEX_URL` must also be set as a Vercel environment
+variable. Without it the pages work and every agent tool fails. `vercel env pull` does not reveal
+sensitive variables, so set the production Convex `SERVER_SECRET` from the original value rather
+than from a pulled file.
+
 ## Limitations, and what comes next
 
 - **Attorney adjudication.** The test set needs labels from someone who practises. The app already
@@ -322,8 +368,16 @@ pnpm authorities       # fetch real opinions from CourtListener (needs a token)
   judge a second, narrower question ("does the passage state this, or would a reader have to infer
   it?"), then measure on held-out rows.
 - **A held-out split** so thresholds can be chosen on one set and reported on another.
-- **Citation rows in the bench**: fictitious, mismatched, misattributed holding, wrong statute.
+- **Citation rows in the bench**: fictitious, mismatched, misattributed holding, wrong statute. The
+  machinery is tested and the corpus is now real, so these rows are the next addition.
 - **The lane comparison**, run enough times to say something.
+- **The associate's chat replies are not verified.** Only sentences in the draft go through the
+  verifier. When the agent summarises its work it adds courts and years to citations from memory.
+  They were right in every run I checked, which is not the same as checked.
+- **The verifier pulls drafts toward quotation.** A sentence that repeats its source passes most
+  easily, so early drafts copied opinions word for word without quotation marks. The instructions
+  now ask for the drafter's own words or visible quotation marks, but nothing measures prose
+  quality yet.
 - **Statutes and rules.** CourtListener resolves case citations, not C.R.S. sections or C.R.C.P.
   56 itself, which need their own verified source.
 - **De-identification** before the drafter sees the record, scored on both leaked identifiers and
