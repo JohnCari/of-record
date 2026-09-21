@@ -40,6 +40,13 @@ export type VerifyDeps = {
 
 type Pending = { sentenceId: string; check: Check };
 
+// The confidence is carried on the check itself, so the sentence a person reads stays plain.
+const RELATION_REASON: Record<string, string> = {
+  supports: "The cited passage supports the sentence.",
+  contradicts: "The cited passage says the opposite of the sentence.",
+  says_nothing: "The cited passage is real, but it does not say this.",
+};
+
 const RELATION_VERDICT: Record<string, Verdict> = {
   supports: "verified",
   contradicts: "contradicted",
@@ -233,7 +240,7 @@ export async function verifySentences(
       verdict: RELATION_VERDICT[answer.choice],
       confidence: answer.confidence,
       probabilities: answer.probabilities,
-      reason: `judge: passage ${answer.choice.replace("_", " ")} the sentence (confidence ${answer.confidence.toFixed(2)})`,
+      reason: RELATION_REASON[answer.choice],
     });
   }
 

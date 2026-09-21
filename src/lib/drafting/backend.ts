@@ -8,16 +8,9 @@ import { createJevJudge, type Judge } from "../verify/judge";
 import type { Authority, AuthorityResolver, RecordStore } from "../verify/sources";
 import type { DraftSentence, SentenceVerification } from "../verify/types";
 import { DEFAULT_OPTIONS, verifySentences } from "../verify/verify";
+import { MATTER_ID } from "./sections";
 
-export const MATTER_ID = "cottonwood-v-tumbleweed";
-
-export const SECTIONS = [
-  { id: "facts", title: "Statement of Undisputed Material Facts" },
-  { id: "standard", title: "Summary Judgment Standard" },
-  { id: "argument", title: "Argument" },
-] as const;
-
-export type SectionId = (typeof SECTIONS)[number]["id"];
+export { MATTER_ID, SECTIONS, type SectionId } from "./sections";
 
 export type Backend = { convex: ConvexHttpClient; secret: string };
 

@@ -7,9 +7,17 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  /* next/font sets these two variables on <html>. Distinct names, so nothing refers to itself. */
+  --font-sans: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-source-serif), ui-serif, Georgia, serif;
+  --font-heading: var(--font-plex), ui-sans-serif, system-ui, sans-serif;
+  --color-paper: var(--paper);
+  --color-rule: var(--rule);
+  --color-verified: var(--verified);
+  --color-blocked: var(--blocked);
+  --color-review: var(--review);
+  --color-exempt: var(--exempt);
+  --color-highlight: var(--highlight);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,72 +57,86 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --background: #eef1f4;
+  --foreground: #14213d;
+  --card: #ffffff;
+  --card-foreground: #14213d;
+  --popover: #ffffff;
+  --popover-foreground: #14213d;
+  --primary: #14213d;
+  --primary-foreground: #f7f9fb;
+  --secondary: #e3e8ee;
+  --secondary-foreground: #14213d;
+  --muted: #e3e8ee;
+  --muted-foreground: #55627a;
+  --accent: #dde4ec;
+  --accent-foreground: #14213d;
+  --destructive: #9b1c31;
+  --border: #d2d9e2;
+  --input: #d2d9e2;
+  --ring: #3b5b92;
+  --chart-1: #1f7a4d;
+  --chart-2: #9b1c31;
+  --chart-3: #a8690f;
+  --chart-4: #3b5b92;
+  --chart-5: #6b778c;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #14213d;
+  --sidebar-foreground: #e6ebf2;
+  --sidebar-primary: #ffe45c;
+  --sidebar-primary-foreground: #14213d;
+  --sidebar-accent: #22325a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #22325a;
+  --sidebar-ring: #ffe45c;
+  --paper: #ffffff;
+  --rule: #c9485b;
+  --verified: #1f7a4d;
+  --blocked: #9b1c31;
+  --review: #a8690f;
+  --exempt: #6b778c;
+  --highlight: #ffe45c;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #0e1628;
+  --foreground: #e6ebf2;
+  --card: #16213a;
+  --card-foreground: #e6ebf2;
+  --popover: #16213a;
+  --popover-foreground: #e6ebf2;
+  --primary: #e6ebf2;
+  --primary-foreground: #14213d;
+  --secondary: #1e2b49;
+  --secondary-foreground: #e6ebf2;
+  --muted: #1e2b49;
+  --muted-foreground: #9aa8c0;
+  --accent: #25345a;
+  --accent-foreground: #ffffff;
+  --destructive: #e0607a;
+  --border: #2a3a60;
+  --input: #2a3a60;
+  --ring: #7f9bd1;
+  --chart-1: #4cc38a;
+  --chart-2: #f0718a;
+  --chart-3: #e6a93c;
+  --chart-4: #7f9bd1;
+  --chart-5: #9aa8c0;
+  --sidebar: #0a1120;
+  --sidebar-foreground: #e6ebf2;
+  --sidebar-primary: #ffe45c;
+  --sidebar-primary-foreground: #14213d;
+  --sidebar-accent: #1e2b49;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1e2b49;
+  --sidebar-ring: #ffe45c;
+  --paper: #f7f5ee;
+  --rule: #c9485b;
+  --verified: #4cc38a;
+  --blocked: #f0718a;
+  --review: #e6a93c;
+  --exempt: #9aa8c0;
+  --highlight: #ffe45c;
 }
 
 @layer base {
@@ -126,5 +148,60 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/*
+ * Pleading paper. Court filings are set on numbered lines with a ruled left margin; the draft is
+ * rendered the same way so a litigator reads it as a filing, not as chat output. The paper stays
+ * light in dark mode because paper is paper.
+ */
+.pleading {
+  background: var(--paper);
+  color: #14213d;
+  font-family: var(--font-source-serif), ui-serif, Georgia, serif;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  counter-reset: pleading-line;
+}
+.pleading-line {
+  counter-increment: pleading-line;
+  display: grid;
+  grid-template-columns: 3.25rem 1fr;
+}
+.pleading-line::before {
+  content: counter(pleading-line);
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 0.8125rem;
+  color: #8a94a6;
+  text-align: right;
+  padding-right: 0.75rem;
+  border-right: 3px double var(--rule);
+  user-select: none;
+}
+.pleading-line > * {
+  padding-left: 1rem;
+  min-width: 0;
+}
+/* The highlighter stroke on the quoted words in a source document. */
+mark.quoted {
+  background: linear-gradient(
+    transparent 12%,
+    var(--highlight) 12%,
+    var(--highlight) 88%,
+    transparent 88%
+  );
+  color: inherit;
+  padding: 0 0.1em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+/* Must beat component-level animation utilities, which is the one honest use of !important. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    /* biome-ignore lint/complexity/noImportantStyles: an accessibility override has to win */
+    animation-duration: 0.01ms !important;
+    /* biome-ignore lint/complexity/noImportantStyles: an accessibility override has to win */
+    transition-duration: 0.01ms !important;
   }
 }

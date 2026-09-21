@@ -71,16 +71,24 @@ export type PipelineResult = { draftId: Id<"drafts">; summary: ValidationSummary
  * draft, verify, one repair, verify. The model fills in each stage; it never chooses what happens
  * next. The draft ends at the same validateDraft and the same gate as the agentic lane.
  */
-export async function runPipeline(backend: Backend, signal?: AbortSignal): Promise<PipelineResult> {
-  const { convex, secret } = backend;
-  const started = Date.now();
-  const usage: Usage = { inputTokens: 0, outputTokens: 0 };
-
-  const draftId = await convex.mutation(api.drafts.create, {
+export async function createPipelineDraft({ convex, secret }: Backend): Promise<Id<"drafts">> {
+  return await convex.mutation(api.drafts.create, {
     secret,
     matterId: MATTER_ID,
     lane: "pipeline",
   });
+}
+
+export async function runPipeline(
+  backend: Backend,
+  existingDraftId?: Id<"drafts">,
+  signal?: AbortSignal,
+): Promise<PipelineResult> {
+  const { convex, secret } = backend;
+  const started = Date.now();
+  const usage: Usage = { inputTokens: 0, outputTokens: 0 };
+
+  const draftId = existingDraftId ?? (await createPipelineDraft(backend));
   const stage = async (name: string, detail?: string) => {
     await convex.mutation(api.drafts.update, { secret, draftId, stage: name });
     await convex.mutation(api.drafts.logEvent, {
