@@ -15,7 +15,7 @@ const PAGES = [
 export function AppHeader() {
   const pathname = usePathname();
   return (
-    <header className="pinstripe flex h-12 shrink-0 items-center gap-6 px-4 text-suit-foreground">
+    <header className="pinstripe flex h-12 shrink-0 items-center gap-3 px-3 text-suit-foreground sm:gap-6 sm:px-4">
       <Link href="/" className="flex items-center gap-2.5">
         <span className="h-5 w-1.5 rounded-[1px] bg-tie" aria-hidden />
         <span className="font-serif text-lg tracking-tight">{APP_NAME}</span>
@@ -27,7 +27,7 @@ export function AppHeader() {
             href={href}
             aria-current={pathname === href ? "page" : undefined}
             className={cn(
-              "rounded-md px-2.5 py-1 text-suit-foreground/70 outline-none transition-colors hover:text-suit-foreground focus-visible:ring-2 focus-visible:ring-suit-foreground/60",
+              "whitespace-nowrap rounded-md px-2 py-1 text-suit-foreground/70 sm:px-2.5 outline-none transition-colors hover:text-suit-foreground focus-visible:ring-2 focus-visible:ring-suit-foreground/60",
               pathname === href && "bg-white/10 text-suit-foreground",
             )}
           >

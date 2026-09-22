@@ -1,30 +1,30 @@
 {
-  "generatedAt": "2026-09-21T23:11:58.802Z",
+  "generatedAt": "2026-09-21T23:58:12.050Z",
   "task": "Draft the whole motion. Verify every citation before you use it.",
-  "runsPerLane": 1,
+  "runsPerLane": 8,
   "lanes": {
     "agent": {
-      "runs": 1,
+      "runs": 8,
       "failed": 0,
       "sentences": {
-        "median": 24,
-        "low": 24,
-        "high": 24
+        "median": 23,
+        "low": 18.5,
+        "high": 32
       },
       "written": {
-        "median": 24,
-        "low": 24,
-        "high": 24
+        "median": 23,
+        "low": 18.5,
+        "high": 32
       },
       "verified": {
-        "median": 19,
-        "low": 19,
-        "high": 19
+        "median": 18.5,
+        "low": 14,
+        "high": 29
       },
       "waitingForAttorney": {
-        "median": 5,
-        "low": 5,
-        "high": 5
+        "median": 3,
+        "low": 3,
+        "high": 4
       },
       "blockedAtEnd": {
         "median": 0,
@@ -34,120 +34,120 @@
       "blockedAtFirstCheck": {
         "median": 0,
         "low": 0,
-        "high": 0
+        "high": 1
       },
       "authoritiesCited": {
         "median": 3,
         "low": 3,
-        "high": 3
+        "high": 4
       },
       "costUsd": {
-        "median": 0.2721,
-        "low": 0.2721,
-        "high": 0.2721
+        "median": 0.30435,
+        "low": 0.1745,
+        "high": 0.6449
       },
       "seconds": {
-        "median": 299.707,
-        "low": 299.707,
-        "high": 299.707
+        "median": 298.8665,
+        "low": 176.367,
+        "high": 449.28
       }
     },
     "pipeline": {
-      "runs": 0,
+      "runs": 8,
       "failed": 0,
       "sentences": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 28,
+        "low": 28,
+        "high": 28
       },
       "written": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 4,
+        "low": 4,
+        "high": 4
       },
       "verified": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 24,
+        "low": 23.5,
+        "high": 24
       },
       "waitingForAttorney": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 4,
+        "low": 4,
+        "high": 4.5
       },
       "blockedAtEnd": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 0,
+        "low": 0,
+        "high": 0
       },
       "blockedAtFirstCheck": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 0,
+        "low": 0,
+        "high": 0
       },
       "authoritiesCited": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 2,
+        "low": 2,
+        "high": 2
       },
       "costUsd": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 0.017255472,
+        "low": 0.016183446,
+        "high": 0.019208796
       },
       "seconds": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 34.3455,
+        "low": 27.2,
+        "high": 41.394
       }
     },
     "jev-only": {
-      "runs": 0,
+      "runs": 8,
       "failed": 0,
       "sentences": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 24,
+        "low": 24,
+        "high": 24
       },
       "written": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 0,
+        "low": 0,
+        "high": 0
       },
       "verified": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 24,
+        "low": 23.5,
+        "high": 24
       },
       "waitingForAttorney": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 0,
+        "low": 0,
+        "high": 0.5
       },
       "blockedAtEnd": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 0,
+        "low": 0,
+        "high": 0
       },
       "blockedAtFirstCheck": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 0,
+        "low": 0,
+        "high": 0
       },
       "authoritiesCited": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 2,
+        "low": 2,
+        "high": 2
       },
       "costUsd": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 0.009628583999999999,
+        "low": 0.009628583999999999,
+        "high": 0.009628583999999999
       },
       "seconds": {
-        "median": null,
-        "low": null,
-        "high": null
+        "median": 21.154,
+        "low": 18.791,
+        "high": 23.810000000000002
       }
     }
   },
@@ -155,16 +155,323 @@
   "runs": [
     {
       "lane": "agent",
-      "draftId": "j976fnzdn7f5wy6k86wh7jx1jx8ev279",
-      "sentences": 24,
-      "written": 24,
-      "verified": 19,
+      "draftId": "j978jn8q3vd8a58y5qh9tt34qn8evxsm",
+      "sentences": 17,
+      "written": 17,
+      "verified": 14,
+      "waitingForAttorney": 3,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 3,
+      "costUsd": 0.1745,
+      "seconds": 174.884,
+      "endedAs": "ready"
+    },
+    {
+      "lane": "agent",
+      "draftId": "j977wc7by05br2m8tjv05e7qd18ev8e3",
+      "sentences": 35,
+      "written": 35,
+      "verified": 32,
+      "waitingForAttorney": 3,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 4,
+      "costUsd": 0.6061,
+      "seconds": 428.347,
+      "endedAs": "input-required"
+    },
+    {
+      "lane": "agent",
+      "draftId": "j973c789d4m2g4etphghqkqmfd8ev2g1",
+      "sentences": 32,
+      "written": 32,
+      "verified": 29,
+      "waitingForAttorney": 3,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 1,
+      "authoritiesCited": 4,
+      "costUsd": 0.3257,
+      "seconds": 328.05,
+      "endedAs": "input-required"
+    },
+    {
+      "lane": "agent",
+      "draftId": "j979edkexj476g3ee13n26vgn58etaf1",
+      "sentences": 28,
+      "written": 28,
+      "verified": 25,
+      "waitingForAttorney": 3,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 1,
+      "authoritiesCited": 3,
+      "costUsd": 0.6449,
+      "seconds": 487.041,
+      "endedAs": "input-required"
+    },
+    {
+      "lane": "agent",
+      "draftId": "j971qqbasr2sw07ek5dfjez6zx8evtgr",
+      "sentences": 25,
+      "written": 25,
+      "verified": 20,
       "waitingForAttorney": 5,
       "blockedAtEnd": 0,
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 3,
-      "costUsd": 0.2721,
-      "seconds": 299.707
+      "costUsd": 0.283,
+      "seconds": 269.683,
+      "endedAs": "input-required"
+    },
+    {
+      "lane": "agent",
+      "draftId": "j977q1efvf0hfxd57bd509rvdd8etjk9",
+      "sentences": 18,
+      "written": 18,
+      "verified": 14,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 3,
+      "costUsd": 0.2377,
+      "seconds": 207.749,
+      "endedAs": "input-required"
+    },
+    {
+      "lane": "agent",
+      "draftId": "j971y487mar05gpayryjn9fmyh8et7pa",
+      "sentences": 20,
+      "written": 20,
+      "verified": 0,
+      "waitingForAttorney": 0,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 1,
+      "authoritiesCited": 0,
+      "costUsd": 0.7517,
+      "seconds": 449.28,
+      "endedAs": "input-required"
+    },
+    {
+      "lane": "agent",
+      "draftId": "j97f6dv4dy279dpq9vcs9z6mq98evs4v",
+      "sentences": 21,
+      "written": 21,
+      "verified": 17,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 4,
+      "costUsd": 0.1609,
+      "seconds": 176.367,
+      "endedAs": "input-required"
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j97cbpebqvgg8kfhsfq9z8zcm18evvjc",
+      "sentences": 28,
+      "written": 4,
+      "verified": 23,
+      "waitingForAttorney": 5,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.017742762,
+      "seconds": 59.253
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j975e4z27dpq802fczjn8eaj9x8etkmb",
+      "sentences": 28,
+      "written": 4,
+      "verified": 23,
+      "waitingForAttorney": 5,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.016741152,
+      "seconds": 37.697
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j97bbdkwfsnc3pbdpavcrkrnch8evvrp",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.020822873999999998,
+      "seconds": 41.394
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j973snk6q8v8f0q5y5ymv9fcts8ev5fh",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.015867246,
+      "seconds": 26.656
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j97fpz05ktbqtqz0vdqfn5cps18evg4q",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.019208796,
+      "seconds": 31.977
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j97c6bkb97mm9yp1fbb591zjt18ev5tj",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.018817728,
+      "seconds": 36.714
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j978wccsevk8ceht13x8jcm5fs8ev2y6",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.016183446,
+      "seconds": 29.284
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j974pjrx4e737vf3fv64p2g4px8evqhm",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.016768182,
+      "seconds": 27.2
+    },
+    {
+      "lane": "jev-only",
+      "draftId": "j973zy65e12kbkwt5e1s65723d8evfmc",
+      "sentences": 24,
+      "written": 0,
+      "verified": 24,
+      "waitingForAttorney": 0,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.009628583999999999,
+      "seconds": 24.688
+    },
+    {
+      "lane": "jev-only",
+      "draftId": "j9764e6kyhbmgchr0yjcc5pm6x8et698",
+      "sentences": 24,
+      "written": 0,
+      "verified": 24,
+      "waitingForAttorney": 0,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.009628583999999999,
+      "seconds": 23.657
+    },
+    {
+      "lane": "jev-only",
+      "draftId": "j975ater0k3c8xsnq898hj7frs8evfh5",
+      "sentences": 24,
+      "written": 0,
+      "verified": 23,
+      "waitingForAttorney": 1,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.009628583999999999,
+      "seconds": 21.19
+    },
+    {
+      "lane": "jev-only",
+      "draftId": "j970jcbqpmdp4frcqcrbz6qcmn8et860",
+      "sentences": 24,
+      "written": 0,
+      "verified": 23,
+      "waitingForAttorney": 1,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.009628583999999999,
+      "seconds": 23.963
+    },
+    {
+      "lane": "jev-only",
+      "draftId": "j975krxjmsyazs7ev4kqvr3ybs8evsyt",
+      "sentences": 24,
+      "written": 0,
+      "verified": 24,
+      "waitingForAttorney": 0,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.009672306,
+      "seconds": 18.613
+    },
+    {
+      "lane": "jev-only",
+      "draftId": "j9712tn33szetm0452xwbvfmvh8etz8g",
+      "sentences": 24,
+      "written": 0,
+      "verified": 24,
+      "waitingForAttorney": 0,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.009628583999999999,
+      "seconds": 18.791
+    },
+    {
+      "lane": "jev-only",
+      "draftId": "j97eq96ak67aa5fcs28nbrness8etkxt",
+      "sentences": 24,
+      "written": 0,
+      "verified": 24,
+      "waitingForAttorney": 0,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.009628583999999999,
+      "seconds": 20.304
+    },
+    {
+      "lane": "jev-only",
+      "draftId": "j972q3xpyqdmmgfze97x8qmdqn8et92t",
+      "sentences": 24,
+      "written": 0,
+      "verified": 24,
+      "waitingForAttorney": 0,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.009628583999999999,
+      "seconds": 21.118
     }
   ]
 }

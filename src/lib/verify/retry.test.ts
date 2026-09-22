@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isTransient, withRetry } from "./retry";
+import { inParts, isTransient, withRetry } from "./retry";
 
 const noSleep = { sleep: async () => {} };
 
@@ -45,5 +45,35 @@ describe("withRetry", () => {
     expect(
       isTransient({ name: "AI_RetryError", lastError: { statusCode: 503, isRetryable: true } }),
     ).toBe(true);
+  });
+});
+
+describe("inParts", () => {
+  const invalid = Object.assign(new Error("did not select a highest-probability option"), {
+    name: "AI_InvalidResponseDataError",
+  });
+
+  it("isolates the one question with a bad answer and gives it the fallback", async () => {
+    const calls: number[][] = [];
+    const ask = async (part: number[]) => {
+      calls.push(part);
+      if (part.includes(3)) throw invalid;
+      return part.map((n) => `ok-${n}`);
+    };
+    const result = await inParts([1, 2, 3, 4, 5], ask, (n) => `skipped-${n}`);
+    expect(result).toEqual(["ok-1", "ok-2", "skipped-3", "ok-4", "ok-5"]);
+    expect(calls[0]).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it("does not swallow other failures", async () => {
+    await expect(
+      inParts(
+        [1, 2],
+        async () => {
+          throw new Error("boom");
+        },
+        () => "x",
+      ),
+    ).rejects.toThrow("boom");
   });
 });

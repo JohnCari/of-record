@@ -46,7 +46,7 @@ export function DraftPaper({
   return (
     <article
       ref={paper}
-      className="pleading mx-auto my-6 max-w-[46rem] rounded-sm py-10 pr-10 shadow-sm ring-1 ring-black/5"
+      className="pleading mx-auto my-3 max-w-[46rem] rounded-sm py-6 pr-4 shadow-sm ring-1 ring-black/5 sm:my-6 sm:py-10 sm:pr-10"
     >
       <header className="pleading-line mb-6">
         <div>

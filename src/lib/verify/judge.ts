@@ -1,5 +1,5 @@
 import { experimental_evaluate as evaluate } from "ai";
-import { withRetry } from "./retry";
+import { inParts, withRetry } from "./retry";
 
 export type Relation = "supports" | "contradicts" | "says_nothing";
 
@@ -107,7 +107,7 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
       const answers = new Map<string, SupportAnswer>();
       const batches = chunk(questions, (q) => q.claim.length + q.passage.length);
 
-      for (const batch of batches) {
+      const ask = async (batch: typeof questions) => {
         // Question keys are for code and are not sent to the model, so each question names its
         // own slice of the shared state by path.
         const items = Object.fromEntries(
@@ -140,7 +140,7 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
           result.providerMetadata?.typesafe as { confidence?: Record<string, number> } | undefined
         )?.confidence;
 
-        batch.forEach((q, i) => {
+        return batch.map((q, i): [string, SupportAnswer] => {
           const answer = result.answers[`c${i}`] as {
             choice: Relation;
             probabilities?: Record<Relation, number>;
@@ -150,12 +150,23 @@ export function createJevJudge(options: { model?: string } = {}): Judge {
             contradicts: answer.choice === "contradicts" ? 1 : 0,
             says_nothing: answer.choice === "says_nothing" ? 1 : 0,
           };
-          answers.set(q.id, {
-            choice: answer.choice,
-            probabilities,
-            confidence: reported?.[`c${i}`] ?? Math.max(...Object.values(probabilities)),
-          });
+          return [
+            q.id,
+            {
+              choice: answer.choice,
+              probabilities,
+              confidence: reported?.[`c${i}`] ?? Math.max(...Object.values(probabilities)),
+            },
+          ];
         });
+      };
+
+      for (const batch of batches) {
+        // A question with no usable answer is left unanswered, and the verifier sends a sentence
+        // with an unanswered check to the attorney.
+        for (const entry of await inParts(batch, ask, () => null)) {
+          if (entry) answers.set(entry[0], entry[1]);
+        }
       }
       return answers;
     },

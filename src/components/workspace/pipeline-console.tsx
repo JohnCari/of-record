@@ -40,7 +40,7 @@ export function PipelineConsole({
         </Button>
         <p className="text-sm text-muted-foreground">
           Jev selects the facts and the rules, code quotes them, and Gemini writes only the
-          sentences that apply one to the other. Under a minute, about a cent.
+          sentences that apply one to the other. Under a minute, about two cents.
         </p>
       </div>
       <ScrollArea className="min-h-0 flex-1">

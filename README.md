@@ -95,8 +95,7 @@ sentences that need writing are exactly the ones that need a lawyer's judgment a
 lane, where a model plans, uses tools and talks to the attorney, needs a generative model by
 definition, and it now gets its facts from the same Jev selection through a `collect_facts` tool.
 
-Reading the whole record this way, a few hundred passages in 12-question batches, costs under a cent,
-which is why there is no retrieval step in front of it and no vector store in the stack.
+Reading the whole record this way, in 12-question batches, costs about a cent, which is why there is no retrieval step in front of it and no vector store in the stack.
 
 ## How a sentence gets checked
 
@@ -271,7 +270,35 @@ any sentence is open, and signing re-checks the gate inside the Convex transacti
 Same case file, same instruction, eight runs per lane, read back from what each run stored.
 Medians, with 95% bootstrap intervals in brackets. `pnpm bench:lanes`.
 
-<!-- LANES -->
+| Per run | Jev-first pipeline | Agent | Jev alone, no Gemini |
+| --- | --- | --- | --- |
+| Sentences in the motion | 28 [28 to 28] | 23 [18 to 32] | 24 [24 to 24] |
+| Written by a generative model | 4 [4 to 4] | 23 [18 to 32] | 0 [0 to 0] |
+| Cleared by the verifier | 24.0 [23.5 to 24.0] | 18.5 [14.0 to 29.0] | 24.0 [23.5 to 24.0] |
+| Waiting for the attorney | 4 [4 to 4] | 3 [3 to 4] | 0 [0 to 0] |
+| Blocked at the first check | 0 [0 to 0] | 0 [0 to 1] | 0 [0 to 0] |
+| Still blocked at the end | 0 [0 to 0] | 0 [0 to 0] | 0 [0 to 0] |
+| Opinions cited | 2 [2 to 2] | 3 [3 to 4] | 2 [2 to 2] |
+| Cost per run | $0.017 [$0.016 to $0.019] | $0.304 [$0.174 to $0.645] | $0.010 [$0.010 to $0.010] |
+| Seconds per run | 34 [27 to 41] | 299 [176 to 449] | 21 [19 to 24] |
+
+What this supports, and no more:
+
+- **Gemini is needed for very little.** With it switched off, the lane still selects and verifies
+  every fact and every rule for about a cent. Gemini adds the four application sentences, which
+  cost another cent and all go to the attorney. That is the measured answer to "could Jev do most
+  of it": yes, everything except the sentences a lawyer has to judge anyway.
+- **The agent costs roughly eighteen times more and takes about nine times longer** for a draft of
+  similar size, and its runs vary widely: 17 to 35 sentences, $0.16 to $0.75. The pipeline produced
+  28 sentences every time.
+- **No lane ended with a blocked sentence in any of 24 runs.** The selecting lanes never had one
+  blocked even at the first check, which is what selection instead of generation predicts. Three of
+  the eight agent runs had one sentence blocked at the first check and repaired it.
+- **One agent run hit its $0.75 session cost ceiling** in the middle of a revision, leaving 20
+  sentences written and not yet re-verified. The gate stayed closed, as designed, and the run is
+  counted here, not dropped.
+- The agent's cost is the drafter's gateway spend from the run's trace. Jev calls made inside its
+  tools are not on the trace; at list price they add under a cent.
 
 Eight runs can show a several-fold difference in cost or a difference of several sentences. They
 cannot rank lanes whose intervals overlap, and they say nothing about a different matter.

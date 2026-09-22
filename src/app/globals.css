@@ -198,6 +198,20 @@
   padding-left: 1rem;
   min-width: 0;
 }
+@media (max-width: 640px) {
+  .pleading {
+    font-size: 1rem;
+  }
+  .pleading-line {
+    grid-template-columns: 2.25rem 1fr;
+  }
+  .pleading-line::before {
+    padding-right: 0.4rem;
+  }
+  .pleading-line > * {
+    padding-left: 0.6rem;
+  }
+}
 /* The highlighter stroke on the quoted words in a source document. */
 mark.quoted {
   background: linear-gradient(

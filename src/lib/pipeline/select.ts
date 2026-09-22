@@ -4,7 +4,7 @@ import type { Backend } from "../drafting/backend";
 import { MATTER_ID } from "../drafting/sections";
 import type { JudgeUsage } from "../verify/judge";
 import { normalize } from "../verify/locate";
-import { withRetry } from "../verify/retry";
+import { inParts, withRetry } from "../verify/retry";
 
 /**
  * Selection instead of generation. Jev reads every passage of the record and says which part of
@@ -107,7 +107,7 @@ export async function selectFacts(
   for (let i = 0; i < candidates.length; i += PER_REQUEST)
     batches.push(candidates.slice(i, i + PER_REQUEST));
 
-  const scored = await pooled(batches, CONCURRENCY, async (batch) => {
+  const ask = async (batch: Candidate[]) => {
     const result = await withRetry(() =>
       evaluate({
         model: JEV,
@@ -145,7 +145,11 @@ export async function selectFacts(
         probability: answer.probabilities?.[answer.choice] ?? 1,
       };
     });
-  });
+  };
+  // A passage Jev cannot give a usable answer on is left out. Omitting a fact is safe; guessing is not.
+  const scored = await pooled(batches, CONCURRENCY, (batch) =>
+    inParts(batch, ask, (candidate) => ({ candidate, choice: "none", probability: 0 })),
+  );
 
   const facts: SelectedFact[] = [];
   for (const element of elements) {
