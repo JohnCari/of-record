@@ -80,19 +80,19 @@ export default function QualityPage() {
       title: "Bad sentences that got through",
       value: `${held.missRate.missed} of ${held.missRate.n}`,
       rate: held.missRate,
-      note: "The error that matters: a sentence that should have been held, marked as verified.",
+      note: "A sentence that should have been held, marked as verified.",
     },
     {
       title: "Sound sentences held back",
       value: `${held.falseHoldRate.held} of ${held.falseHoldRate.n}`,
       rate: held.falseHoldRate,
-      note: "The cost of caution: attorney time spent on a sentence that was fine.",
+      note: "Your time spent on a sentence that was fine.",
     },
     {
       title: "Bad sentences blocked with no person involved",
       value: `${held.autoBlockedShare.blocked} of ${held.autoBlockedShare.n}`,
       rate: held.autoBlockedShare,
-      note: "The rest were sent to the attorney rather than blocked outright.",
+      note: "The rest came to you instead.",
     },
   ];
 
@@ -102,11 +102,10 @@ export default function QualityPage() {
         <div className="max-w-[68ch]">
           <h1 className="font-serif text-3xl leading-tight">How often the checks are wrong</h1>
           <p className="mt-3 text-muted-foreground">
-            {total} test sentences written against the real case file and real opinions. Some are
-            sound. The rest each carry one planted failure, the kinds an AI drafter actually makes.
-            Half the sentences were set aside before any setting was chosen, and the numbers below
-            come from that half only. They are measurements from commit{" "}
-            <code className="text-foreground">{results.commit}</code>, not targets.
+            {total} test sentences against the real case file and opinions. Some are sound; the rest
+            each carry one planted error of the kind an AI drafter makes. Half were set aside before
+            any setting was chosen, and these numbers come from that half only. Commit{" "}
+            <code className="text-foreground">{results.commit}</code>.
           </p>
         </div>
 
@@ -139,11 +138,9 @@ export default function QualityPage() {
             </CardHeader>
             <CardContent className="max-w-[72ch] text-sm text-muted-foreground">
               {held.missRate.n} held-out bad sentences cannot rule out a miss rate as high as{" "}
-              {pct(held.missRate.high)}. The kinds to watch are the two that rest on the judge's
-              call rather than on a word-for-word match: a real quote that does not establish the
-              sentence, and a sentence that claims more than its quote. Most of those were sent to
-              the attorney rather than blocked. That is the design working, and it is also where a
-              miss would come from.
+              {pct(held.missRate.high)}. The kinds to watch are the ones that rest on the judge's
+              call: a real quote that does not establish the sentence, or a sentence that claims
+              more than its quote. Most of those were sent to you rather than blocked.
             </CardContent>
           </Card>
         )}
@@ -201,11 +198,10 @@ export default function QualityPage() {
             </CardTitle>
             <CardDescription>
               The app uses the first way. The second, an assistant that decides its own next step,
-              is kept in the repository for comparison: on the same case file and the same task,{" "}
-              {lanes.runsPerLane} runs each, it cost about eighteen times more and took about nine
-              times longer for a draft of similar size, under the same checks, and its length varied
-              from run to run where the first way produced the same motion every time. The middle
-              run is shown, with the range the middle could plausibly fall in.
+              is kept in the repository for comparison: same case, same task, {lanes.runsPerLane}{" "}
+              runs each. It cost about 18 times more, took about 9 times longer, and varied in
+              length where the first way produced the same motion every time. Middle run shown, with
+              the range it could plausibly fall in.
             </CardDescription>
           </CardHeader>
           <CardContent>

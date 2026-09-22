@@ -46,7 +46,7 @@ export function EvidencePanel({
       <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
         <MousePointerClick className="size-8 text-muted-foreground" aria-hidden />
         <p className="max-w-xs text-sm text-muted-foreground">
-          Select a sentence in the draft to see what it rests on and how it was checked.
+          Select a sentence to see its source and its checks.
         </p>
       </div>
     );
@@ -86,8 +86,8 @@ export function EvidencePanel({
         {checks.length === 0 && (
           <p className="text-sm text-muted-foreground">
             {sentence.verification
-              ? "This sentence cites nothing and asserts nothing new, so there was nothing to check."
-              : "This sentence has not been checked yet."}
+              ? "Cites nothing and asserts nothing new. Nothing to check."
+              : "Not checked yet."}
           </p>
         )}
 
@@ -155,15 +155,14 @@ export function EvidencePanel({
             <Separator />
             <div className="flex flex-col gap-2">
               <p className="text-sm">
-                The draft cannot be signed while this sentence is open. Decide it, and your decision
-                is kept with your reason.
+                Open until you decide. Your reason is kept with the sentence.
               </p>
               <div className="flex gap-2">
                 <Button variant="outline" onClick={() => setDeciding("accept")}>
-                  Accept this sentence
+                  Accept
                 </Button>
                 <Button variant="outline" onClick={() => setDeciding("strike")}>
-                  Strike this sentence
+                  Strike
                 </Button>
               </div>
             </div>
@@ -222,8 +221,7 @@ function DecideDialog({
         <DialogHeader>
           <DialogTitle>{verb} this sentence</DialogTitle>
           <DialogDescription>
-            Your decision overrides the check for this sentence. The sentence, what the check found,
-            and your reason are kept together.
+            Your decision overrides the check. It is kept with the sentence and your reason.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">

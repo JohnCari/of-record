@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react";
+import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -66,17 +66,19 @@ export function Workspace() {
   }
 
   // The first thing on screen is an example, not an empty pane: a sentence that is the reader's
-  // call, with the filing open at its quote.
+  // call, with the filing open at its quote. Once per draft, and never over a choice already made.
   const finished = state?.draft.status === "gated" || state?.draft.status === "signed";
+  const opened = useRef<string | null>(null);
   useEffect(() => {
-    if (!finished || selectedId !== null) return;
+    if (!finished || !draftId || opened.current === draftId) return;
+    opened.current = draftId;
     const first =
       sentences.find((s) => standingOf(s) === "review") ??
       sentences.find((s) => s.recordCites.length > 0);
-    if (first) show(first.sentenceId);
-    // show() reads sentences from this render; nothing else should re-run this.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finished, draftId]);
+    if (!first) return;
+    setSelectedId(first.sentenceId);
+    setSource({ id: first.recordCites[0].docId, quotes: first.recordCites.map((c) => c.quote) });
+  }, [finished, draftId, sentences]);
 
   const record = (
     <RecordPanel
@@ -89,11 +91,10 @@ export function Workspace() {
     <ScrollArea className="h-full">
       {sentences.length > 0 && (
         <p className="mx-auto max-w-[46rem] px-4 pt-4 text-center text-xs text-muted-foreground">
-          Click any sentence to see the filing it rests on.{" "}
-          <span className="text-verified">Green</span> passed every check,{" "}
+          Click a sentence to see its source. <span className="text-verified">Green</span> passed,{" "}
           <span className="text-review">amber</span> is your call,{" "}
           <span className="text-blocked">red</span> failed.
-          {showingRecorded && " This is a recorded run."}
+          {showingRecorded && " Recorded run."}
         </p>
       )}
       <DraftPaper
@@ -124,7 +125,7 @@ export function Workspace() {
         <div className="min-w-0">
           <h1 className="truncate font-serif text-base leading-tight">{MATTER_CAPTION}</h1>
           <p className="text-xs text-muted-foreground">
-            {MATTER_DOCKET}, D. Colo. A real case, from public filings on CourtListener.
+            {MATTER_DOCKET} (D. Colo.). Public filings, as filed.
           </p>
         </div>
         <div className="ml-auto">

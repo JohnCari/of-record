@@ -1,7 +1,6 @@
 import { useQuery } from "convex/react";
-import { ExternalLink, Landmark } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
@@ -58,26 +57,20 @@ export function RecordPanel({
           {source && (
             <>
               <h2 className="font-serif text-lg leading-snug">{source.title}</h2>
-              {source.notice && (
-                <Alert>
-                  <Landmark aria-hidden />
-                  <AlertTitle>About this filing</AlertTitle>
-                  <AlertDescription>
-                    {source.notice}
-                    {source.url && (
-                      <a
-                        href={source.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-1 inline-flex items-center gap-1 underline underline-offset-4"
-                      >
-                        Open the original on CourtListener{" "}
-                        <ExternalLink className="size-3" aria-hidden />
-                      </a>
-                    )}
-                  </AlertDescription>
-                </Alert>
-              )}
+              <p className="text-xs text-muted-foreground">
+                As filed.
+                {/scan/i.test(source.notice ?? "") && " Scanned, so some words are misread."}{" "}
+                {source.url && (
+                  <a
+                    href={source.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 underline underline-offset-4"
+                  >
+                    Original on CourtListener <ExternalLink className="size-3" aria-hidden />
+                  </a>
+                )}
+              </p>
               {source.passages.map((passage, i) => {
                 const heading = passage.section !== source.passages[i - 1]?.section;
                 return (

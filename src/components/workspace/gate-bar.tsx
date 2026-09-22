@@ -23,7 +23,7 @@ const COUNT_LABEL: Record<Standing, string> = {
   blocked: "blocked",
   unverified: "not yet checked",
   struck: "struck by you",
-  exempt: "pure argument",
+  exempt: "argument",
 };
 
 const ORDER: Standing[] = [
@@ -73,7 +73,7 @@ export function GateBar({
       const body = await response.json().catch(() => ({}));
       toast.error(
         body.open
-          ? `The gate refused: ${body.open.length} sentence${body.open.length === 1 ? " is" : "s are"} still open.`
+          ? `${body.open.length} sentence${body.open.length === 1 ? " is" : "s are"} still open.`
           : (body.error ?? "The draft was not signed."),
       );
     }
@@ -93,7 +93,7 @@ export function GateBar({
             : sentences.length === 0
               ? "Nothing to sign yet"
               : gateOpen
-                ? "Every sentence is cleared"
+                ? "Ready to sign"
                 : `${open.length} sentence${open.length === 1 ? " needs" : "s need"} your decision`}
         </span>
       </div>
@@ -107,7 +107,7 @@ export function GateBar({
       <div className="ml-auto flex items-center gap-2">
         {open.length > 0 && (
           <Button variant="ghost" size="sm" onClick={() => onJumpToOpen(open[0].s.sentenceId)}>
-            Show me the next one
+            Next open sentence
           </Button>
         )}
         {!readOnly && !signed && (
@@ -121,9 +121,8 @@ export function GateBar({
               <AlertDialogHeader>
                 <AlertDialogTitle>Sign this draft?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Signing records that you reviewed the draft and that it may leave the workspace.
-                  The gate is checked again at the moment you sign, against what is stored, and
-                  refuses if any sentence has reopened.
+                  This records that you reviewed the draft. Every sentence is checked once more as
+                  you sign; if any has reopened, signing is refused.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
