@@ -15,6 +15,8 @@ import { AttachCaseDialog } from "./attach-case-dialog";
 import { TextLines } from "./placeholders";
 import { Quoted } from "./quoted";
 
+const NONE = "none";
+
 export function CasesPanel({
   matters,
   matterId,
@@ -26,7 +28,7 @@ export function CasesPanel({
 }: {
   matters: Doc<"matters">[];
   matterId: string | null;
-  onChooseMatter: (matterId: string) => void;
+  onChooseMatter: (matterId: string | null) => void;
   onAttached: (matterId: string) => void;
   sourceId: string | null;
   quotes: string[];
@@ -36,10 +38,13 @@ export function CasesPanel({
     api.knowledge.listSources,
     matterId ? { matterId, kind: "record" } : "skip",
   );
-  const source = useQuery(
+  const fetched = useQuery(
     api.knowledge.getSource,
     matterId && sourceId ? { matterId, sourceId } : "skip",
   );
+  // Never show a filing from a previous choice: only the one that matches what is selected now.
+  const source =
+    fetched && fetched.sourceId === sourceId && fetched.matterId === matterId ? fetched : undefined;
   const body = useRef<HTMLDivElement>(null);
 
   // Bring the highlighted words into view when a sentence sends the reader here. The rendered
@@ -53,11 +58,18 @@ export function CasesPanel({
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex flex-col gap-2 border-b p-2">
         <div className="flex gap-2">
-          <Select value={matterId ?? ""} onValueChange={onChooseMatter}>
+          <Select
+            value={matterId ?? NONE}
+            onValueChange={(value) => onChooseMatter(value === NONE ? null : value)}
+          >
             <SelectTrigger className="min-w-0 flex-1" aria-label="Case">
               <SelectValue placeholder="Choose a case" />
             </SelectTrigger>
             <SelectContent>
+              {/* The blank choice clears every pane. */}
+              <SelectItem value={NONE}>
+                <span className="text-muted-foreground">None</span>
+              </SelectItem>
               {matters.map((m) => (
                 <SelectItem key={m.matterId} value={m.matterId}>
                   {m.caption}
@@ -85,7 +97,7 @@ export function CasesPanel({
       </div>
 
       <ScrollArea className="min-h-0 flex-1">
-        <div ref={body} className="flex flex-col gap-3 p-5">
+        <div key={`${matterId}:${sourceId}`} ref={body} className="flex flex-col gap-3 p-5">
           {sourceId && source === undefined && <TextLines lines={10} heading />}
           {matterId && !sourceId && (
             <p className="text-sm text-muted-foreground">

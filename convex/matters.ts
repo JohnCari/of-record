@@ -61,3 +61,18 @@ export const list = query({
     return [...prepared, ...own];
   },
 });
+
+/** Removes a case row. The record and drafts are purged separately (knowledge.purgeMatter). */
+export const remove = mutation({
+  args: { secret: v.string(), matterId: v.string() },
+  returns: v.null(),
+  handler: async (ctx, { secret, matterId }) => {
+    assertServer(secret);
+    const row = await ctx.db
+      .query("matters")
+      .withIndex("by_matterId", (q) => q.eq("matterId", matterId))
+      .unique();
+    if (row) await ctx.db.delete("matters", row._id);
+    return null;
+  },
+});

@@ -70,7 +70,7 @@ export function Workspace() {
   const adjudications = state?.adjudications ?? [];
   const selected = sentences.find((s) => s.sentenceId === selectedId) ?? null;
 
-  function chooseMatter(id: string) {
+  function chooseMatter(id: string | null) {
     setMatterId(id);
     setDraftId(null);
     setLive(false);
