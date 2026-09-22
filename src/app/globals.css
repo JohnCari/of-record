@@ -246,3 +246,58 @@ mark.quoted {
     transparent 13px
   );
 }
+
+/* The tour's ring on the control to click next: it breathes, so the eye lands on it. */
+@keyframes tour-pulse {
+  0%,
+  100% {
+    outline: 0 solid transparent;
+  }
+  50% {
+    outline: 10px solid color-mix(in oklch, var(--review) 35%, transparent);
+  }
+}
+.tour-pulse {
+  animation: tour-pulse 1.6s ease-in-out infinite;
+}
+
+/* Print: the paper alone, full width on white, numbered lines kept, marks and chrome gone. */
+@page {
+  size: letter;
+  margin: 1in 0.75in;
+}
+@media print {
+  html,
+  body {
+    height: auto;
+    overflow: visible;
+    background: #fff;
+    display: block;
+  }
+  :root {
+    --paper: #fff;
+  }
+  [data-sonner-toaster],
+  [data-radix-popper-content-wrapper] {
+    display: none;
+  }
+  .pleading {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 12pt;
+    line-height: 2;
+  }
+  .pleading-line {
+    break-inside: avoid;
+  }
+  .pleading-line button {
+    background: transparent;
+  }
+  .pleading a {
+    text-decoration: none;
+    color: inherit;
+  }
+}

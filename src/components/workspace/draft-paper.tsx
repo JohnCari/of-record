@@ -5,7 +5,19 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { SECTIONS } from "@/lib/drafting/sections";
 import { cn } from "@/lib/utils";
 import type { Doc } from "../../../convex/_generated/dataModel";
+import { Empty } from "./placeholders";
 import { type Adjudication, type Sentence, STANDING, shortCite, standingOf } from "./status";
+
+/** True when there is no paper to show: the pane holds a single centred line instead. */
+export const isEmpty = ({
+  sentences,
+  drafting = false,
+  loading = false,
+}: {
+  sentences: Sentence[];
+  drafting?: boolean;
+  loading?: boolean;
+}) => sentences.length === 0 && !drafting && !loading;
 
 export function DraftPaper({
   drafting = false,
@@ -15,6 +27,7 @@ export function DraftPaper({
   selectedId,
   onSelect,
   matter,
+  signedAt = null,
 }: {
   /** True while a live run is writing: empty sections are shown as placeholder lines. */
   drafting?: boolean;
@@ -25,6 +38,8 @@ export function DraftPaper({
   selectedId: string | null;
   onSelect: (sentenceId: string) => void;
   matter: Doc<"matters"> | null;
+  /** When the draft is signed: the signature line closes the paper. */
+  signedAt?: number | null;
 }) {
   const decided = new Map(adjudications.map((a) => [a.sentenceId, a]));
   const paper = useRef<HTMLElement>(null);
@@ -42,20 +57,14 @@ export function DraftPaper({
 
   // Before anything is known, show the paper with placeholder lines rather than an empty message
   // that would flash and then be wrong.
-  if (sentences.length === 0 && !drafting && !loading) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-        <FileText className="size-8 text-muted-foreground" aria-hidden />
-        <p className="max-w-sm text-sm text-muted-foreground">
-          Choose a case, then Draft the motion.
-        </p>
-      </div>
-    );
+  if (isEmpty({ sentences, drafting, loading })) {
+    return <Empty icon={FileText}>{matter ? "Draft the motion." : "Then draft the motion."}</Empty>;
   }
 
   return (
     <article
       ref={paper}
+      data-tour="paper"
       className="pleading mx-auto my-3 max-w-[46rem] rounded-sm py-6 pr-4 shadow-sm ring-1 ring-black/5 sm:my-6 sm:py-10 sm:pr-10"
     >
       <header className="pleading-line mb-6">
@@ -103,7 +112,7 @@ export function DraftPaper({
                       <TooltipTrigger asChild>
                         <span
                           className={cn(
-                            "absolute top-1.5 bottom-1.5 left-1 w-1 rounded-full",
+                            "absolute top-1.5 bottom-1.5 left-1 w-1 rounded-full print:hidden",
                             meta.mark,
                           )}
                         />
@@ -123,6 +132,18 @@ export function DraftPaper({
           </section>
         );
       })}
+      {signedAt !== null && (
+        <footer className="pleading-line mt-8 text-sm">
+          <p>
+            Signed{" "}
+            {new Date(signedAt).toLocaleString(undefined, {
+              dateStyle: "long",
+              timeStyle: "short",
+            })}
+            . Every sentence checked against its source.
+          </p>
+        </footer>
+      )}
     </article>
   );
 }

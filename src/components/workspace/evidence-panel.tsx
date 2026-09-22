@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import { Empty } from "./placeholders";
 import { Quoted } from "./quoted";
 import {
   type Adjudication,
@@ -43,12 +44,7 @@ export function EvidencePanel({
 
   if (!sentence) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
-        <MousePointerClick className="size-8 text-muted-foreground" aria-hidden />
-        <p className="max-w-xs text-sm text-muted-foreground">
-          Select a sentence to see its source and its checks.
-        </p>
-      </div>
+      <Empty icon={MousePointerClick}>Select a sentence to see its source and its checks.</Empty>
     );
   }
 
@@ -60,7 +56,7 @@ export function EvidencePanel({
   const canDecide = !readOnly && (standing === "blocked" || standing === "review");
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-full" data-tour="evidence">
       <div className="flex flex-col gap-4 p-5">
         <div className="flex items-start gap-2">
           <Icon className={cn("mt-0.5 size-5 shrink-0", meta.text)} aria-hidden />
@@ -157,7 +153,7 @@ export function EvidencePanel({
               <p className="text-sm">
                 Open until you decide. Your reason is kept with the sentence.
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2" data-tour="decide">
                 <Button variant="outline" onClick={() => setDeciding("accept")}>
                   Accept
                 </Button>

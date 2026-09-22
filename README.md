@@ -13,7 +13,7 @@ facts, and those always go to the attorney.
 **Live: [rossrecall.vercel.app](https://rossrecall.vercel.app)**. A recorded run plays for anyone,
 at no cost. Drafting live calls paid models, so it needs an invite link. The app is written for the
 lawyer who opens it: one button, plain words, the two models named once in the header with their
-jobs. The engineering is here and on the Accuracy page.
+jobs. The engineering and the measurements are here.
 
 ![The workspace on a recorded run: a motion for summary judgment on pleading paper, a mark beside every sentence, the real filing open at the quoted words.](docs/workspace.jpg)
 
@@ -279,13 +279,13 @@ Medians, with 95% bootstrap intervals in brackets. `pnpm bench:lanes`.
 | --- | --- | --- | --- |
 | Sentences in the motion | 28 [28 to 28] | 23 [18 to 32] | 24 [24 to 24] |
 | Written by a generative model | 4 [4 to 4] | 23 [18 to 32] | 0 [0 to 0] |
-| Cleared by the verifier | 24.0 [23.5 to 24.0] | 18.5 [14.0 to 29.0] | 24.0 [23.5 to 24.0] |
-| Waiting for the attorney | 4 [4 to 4] | 3 [3 to 4] | 0 [0 to 0] |
+| Cleared by the verifier | 24 [23 to 24] | 18.5 [14.0 to 29.0] | 24.0 [23.5 to 24.0] |
+| Waiting for the attorney | 4 [4 to 5] | 3 [3 to 4] | 0 [0 to 0] |
 | Blocked at the first check | 0 [0 to 0] | 0 [0 to 1] | 0 [0 to 0] |
 | Still blocked at the end | 0 [0 to 0] | 0 [0 to 0] | 0 [0 to 0] |
 | Opinions cited | 2 [2 to 2] | 3 [3 to 4] | 2 [2 to 2] |
-| Cost per run | $0.017 [$0.016 to $0.019] | $0.304 [$0.174 to $0.645] | $0.010 [$0.010 to $0.010] |
-| Seconds per run | 34 [27 to 41] | 299 [176 to 449] | 21 [19 to 24] |
+| Cost per run | $0.013 [$0.013 to $0.013] | $0.304 [$0.174 to $0.645] | $0.010 [$0.010 to $0.010] |
+| Seconds per run | 29 [27 to 32] | 299 [176 to 449] | 21 [19 to 24] |
 
 What this supports, and no more:
 
@@ -389,14 +389,27 @@ The full tool list, with what was kept, added and dropped relative to a producti
 ## Attaching your own case
 
 The workspace drafts for the prepared case, and for any case a person attaches: PDF files with a
-text layer or `.txt` files (up to 10, 10 MB each; scanned images are refused), the case name, the
-court, and one sentence on what the motion asks for. The files are split into passages exactly as
-the RECAP filings are (`passagesFromFiling`) and stored under a new case id that only the browser
-that attached them lists. One generative call then writes the outline the judge selects against:
+text layer, Word (`.docx`) or `.txt` files (up to 10; scanned images are refused), the case name,
+the court, and one sentence on what the motion asks for. The browser reads the files itself
+(PDF.js and mammoth, [`extract.ts`](src/lib/cases/extract.ts)) and sends only their text, so the
+files never leave the machine and an 8 MB court PDF fits under the 4.5 MB a Vercel function
+accepts. The text is split into passages exactly as the RECAP filings are (`passagesFromFiling`)
+and stored under a new case id that only the browser that attached them lists. One generative call then writes the outline the judge selects against:
 three to five points the motion must establish, each with a one-sentence description in the style
 of [`task.ts`](src/lib/drafting/task.ts), and the substantive rules it needs; the summary-judgment
 standard is always added from code. From there the pipeline is the same code for every case.
-Attaching needs the invite link and has a daily ceiling.
+Attaching needs the invite link and has a daily ceiling, and it unlocks once the guided tour has been
+walked to its end: the tour (`src/components/workspace/tour.tsx`) runs the prepared case step by step,
+pointing at the one control to use next and moving on when it has been used.
+
+## Signed drafts
+
+Signing changes nothing but three fields on the draft row, so the **Signed drafts** page
+(`src/components/signed-drafts.tsx`, `drafts.listSigned`) is where a signed motion is found again:
+every signed draft of a prepared case plus those of the cases this browser attached, with the counts
+of sentences the verifier cleared and the attorney accepted or struck. A row reopens the draft as
+signed, read-only, and **Print** puts the pleading alone on paper, line numbers and signature line
+included (`@media print` in `src/app/globals.css`).
 
 ## A public demo that calls paid models
 

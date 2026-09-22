@@ -11,7 +11,8 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ConvexProvider client={convex}>
       <TooltipProvider delayDuration={200}>{children}</TooltipProvider>
-      <Toaster position="bottom-right" />
+      {/* Bottom centre: the corner is where the Accept and Strike buttons sit. */}
+      <Toaster position="bottom-center" />
     </ConvexProvider>
   );
 }

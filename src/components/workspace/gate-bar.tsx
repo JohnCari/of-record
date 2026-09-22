@@ -1,4 +1,4 @@
-import { Lock, LockOpen, Stamp } from "lucide-react";
+import { Lock, LockOpen, Printer, Stamp } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -81,7 +81,10 @@ export function GateBar({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b bg-card px-4 py-2.5">
+    <div
+      className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b bg-card px-4 py-2.5"
+      data-tour="gate"
+    >
       <div className="flex items-center gap-2">
         {gateOpen || signed ? (
           <LockOpen className="size-4 text-verified" aria-hidden />
@@ -122,6 +125,12 @@ export function GateBar({
       )}
 
       <div className="ml-auto flex items-center gap-2">
+        {/* Only a signed draft prints: the printout carries the signature line. */}
+        {signed && (
+          <Button variant="outline" size="sm" onClick={() => window.print()}>
+            <Printer aria-hidden /> Print
+          </Button>
+        )}
         {open.length > 0 && (
           <Button variant="ghost" size="sm" onClick={() => onJumpToOpen(open[0].s.sentenceId)}>
             Next open sentence
@@ -130,7 +139,7 @@ export function GateBar({
         {!readOnly && !signed && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button size="sm" disabled={!gateOpen || signing}>
+              <Button size="sm" disabled={!gateOpen || signing} data-tour="sign">
                 <Stamp aria-hidden /> Sign the draft
               </Button>
             </AlertDialogTrigger>

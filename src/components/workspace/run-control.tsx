@@ -42,7 +42,7 @@ export function RunControl({
   }
 
   return (
-    <Button size="sm" onClick={start} disabled={!matterId || starting || running}>
+    <Button size="sm" onClick={start} disabled={!matterId || starting || running} data-tour="run">
       {running || starting ? (
         <Loader2 className="animate-spin" aria-hidden />
       ) : (
@@ -61,7 +61,11 @@ export function RunProgress({ draft, events }: { draft: Doc<"drafts">; events: D
   const index = STAGES.findIndex((word) => latest.startsWith(word));
   const value = index < 0 ? 5 : Math.min(95, 20 * (index + 1));
   return (
-    <div className="flex items-center gap-3 border-b bg-card px-4 py-2" aria-live="polite">
+    <div
+      className="flex items-center gap-3 border-b bg-card px-4 py-2"
+      aria-live="polite"
+      data-tour="progress"
+    >
       <Progress value={value} className="h-1.5 max-w-xs" />
       <p className="truncate text-sm text-muted-foreground">
         {latest}. <span className="hidden sm:inline">About half a minute in all.</span>

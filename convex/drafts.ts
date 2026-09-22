@@ -1,4 +1,5 @@
 import { ConvexError, v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { assertServer } from "./lib";
 import schema, { authorityCite, lane, recordCite, sentenceKind, verification } from "./schema";
@@ -323,5 +324,87 @@ export const purgeOne = mutation({
       return true;
     }
     return false;
+  },
+});
+
+const signedRow = v.object({
+  draftId: v.id("drafts"),
+  matterId: v.string(),
+  caption: v.string(),
+  motionTitle: v.string(),
+  signedAt: v.number(),
+  sentences: v.number(),
+  verified: v.number(),
+  accepted: v.number(),
+  struck: v.number(),
+  costUsd: v.number(),
+});
+
+const SIGNED_ROWS = 20;
+
+/**
+ * Signed drafts the viewer may see, newest first: every prepared case's, plus those of the cases this
+ * browser attached. Attached cases are private to the browser that holds their ids, as in matters.list.
+ */
+export const listSigned = query({
+  args: { ownIds: v.array(v.string()) },
+  returns: v.array(signedRow),
+  handler: async (ctx, { ownIds }) => {
+    const own = new Set(ownIds.slice(0, 50));
+    const signed = await ctx.db
+      .query("drafts")
+      .withIndex("by_status_and_signedAt", (q) => q.eq("status", "signed"))
+      .order("desc")
+      .take(100);
+    const matters = new Map<string, Doc<"matters"> | null>();
+    const rows = [];
+    for (const draft of signed) {
+      if (rows.length >= SIGNED_ROWS) break;
+      let matter = matters.get(draft.matterId);
+      if (matter === undefined) {
+        matter = await ctx.db
+          .query("matters")
+          .withIndex("by_matterId", (q) => q.eq("matterId", draft.matterId))
+          .unique();
+        matters.set(draft.matterId, matter);
+      }
+      if (!matter || !(matter.prepared || own.has(matter.matterId))) continue;
+
+      const sentences = await ctx.db
+        .query("sentences")
+        .withIndex("by_draftId_and_order", (q) => q.eq("draftId", draft._id))
+        .take(1000);
+      const decided = new Map(
+        (
+          await ctx.db
+            .query("adjudications")
+            .withIndex("by_draftId_and_sentenceId", (q) => q.eq("draftId", draft._id))
+            .take(1000)
+        ).map((a) => [a.sentenceId, a.decision]),
+      );
+      // The attorney's decision counts over the machine's, as it does on the page.
+      let verified = 0;
+      let accepted = 0;
+      let struck = 0;
+      for (const s of sentences) {
+        const decision = decided.get(s.sentenceId);
+        if (decision === "accept") accepted += 1;
+        else if (decision === "strike") struck += 1;
+        else if (s.verification?.status === "verified") verified += 1;
+      }
+      rows.push({
+        draftId: draft._id,
+        matterId: draft.matterId,
+        caption: matter.caption,
+        motionTitle: matter.motionTitle,
+        signedAt: draft.signedAt ?? draft._creationTime,
+        sentences: sentences.length,
+        verified,
+        accepted,
+        struck,
+        costUsd: draft.usage.costUsd,
+      });
+    }
+    return rows;
   },
 });

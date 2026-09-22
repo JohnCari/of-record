@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 
 const PAGES = [
   { href: "/", label: "Workspace" },
+  { href: "/signed", label: "Signed drafts" },
   { href: "/how-it-works", label: "How it works" },
 ];
 
@@ -31,7 +32,7 @@ const MODELS = [
 export function AppHeader() {
   const pathname = usePathname();
   return (
-    <header className="pinstripe flex h-12 shrink-0 items-center gap-3 px-3 text-suit-foreground sm:gap-6 sm:px-4">
+    <header className="pinstripe flex h-12 print:hidden shrink-0 items-center gap-3 px-3 text-suit-foreground sm:gap-6 sm:px-4">
       <Link href="/" className="flex items-center gap-2.5">
         <span className="h-5 w-1.5 rounded-[1px] bg-tie" aria-hidden />
         <span className="font-serif text-lg tracking-tight">{APP_NAME}</span>

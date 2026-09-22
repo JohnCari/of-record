@@ -1,5 +1,5 @@
 import { useQuery } from "convex/react";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Scale } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -9,10 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { AttachCaseDialog } from "./attach-case-dialog";
-import { TextLines } from "./placeholders";
+import { Empty, TextLines } from "./placeholders";
 import { Quoted } from "./quoted";
 
 const NONE = "none";
@@ -22,6 +23,7 @@ export function CasesPanel({
   matterId,
   onChooseMatter,
   onAttached,
+  attachLocked = false,
   sourceId,
   quotes,
   onSelect,
@@ -30,9 +32,11 @@ export function CasesPanel({
   matterId: string | null;
   onChooseMatter: (matterId: string | null) => void;
   onAttached: (matterId: string) => void;
+  /** True until the tour has been walked once. */
+  attachLocked?: boolean;
   sourceId: string | null;
   quotes: string[];
-  onSelect: (sourceId: string) => void;
+  onSelect: (sourceId: string | null) => void;
 }) {
   const sources = useQuery(
     api.knowledge.listSources,
@@ -62,7 +66,7 @@ export function CasesPanel({
             value={matterId ?? NONE}
             onValueChange={(value) => onChooseMatter(value === NONE ? null : value)}
           >
-            <SelectTrigger className="min-w-0 flex-1" aria-label="Case">
+            <SelectTrigger className="min-w-0 flex-1" aria-label="Case" data-tour="case">
               <SelectValue placeholder="Choose a case" />
             </SelectTrigger>
             <SelectContent>
@@ -78,14 +82,21 @@ export function CasesPanel({
               ))}
             </SelectContent>
           </Select>
-          <AttachCaseDialog onAttached={onAttached} />
+          <AttachCaseDialog onAttached={onAttached} locked={attachLocked} />
         </div>
         {matterId && (
-          <Select value={sourceId ?? ""} onValueChange={onSelect}>
+          <Select
+            value={sourceId ?? NONE}
+            onValueChange={(value) => onSelect(value === NONE ? null : value)}
+          >
             <SelectTrigger className="w-full" aria-label="Filing">
               <SelectValue placeholder="Choose a filing to read" />
             </SelectTrigger>
             <SelectContent>
+              {/* The blank choice closes the filing and leaves the count. */}
+              <SelectItem value={NONE}>
+                <span className="text-muted-foreground">None</span>
+              </SelectItem>
               {(sources ?? []).map((s) => (
                 <SelectItem key={s.sourceId} value={s.sourceId}>
                   {s.title}
@@ -96,7 +107,8 @@ export function CasesPanel({
         )}
       </div>
 
-      <ScrollArea className="min-h-0 flex-1">
+      {!matterId && <Empty icon={Scale}>Choose a case.</Empty>}
+      <ScrollArea className={cn("min-h-0 flex-1", !matterId && "hidden")} data-tour="filing">
         <div key={`${matterId}:${sourceId}`} ref={body} className="flex flex-col gap-3 p-5">
           {sourceId && source === undefined && <TextLines lines={10} heading />}
           {matterId && !sourceId && (

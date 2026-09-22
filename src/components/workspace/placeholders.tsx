@@ -1,4 +1,18 @@
+import type { LucideIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+
+/**
+ * An empty pane: one icon and one line, centred. The same shape in every pane, so the three
+ * placeholders read as one instruction left to right.
+ */
+export function Empty({ icon: Icon, children }: { icon: LucideIcon; children: React.ReactNode }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
+      <Icon className="size-10 text-muted-foreground" strokeWidth={1.5} aria-hidden />
+      <p className="max-w-sm font-serif text-lg text-muted-foreground">{children}</p>
+    </div>
+  );
+}
 
 /**
  * Placeholders shaped like the content they stand in for, so a loading pane looks like a pane

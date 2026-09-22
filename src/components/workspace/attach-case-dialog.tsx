@@ -14,9 +14,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ACCEPT, ExtractError, extractDocument, FORMATS, MAX_FILES } from "@/lib/cases/extract";
 
-/** Four fields and a button. The files stay as uploaded; nothing is edited. */
-export function AttachCaseDialog({ onAttached }: { onAttached: (matterId: string) => void }) {
+/** Four fields and a button. The files are read here in the browser; only their text is sent. */
+export function AttachCaseDialog({
+  onAttached,
+  locked = false,
+}: {
+  onAttached: (matterId: string) => void;
+  /** The tour shows how a case is drafted, so attaching waits until it has been walked once. */
+  locked?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [caption, setCaption] = useState("");
   const [court, setCourt] = useState("");
@@ -30,15 +39,37 @@ export function AttachCaseDialog({ onAttached }: { onAttached: (matterId: string
   async function submit(event: React.SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    setBusy(
-      `Reading ${files.length} file${files.length === 1 ? "" : "s"} and working out what the motion must show. About a minute.`,
-    );
-    const form = new FormData();
-    form.set("caption", caption.trim());
-    form.set("court", court.trim());
-    form.set("motion", motion.trim());
-    for (const file of files) form.append("files", file);
-    const response = await fetch("/api/cases", { method: "POST", body: form });
+    if (files.length > MAX_FILES) {
+      setError(`Attach at most ${MAX_FILES} files.`);
+      return;
+    }
+    const documents = [];
+    try {
+      for (const [i, file] of files.entries()) {
+        setBusy(`Reading ${file.name} (${i + 1} of ${files.length})…`);
+        documents.push(await extractDocument(file));
+      }
+    } catch (e) {
+      setBusy(null);
+      setError(e instanceof ExtractError ? e.message : "A file could not be read.");
+      return;
+    }
+    setBusy("Working out what the motion must show. About a minute.");
+    const response = await fetch("/api/cases", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        caption: caption.trim(),
+        court: court.trim(),
+        motion: motion.trim(),
+        documents,
+      }),
+    }).catch(() => null);
+    if (!response) {
+      setBusy(null);
+      setError("The case could not be sent. Check your connection and try again.");
+      return;
+    }
     const body = await response.json().catch(() => ({}));
     setBusy(null);
     if (!response.ok) {
@@ -54,6 +85,24 @@ export function AttachCaseDialog({ onAttached }: { onAttached: (matterId: string
     onAttached(body.matterId);
   }
 
+  if (locked) {
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {/* A disabled button gets no pointer events, so the wrapper carries the tooltip. */}
+          <span className="inline-flex rounded-md">
+            <Button variant="outline" size="sm" disabled>
+              <Paperclip aria-hidden /> Attach a case
+            </Button>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent side="bottom" className="max-w-64">
+          Finish the tour first. It shows how a case is drafted.
+        </TooltipContent>
+      </Tooltip>
+    );
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -66,7 +115,8 @@ export function AttachCaseDialog({ onAttached }: { onAttached: (matterId: string
           <DialogHeader>
             <DialogTitle>Attach a case</DialogTitle>
             <DialogDescription>
-              PDF files with text, or .txt. Up to 10 files. Scanned images cannot be read.
+              {FORMATS}. Up to {MAX_FILES} files, read on your machine. Scanned images cannot be
+              read.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-2">
@@ -103,7 +153,7 @@ export function AttachCaseDialog({ onAttached }: { onAttached: (matterId: string
               id="files"
               type="file"
               multiple
-              accept=".pdf,.txt"
+              accept={ACCEPT}
               onChange={(e) => setFiles(Array.from(e.target.files ?? []))}
             />
           </div>

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-21T23:58:12.050Z",
+  "generatedAt": "2026-09-22T14:46:19.359Z",
   "task": "Draft the whole motion. Verify every citation before you use it.",
   "runsPerLane": 8,
   "lanes": {
@@ -46,6 +46,21 @@
         "low": 0.1745,
         "high": 0.6449
       },
+      "judgeTokens": {
+        "median": 0,
+        "low": 0,
+        "high": 0
+      },
+      "writerTokensIn": {
+        "median": 0,
+        "low": 0,
+        "high": 0
+      },
+      "writerTokensOut": {
+        "median": 0,
+        "low": 0,
+        "high": 0
+      },
       "seconds": {
         "median": 298.8665,
         "low": 176.367,
@@ -67,13 +82,13 @@
       },
       "verified": {
         "median": 24,
-        "low": 23.5,
+        "low": 23,
         "high": 24
       },
       "waitingForAttorney": {
         "median": 4,
         "low": 4,
-        "high": 4.5
+        "high": 5
       },
       "blockedAtEnd": {
         "median": 0,
@@ -91,14 +106,29 @@
         "high": 2
       },
       "costUsd": {
-        "median": 0.017255472,
-        "low": 0.016183446,
-        "high": 0.019208796
+        "median": 0.012883251,
+        "low": 0.012821208,
+        "high": 0.012903917999999999
+      },
+      "judgeTokens": {
+        "median": 235876.5,
+        "low": 235840,
+        "high": 236967
+      },
+      "writerTokensIn": {
+        "median": 2351,
+        "low": 2330.5,
+        "high": 2351
+      },
+      "writerTokensOut": {
+        "median": 316.5,
+        "low": 305,
+        "high": 329
       },
       "seconds": {
-        "median": 34.3455,
-        "low": 27.2,
-        "high": 41.394
+        "median": 29.011,
+        "low": 26.957,
+        "high": 31.624
       }
     },
     "jev-only": {
@@ -143,6 +173,21 @@
         "median": 0.009628583999999999,
         "low": 0.009628583999999999,
         "high": 0.009628583999999999
+      },
+      "judgeTokens": {
+        "median": 229252,
+        "low": 229252,
+        "high": 229252
+      },
+      "writerTokensIn": {
+        "median": 0,
+        "low": 0,
+        "high": 0
+      },
+      "writerTokensOut": {
+        "median": 0,
+        "low": 0,
+        "high": 0
       },
       "seconds": {
         "median": 21.154,
@@ -290,134 +335,6 @@
       "writerTokensOut": 0
     },
     {
-      "lane": "pipeline",
-      "draftId": "j97cbpebqvgg8kfhsfq9z8zcm18evvjc",
-      "sentences": 28,
-      "written": 4,
-      "verified": 23,
-      "waitingForAttorney": 5,
-      "blockedAtEnd": 0,
-      "blockedAtFirstCheck": 0,
-      "authoritiesCited": 2,
-      "costUsd": 0.017742762,
-      "seconds": 59.253,
-      "judgeTokens": 235786,
-      "writerTokensIn": 2328,
-      "writerTokensOut": 1625
-    },
-    {
-      "lane": "pipeline",
-      "draftId": "j975e4z27dpq802fczjn8eaj9x8etkmb",
-      "sentences": 28,
-      "written": 4,
-      "verified": 23,
-      "waitingForAttorney": 5,
-      "blockedAtEnd": 0,
-      "blockedAtFirstCheck": 0,
-      "authoritiesCited": 2,
-      "costUsd": 0.016741152,
-      "seconds": 37.697,
-      "judgeTokens": 235706,
-      "writerTokensIn": 2287,
-      "writerTokensOut": 1367
-    },
-    {
-      "lane": "pipeline",
-      "draftId": "j97bbdkwfsnc3pbdpavcrkrnch8evvrp",
-      "sentences": 28,
-      "written": 4,
-      "verified": 24,
-      "waitingForAttorney": 4,
-      "blockedAtEnd": 0,
-      "blockedAtFirstCheck": 0,
-      "authoritiesCited": 2,
-      "costUsd": 0.020822873999999998,
-      "seconds": 41.394,
-      "judgeTokens": 235872,
-      "writerTokensIn": 2335,
-      "writerTokensOut": 2444
-    },
-    {
-      "lane": "pipeline",
-      "draftId": "j973snk6q8v8f0q5y5ymv9fcts8ev5fh",
-      "sentences": 28,
-      "written": 4,
-      "verified": 24,
-      "waitingForAttorney": 4,
-      "blockedAtEnd": 0,
-      "blockedAtFirstCheck": 0,
-      "authoritiesCited": 2,
-      "costUsd": 0.015867246,
-      "seconds": 26.656,
-      "judgeTokens": 235863,
-      "writerTokensIn": 2328,
-      "writerTokensOut": 1124
-    },
-    {
-      "lane": "pipeline",
-      "draftId": "j97fpz05ktbqtqz0vdqfn5cps18evg4q",
-      "sentences": 28,
-      "written": 4,
-      "verified": 24,
-      "waitingForAttorney": 4,
-      "blockedAtEnd": 0,
-      "blockedAtFirstCheck": 0,
-      "authoritiesCited": 2,
-      "costUsd": 0.019208796,
-      "seconds": 31.977,
-      "judgeTokens": 236263,
-      "writerTokensIn": 2381,
-      "writerTokensOut": 2000
-    },
-    {
-      "lane": "pipeline",
-      "draftId": "j97c6bkb97mm9yp1fbb591zjt18ev5tj",
-      "sentences": 28,
-      "written": 4,
-      "verified": 24,
-      "waitingForAttorney": 4,
-      "blockedAtEnd": 0,
-      "blockedAtFirstCheck": 0,
-      "authoritiesCited": 2,
-      "costUsd": 0.018817728,
-      "seconds": 36.714,
-      "judgeTokens": 235809,
-      "writerTokensIn": 2335,
-      "writerTokensOut": 1910
-    },
-    {
-      "lane": "pipeline",
-      "draftId": "j978wccsevk8ceht13x8jcm5fs8ev2y6",
-      "sentences": 28,
-      "written": 4,
-      "verified": 24,
-      "waitingForAttorney": 4,
-      "blockedAtEnd": 0,
-      "blockedAtFirstCheck": 0,
-      "authoritiesCited": 2,
-      "costUsd": 0.016183446,
-      "seconds": 29.284,
-      "judgeTokens": 235338,
-      "writerTokensIn": 2309,
-      "writerTokensOut": 1218
-    },
-    {
-      "lane": "pipeline",
-      "draftId": "j974pjrx4e737vf3fv64p2g4px8evqhm",
-      "sentences": 28,
-      "written": 4,
-      "verified": 24,
-      "waitingForAttorney": 4,
-      "blockedAtEnd": 0,
-      "blockedAtFirstCheck": 0,
-      "authoritiesCited": 2,
-      "costUsd": 0.016768182,
-      "seconds": 27.2,
-      "judgeTokens": 235796,
-      "writerTokensIn": 2328,
-      "writerTokensOut": 1365
-    },
-    {
       "lane": "jev-only",
       "draftId": "j973zy65e12kbkwt5e1s65723d8evfmc",
       "sentences": 24,
@@ -544,6 +461,134 @@
       "judgeTokens": 229252,
       "writerTokensIn": 0,
       "writerTokensOut": 0
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j972nn790qy8t8p58y1h7cdck98ewkjx",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.012899664000000002,
+      "judgeTokens": 235867,
+      "writerTokensIn": 2351,
+      "writerTokensOut": 328,
+      "seconds": 30.491
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j970bccgpx44n5wb61m66n3jv18ewt6f",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.01289103,
+      "judgeTokens": 235840,
+      "writerTokensIn": 2351,
+      "writerTokensOut": 326,
+      "seconds": 29.27
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j97cqsdr16888nfjq60ry942ks8exxrz",
+      "sentences": 28,
+      "written": 4,
+      "verified": 22,
+      "waitingForAttorney": 6,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.012685283999999998,
+      "judgeTokens": 235602,
+      "writerTokensIn": 2310,
+      "writerTokensOut": 282,
+      "seconds": 28.633
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j977xj5pk966ra7fvh37ctzcks8ew45r",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.012834024,
+      "judgeTokens": 236822,
+      "writerTokensIn": 2325,
+      "writerTokensOut": 305,
+      "seconds": 31.624
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j979rn6aybj446scxc9f3gmhy98ewtm2",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.012979614,
+      "judgeTokens": 236967,
+      "writerTokensIn": 2351,
+      "writerTokensOut": 337,
+      "seconds": 65.825
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j9731p0j27tg21jh8r88bhqy7s8ewwvb",
+      "sentences": 28,
+      "written": 4,
+      "verified": 22,
+      "waitingForAttorney": 6,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.012821208,
+      "judgeTokens": 235874,
+      "writerTokensIn": 2351,
+      "writerTokensOut": 307,
+      "seconds": 28.752
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j9753xwsmaj1smvyd8mw1nm83s8ex0a8",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.012903917999999999,
+      "judgeTokens": 235879,
+      "writerTokensIn": 2351,
+      "writerTokensOut": 329,
+      "seconds": 26.957
+    },
+    {
+      "lane": "pipeline",
+      "draftId": "j979kg0r8dr5d2zdhm1pgj8kb58exffd",
+      "sentences": 28,
+      "written": 4,
+      "verified": 24,
+      "waitingForAttorney": 4,
+      "blockedAtEnd": 0,
+      "blockedAtFirstCheck": 0,
+      "authoritiesCited": 2,
+      "costUsd": 0.012875472,
+      "judgeTokens": 237166,
+      "writerTokensIn": 2351,
+      "writerTokensOut": 307,
+      "seconds": 24.498
     }
   ]
 }

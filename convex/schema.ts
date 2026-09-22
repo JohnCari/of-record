@@ -117,7 +117,8 @@ export default defineSchema({
   })
     .index("by_matterId_and_lane", ["matterId", "lane"])
     .index("by_featured_and_lane", ["featured", "lane"])
-    .index("by_sessionId", ["sessionId"]),
+    .index("by_sessionId", ["sessionId"])
+    .index("by_status_and_signedAt", ["status", "signedAt"]),
 
   sentences: defineTable({
     draftId: v.id("drafts"),
