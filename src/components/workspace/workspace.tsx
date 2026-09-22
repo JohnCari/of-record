@@ -139,7 +139,7 @@ export function Workspace() {
         <div className="min-w-0">
           <h1 className="truncate font-serif text-base leading-tight">{MATTER_CAPTION}</h1>
           <p className="text-xs text-muted-foreground">
-            {MATTER_DOCKET} (D. Colo.). Public filings, as filed.
+            {MATTER_DOCKET} (D. Colo.). One real case, prepared in advance from public filings.
           </p>
         </div>
         <div className="ml-auto">
