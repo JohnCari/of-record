@@ -47,18 +47,34 @@ export function Accuracy() {
     },
   ];
 
+  const rows = [
+    {
+      label: "The test",
+      text: `${held.missRate.n + held.falseHoldRate.n} sentences it had never seen. ${held.falseHoldRate.n} were sound; ${held.missRate.n} each carried one planted error, the kind an AI drafter makes.`,
+    },
+    {
+      label: "The result",
+      text: `Every planted error was caught and no sound sentence was held back. With this few sentences the true miss rate could still be as high as ${pct(held.missRate.high)}, so the honest reading is "low", not "zero".`,
+    },
+    {
+      label: "The cost",
+      text: `$${cost.usd.toFixed(3)} a draft: the judge reads about ${Math.round(cost.judge / 1000)},000 tokens at $${PRICE_PER_MILLION.judge} per million; the writer reads ${(cost.wIn / 1000).toFixed(1)},000 and writes ${(cost.wOut / 1000).toFixed(1)},000 at $${PRICE_PER_MILLION.writerIn} and $${PRICE_PER_MILLION.writerOut}. A token is about three quarters of a word.`,
+    },
+    {
+      label: "Why it drafts this way",
+      text: `An assistant that plans its own steps was built too and measured the same way. For a draft of similar size it cost about ${Math.round((agent.costUsd.median ?? 0) / (app.costUsd.median ?? 1))} times more, took about ${Math.round((agent.seconds.median ?? 0) / (app.seconds.median ?? 1))} times longer, and came out a different length every run.`,
+    },
+    {
+      label: "What this does not show",
+      text: "Most test sentences were written by the engineer, not a practising lawyer. One case, one court. Middle of eight runs at list prices.",
+    },
+  ];
+
   return (
     <section id="accuracy" className="flex scroll-mt-6 flex-col gap-6">
-      <div>
-        <h2 className="font-serif text-3xl leading-tight">
-          How often it is wrong, and what it costs
-        </h2>
-        <p className="mt-2 max-w-[72ch] text-muted-foreground">
-          Tested on {held.missRate.n + held.falseHoldRate.n} sentences it had never seen: some
-          sound, the rest each with one planted error. Every planted error was caught. That is not
-          zero; the numbers say how far from zero it could be.
-        </p>
-      </div>
+      <h2 className="font-serif text-3xl leading-tight">
+        How often it is wrong, and what it costs
+      </h2>
 
       <div className="grid gap-4 md:grid-cols-3">
         {tiles.map((tile) => (
@@ -74,23 +90,14 @@ export function Accuracy() {
         ))}
       </div>
 
-      <div className="grid gap-5 text-sm leading-relaxed text-muted-foreground sm:grid-cols-2">
-        <p>
-          The judge reads about {Math.round(cost.judge / 1000)},000 tokens a draft at $
-          {PRICE_PER_MILLION.judge} per million. The writer reads {(cost.wIn / 1000).toFixed(1)}
-          ,000 and writes {(cost.wOut / 1000).toFixed(1)},000 at ${PRICE_PER_MILLION.writerIn} and $
-          {PRICE_PER_MILLION.writerOut}. Middle of {lanes.runsPerLane} runs, list prices. A token is
-          about three quarters of a word.
-        </p>
-        <p>
-          An assistant that plans its own steps was built too and measured the same way: about{" "}
-          {Math.round((agent.costUsd.median ?? 0) / (app.costUsd.median ?? 1))} times the cost and{" "}
-          {Math.round((agent.seconds.median ?? 0) / (app.seconds.median ?? 1))} times the time for a
-          draft of similar size, and a different length every run. That is why the app drafts the
-          way it does. Most test sentences were written by the engineer, not a practising lawyer,
-          and there is one case in one court.
-        </p>
-      </div>
+      <dl className="grid gap-x-8 gap-y-4 text-sm leading-relaxed md:grid-cols-[12rem_1fr]">
+        {rows.map((row) => (
+          <div key={row.label} className="contents">
+            <dt className="font-medium">{row.label}</dt>
+            <dd className="max-w-[80ch] text-muted-foreground">{row.text}</dd>
+          </div>
+        ))}
+      </dl>
     </section>
   );
 }
