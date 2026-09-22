@@ -1,4 +1,4 @@
-import { DAY, RateLimiter } from "@convex-dev/rate-limiter";
+import { DAY, MINUTE, RateLimiter } from "@convex-dev/rate-limiter";
 import { v } from "convex/values";
 import { components } from "./_generated/api";
 import { mutation } from "./_generated/server";
@@ -8,6 +8,8 @@ import { assertServer } from "./lib";
 // forwarded, so the ceiling is global rather than per visitor.
 const limiter = new RateLimiter(components.rateLimiter, {
   pipelineRun: { kind: "fixed window", rate: 40, period: DAY },
+  // Case-law search is open to anyone, so the ceiling protects the CourtListener quota.
+  search: { kind: "token bucket", rate: 30, period: MINUTE, capacity: 10 },
 });
 
 export const takePipelineRun = mutation({
@@ -16,6 +18,16 @@ export const takePipelineRun = mutation({
   handler: async (ctx, { secret }) => {
     assertServer(secret);
     const { ok, retryAfter } = await limiter.limit(ctx, "pipelineRun");
+    return { ok, retryAfterMs: retryAfter ?? null };
+  },
+});
+
+export const takeSearch = mutation({
+  args: { secret: v.string() },
+  returns: v.object({ ok: v.boolean(), retryAfterMs: v.union(v.number(), v.null()) }),
+  handler: async (ctx, { secret }) => {
+    assertServer(secret);
+    const { ok, retryAfter } = await limiter.limit(ctx, "search");
     return { ok, retryAfterMs: retryAfter ?? null };
   },
 });

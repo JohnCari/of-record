@@ -1,17 +1,21 @@
 import { FileText } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MATTER_COURT, MATTER_DOCKET, MOTION_TITLE, SECTIONS } from "@/lib/drafting/sections";
 import { cn } from "@/lib/utils";
 import { type Adjudication, type Sentence, STANDING, shortCite, standingOf } from "./status";
 
 export function DraftPaper({
+  drafting = false,
   sentences,
   adjudications,
   selectedId,
   onSelect,
   caption,
 }: {
+  /** True while a live run is writing: empty sections are shown as placeholder lines. */
+  drafting?: boolean;
   sentences: Sentence[];
   adjudications: Adjudication[];
   selectedId: string | null;
@@ -32,7 +36,7 @@ export function DraftPaper({
       ?.scrollIntoView({ block: "center" });
   }, [selectedId]);
 
-  if (sentences.length === 0) {
+  if (sentences.length === 0 && !drafting) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
         <FileText className="size-8 text-muted-foreground" aria-hidden />
@@ -59,12 +63,18 @@ export function DraftPaper({
 
       {SECTIONS.map((section) => {
         const rows = sentences.filter((s) => s.sectionId === section.id);
-        if (rows.length === 0) return null;
+        if (rows.length === 0 && !drafting) return null;
         return (
           <section key={section.id} className="mb-6">
             <div className="pleading-line">
               <h2 className="font-semibold">{section.title}</h2>
             </div>
+            {rows.length === 0 &&
+              [0, 1, 2].map((i) => (
+                <div key={i} className="pleading-line">
+                  <Skeleton className="my-2 h-4" style={{ width: `${88 - i * 14}%` }} />
+                </div>
+              ))}
             {rows.map((sentence) => {
               const standing = standingOf(sentence, decided.get(sentence.sentenceId));
               const meta = STANDING[standing];

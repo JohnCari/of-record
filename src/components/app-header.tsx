@@ -7,9 +7,8 @@ import { APP_NAME } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 const PAGES = [
-  { href: "/", label: "The draft" },
+  { href: "/", label: "Workspace" },
   { href: "/how-it-works", label: "How it works" },
-  { href: "/quality", label: "Accuracy" },
 ];
 
 /** The two models, named once with their jobs. Everywhere else they are "the judge" and "the writer". */
@@ -52,7 +51,7 @@ export function AppHeader() {
           </Link>
         ))}
       </nav>
-      <p className="ml-auto hidden items-center gap-3 text-xs text-suit-foreground/70 md:flex">
+      <p className="ml-auto hidden items-center gap-3 text-xs text-suit-foreground/70 lg:flex">
         {MODELS.map((model) => (
           <Tooltip key={model.name}>
             <TooltipTrigger asChild>

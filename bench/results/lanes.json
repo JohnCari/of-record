@@ -165,7 +165,10 @@
       "authoritiesCited": 3,
       "costUsd": 0.1745,
       "seconds": 174.884,
-      "endedAs": "ready"
+      "endedAs": "ready",
+      "judgeTokens": 0,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "agent",
@@ -179,7 +182,10 @@
       "authoritiesCited": 4,
       "costUsd": 0.6061,
       "seconds": 428.347,
-      "endedAs": "input-required"
+      "endedAs": "input-required",
+      "judgeTokens": 0,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "agent",
@@ -193,7 +199,10 @@
       "authoritiesCited": 4,
       "costUsd": 0.3257,
       "seconds": 328.05,
-      "endedAs": "input-required"
+      "endedAs": "input-required",
+      "judgeTokens": 0,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "agent",
@@ -207,7 +216,10 @@
       "authoritiesCited": 3,
       "costUsd": 0.6449,
       "seconds": 487.041,
-      "endedAs": "input-required"
+      "endedAs": "input-required",
+      "judgeTokens": 0,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "agent",
@@ -221,7 +233,10 @@
       "authoritiesCited": 3,
       "costUsd": 0.283,
       "seconds": 269.683,
-      "endedAs": "input-required"
+      "endedAs": "input-required",
+      "judgeTokens": 0,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "agent",
@@ -235,7 +250,10 @@
       "authoritiesCited": 3,
       "costUsd": 0.2377,
       "seconds": 207.749,
-      "endedAs": "input-required"
+      "endedAs": "input-required",
+      "judgeTokens": 0,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "agent",
@@ -249,7 +267,10 @@
       "authoritiesCited": 0,
       "costUsd": 0.7517,
       "seconds": 449.28,
-      "endedAs": "input-required"
+      "endedAs": "input-required",
+      "judgeTokens": 0,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "agent",
@@ -263,7 +284,10 @@
       "authoritiesCited": 4,
       "costUsd": 0.1609,
       "seconds": 176.367,
-      "endedAs": "input-required"
+      "endedAs": "input-required",
+      "judgeTokens": 0,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "pipeline",
@@ -276,7 +300,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.017742762,
-      "seconds": 59.253
+      "seconds": 59.253,
+      "judgeTokens": 235786,
+      "writerTokensIn": 2328,
+      "writerTokensOut": 1625
     },
     {
       "lane": "pipeline",
@@ -289,7 +316,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.016741152,
-      "seconds": 37.697
+      "seconds": 37.697,
+      "judgeTokens": 235706,
+      "writerTokensIn": 2287,
+      "writerTokensOut": 1367
     },
     {
       "lane": "pipeline",
@@ -302,7 +332,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.020822873999999998,
-      "seconds": 41.394
+      "seconds": 41.394,
+      "judgeTokens": 235872,
+      "writerTokensIn": 2335,
+      "writerTokensOut": 2444
     },
     {
       "lane": "pipeline",
@@ -315,7 +348,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.015867246,
-      "seconds": 26.656
+      "seconds": 26.656,
+      "judgeTokens": 235863,
+      "writerTokensIn": 2328,
+      "writerTokensOut": 1124
     },
     {
       "lane": "pipeline",
@@ -328,7 +364,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.019208796,
-      "seconds": 31.977
+      "seconds": 31.977,
+      "judgeTokens": 236263,
+      "writerTokensIn": 2381,
+      "writerTokensOut": 2000
     },
     {
       "lane": "pipeline",
@@ -341,7 +380,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.018817728,
-      "seconds": 36.714
+      "seconds": 36.714,
+      "judgeTokens": 235809,
+      "writerTokensIn": 2335,
+      "writerTokensOut": 1910
     },
     {
       "lane": "pipeline",
@@ -354,7 +396,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.016183446,
-      "seconds": 29.284
+      "seconds": 29.284,
+      "judgeTokens": 235338,
+      "writerTokensIn": 2309,
+      "writerTokensOut": 1218
     },
     {
       "lane": "pipeline",
@@ -367,7 +412,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.016768182,
-      "seconds": 27.2
+      "seconds": 27.2,
+      "judgeTokens": 235796,
+      "writerTokensIn": 2328,
+      "writerTokensOut": 1365
     },
     {
       "lane": "jev-only",
@@ -380,7 +428,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.009628583999999999,
-      "seconds": 24.688
+      "seconds": 24.688,
+      "judgeTokens": 229252,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "jev-only",
@@ -393,7 +444,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.009628583999999999,
-      "seconds": 23.657
+      "seconds": 23.657,
+      "judgeTokens": 229252,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "jev-only",
@@ -406,7 +460,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.009628583999999999,
-      "seconds": 21.19
+      "seconds": 21.19,
+      "judgeTokens": 229252,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "jev-only",
@@ -419,7 +476,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.009628583999999999,
-      "seconds": 23.963
+      "seconds": 23.963,
+      "judgeTokens": 229252,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "jev-only",
@@ -432,7 +492,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.009672306,
-      "seconds": 18.613
+      "seconds": 18.613,
+      "judgeTokens": 230293,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "jev-only",
@@ -445,7 +508,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.009628583999999999,
-      "seconds": 18.791
+      "seconds": 18.791,
+      "judgeTokens": 229252,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "jev-only",
@@ -458,7 +524,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.009628583999999999,
-      "seconds": 20.304
+      "seconds": 20.304,
+      "judgeTokens": 229252,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     },
     {
       "lane": "jev-only",
@@ -471,7 +540,10 @@
       "blockedAtFirstCheck": 0,
       "authoritiesCited": 2,
       "costUsd": 0.009628583999999999,
-      "seconds": 21.118
+      "seconds": 21.118,
+      "judgeTokens": 229252,
+      "writerTokensIn": 0,
+      "writerTokensOut": 0
     }
   ]
 }

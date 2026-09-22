@@ -2,6 +2,7 @@
 
 import { useQuery } from "convex/react";
 import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { toast } from "sonner";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +14,7 @@ import { DraftPaper } from "./draft-paper";
 import { EvidencePanel } from "./evidence-panel";
 import { GateBar } from "./gate-bar";
 import { RecordPanel } from "./record-panel";
-import { RunControl } from "./run-control";
+import { isRunning, RunControl, RunProgress } from "./run-control";
 import { standingOf } from "./status";
 
 const DESKTOP = "(min-width: 1024px)";
@@ -69,6 +70,15 @@ export function Workspace() {
   // call, with the filing open at its quote. Once per draft, and never over a choice already made.
   const finished = state?.draft.status === "gated" || state?.draft.status === "signed";
   const opened = useRef<string | null>(null);
+  const wasRunning = useRef(false);
+  useEffect(() => {
+    const running = isRunning(state?.draft ?? null);
+    if (wasRunning.current && !running && liveId && state) {
+      const review = sentences.filter((s) => standingOf(s) === "review").length;
+      toast.success(`Draft ready: ${sentences.length} sentences, ${review} for your review.`);
+    }
+    wasRunning.current = running;
+  }, [state, liveId, sentences]);
   useEffect(() => {
     if (!finished || !draftId || opened.current === draftId) return;
     opened.current = draftId;
@@ -98,6 +108,7 @@ export function Workspace() {
         </p>
       )}
       <DraftPaper
+        drafting={isRunning(state?.draft ?? null)}
         sentences={sentences}
         adjudications={adjudications}
         selectedId={selectedId}
@@ -131,7 +142,6 @@ export function Workspace() {
         <div className="ml-auto">
           <RunControl
             draft={state?.draft ?? null}
-            events={state?.events ?? []}
             onStarted={(id) => {
               setLiveId(id);
               setSelectedId(null);
@@ -141,6 +151,7 @@ export function Workspace() {
         </div>
       </header>
 
+      {state && <RunProgress draft={state.draft} events={state.events} />}
       {state && (
         <GateBar
           draft={state.draft}

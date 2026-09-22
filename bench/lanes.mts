@@ -38,6 +38,10 @@ type Run = {
   blockedAtFirstCheck: number;
   authoritiesCited: number;
   costUsd: number;
+  /** Tokens the judge read and the writer read and wrote, from what the run stored. */
+  judgeTokens: number;
+  writerTokensIn: number;
+  writerTokensOut: number;
   seconds: number;
   /** How the agent's turn ended: ready, or input-required when it parked on a question. */
   endedAs?: string;
@@ -75,6 +79,9 @@ async function measure(
       stored.sentences.flatMap((s) => s.authorityCites.map((c) => c.citation)),
     ).size,
     costUsd: cost ?? stored.draft.usage.costUsd,
+    judgeTokens: stored.draft.usage.judgeInputTokens,
+    writerTokensIn: stored.draft.usage.drafterInputTokens,
+    writerTokensOut: stored.draft.usage.drafterOutputTokens,
     seconds,
   };
 }
@@ -142,6 +149,9 @@ const METRICS = [
   "blockedAtFirstCheck",
   "authoritiesCited",
   "costUsd",
+  "judgeTokens",
+  "writerTokensIn",
+  "writerTokensOut",
   "seconds",
 ] as const;
 
@@ -195,6 +205,9 @@ for (const lane of LANES) {
           blockedAtFirstCheck: Number.NaN,
           authoritiesCited: Number.NaN,
           costUsd: Number.NaN,
+          judgeTokens: Number.NaN,
+          writerTokensIn: Number.NaN,
+          writerTokensOut: Number.NaN,
           seconds: Number.NaN,
           error: error instanceof Error ? error.message.slice(0, 300) : String(error),
         }),
