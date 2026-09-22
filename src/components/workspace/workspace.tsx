@@ -8,7 +8,6 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/componen
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MATTER_ID } from "@/lib/drafting/sections";
 import { cn } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -47,7 +46,7 @@ function readOwnCases(): string[] {
 type Pane = "draft" | "evidence" | "cases";
 
 export function Workspace() {
-  const [matterId, setMatterId] = useState(MATTER_ID);
+  const [matterId, setMatterId] = useState<string | null>(null);
   const [ownCases, setOwnCases] = useState<string[]>([]);
   // Blank until the person asks for a draft. Choosing another case blanks it again.
   const [draftId, setDraftId] = useState<Id<"drafts"> | null>(null);
@@ -63,7 +62,7 @@ export function Workspace() {
 
   const matters = useQuery(api.matters.list, { ids: ownCases });
   const matter = matters?.find((m) => m.matterId === matterId) ?? null;
-  const lastDraft = useQuery(api.drafts.latest, { matterId, lane: "pipeline" });
+  const lastDraft = useQuery(api.drafts.latest, matterId ? { matterId, lane: "pipeline" } : "skip");
   const state = useQuery(api.drafts.get, draftId ? { draftId } : "skip");
   const loading = draftId !== null && state === undefined;
 
@@ -183,7 +182,7 @@ export function Workspace() {
           </p>
         </div>
         <div className="ml-auto flex items-center gap-2">
-          {!draftId && lastDraft && (
+          {matterId && !draftId && lastDraft && (
             <Button variant="ghost" size="sm" onClick={() => setDraftId(lastDraft)}>
               Show the last draft
             </Button>

@@ -13,6 +13,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { type Adjudication, type Sentence, type Standing, standingOf } from "./status";
 
@@ -103,6 +104,22 @@ export function GateBar({
           .map((standing) => `${counts.get(standing)} ${COUNT_LABEL[standing]}`)
           .join(", ")}
       </p>
+
+      {draft.usage.costUsd > 0 && (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <p className="cursor-default text-sm text-muted-foreground tabular-nums">
+              Cost ${draft.usage.costUsd.toFixed(3)}
+            </p>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="max-w-72">
+            The judge read {Math.round(draft.usage.judgeInputTokens / 1000)},000 tokens; the writer
+            read {(draft.usage.drafterInputTokens / 1000).toFixed(1)},000 and wrote{" "}
+            {(draft.usage.drafterOutputTokens / 1000).toFixed(1)},000. Took{" "}
+            {Math.round(draft.usage.durationMs / 1000)} seconds. List prices.
+          </TooltipContent>
+        </Tooltip>
+      )}
 
       <div className="ml-auto flex items-center gap-2">
         {open.length > 0 && (

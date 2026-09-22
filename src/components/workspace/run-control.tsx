@@ -19,7 +19,7 @@ export function RunControl({
   onStarted,
 }: {
   draft: Doc<"drafts"> | null;
-  matterId: string;
+  matterId: string | null;
   onStarted: (draftId: Id<"drafts">) => void;
 }) {
   const [starting, setStarting] = useState(false);
@@ -42,7 +42,7 @@ export function RunControl({
   }
 
   return (
-    <Button size="sm" onClick={start} disabled={starting || running}>
+    <Button size="sm" onClick={start} disabled={!matterId || starting || running}>
       {running || starting ? (
         <Loader2 className="animate-spin" aria-hidden />
       ) : (

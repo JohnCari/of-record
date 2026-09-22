@@ -398,14 +398,6 @@ of [`task.ts`](src/lib/drafting/task.ts), and the substantive rules it needs; th
 standard is always added from code. From there the pipeline is the same code for every case.
 Attaching needs the invite link and has a daily ceiling.
 
-## Finding a case from the workspace
-
-The record pane has a second tab, **Find a case**, that searches CourtListener's opinions by
-words, a case name or a citation and shows the opinion text with a link to the original. It is for
-reading: nothing found there enters the draft, which cites only cases it has checked. The search
-is open to anyone, behind a global rate limit (`convex/limits.ts`), and calls CourtListener
-anonymously first so the token's quota is kept for what needs it.
-
 ## A public demo that calls paid models
 
 - The live lanes require an invite link. The link sets a signed, HTTP-only cookie; the eve channel

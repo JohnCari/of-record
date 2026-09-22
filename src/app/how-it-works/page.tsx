@@ -8,48 +8,30 @@ import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: `How it works, ${APP_NAME}` };
 
-// What the reader does, in order.
 const HOW_TO = [
-  {
-    title: "Choose a case",
-    body: "The prepared one is ready. Or attach your own: the filings you have, and one sentence on what the motion asks for.",
-  },
-  { title: "Draft the motion", body: "One button, top right. About half a minute." },
-  {
-    title: "Click a sentence",
-    body: "The filing opens at the words it quotes. Green passed, amber is your call, red failed.",
-  },
-  {
-    title: "Decide the amber ones",
-    body: "Accept or strike, with a reason. Your reason is kept with the sentence.",
-  },
-  {
-    title: "Sign",
-    body: "Only possible once nothing is open. Every sentence is checked again as you sign.",
-  },
+  { title: "Choose a case", body: "The prepared one, or attach your own filings." },
+  { title: "Draft the motion", body: "One button. About half a minute." },
+  { title: "Click a sentence", body: "The filing opens at the words it quotes." },
+  { title: "Decide the amber ones", body: "Accept or strike, with a reason." },
+  { title: "Sign", body: "Only once nothing is open." },
 ];
 
-// What the system does, in order, every time.
-const STEPS = [
+const HOW = [
   {
-    title: "It reads everything and picks the quotes.",
-    body: "Every page of the record, every paragraph of every case. The judge, Jev, picks the passages that prove each point; they are quoted word for word. It cannot write, only choose, so a quoted fact cannot be made up.",
+    title: "It quotes, it does not paraphrase.",
+    body: "The judge, Jev, reads every page and picks the passages that prove each point. They are quoted word for word. It cannot write, so it cannot make a fact up.",
   },
   {
-    title: "It writes only the sentences that apply the law to the facts.",
-    body: "The writer, Gemini 3.8 Flash, does this and nothing else. Those are the few sentences a lawyer has to judge anyway, so every one of them comes to you.",
+    title: "The writer writes only the sentences that apply the law to the facts.",
+    body: "Gemini 3.8 Flash. Those sentences always come to you.",
   },
   {
     title: "Every sentence is checked before you see it.",
-    body: "Is the quote in the filing? Is the case real, and the one named? Does the source support the sentence?",
+    body: "Is the quote in the filing? Is the case real? Does the source support the sentence?",
   },
   {
-    title: "Nothing can be signed while a sentence is open.",
-    body: "Not a rule it is asked to follow. A lock.",
-  },
-  {
-    title: "Same steps, same order, every time.",
-    body: "It never chooses what to do next. Run it twice on the same file and you get the same motion.",
+    title: "Same steps, same order, every time. Nothing signs while a sentence is open.",
+    body: "It never chooses what to do next, and the lock is not a rule it follows but a check as you sign.",
   },
 ];
 
@@ -57,7 +39,7 @@ const MARKS: Standing[] = ["verified", "blocked", "review", "exempt", "accepted"
 
 function Numbered({ items }: { items: { title: string; body: string }[] }) {
   return (
-    <ol className="grid gap-5 sm:grid-cols-2">
+    <ol className="grid gap-4 sm:grid-cols-2">
       {items.map((step, i) => (
         <li key={step.title} className="grid min-w-0 grid-cols-[2rem_1fr] gap-2">
           <span className="font-serif text-2xl text-muted-foreground tabular-nums">{i + 1}</span>
@@ -71,38 +53,44 @@ function Numbered({ items }: { items: { title: string; body: string }[] }) {
   );
 }
 
+function Section({
+  title,
+  sub,
+  children,
+}: {
+  title: string;
+  sub?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
+      <div>
+        <h2 className="font-serif text-2xl leading-tight">{title}</h2>
+        {sub && <p className="mt-2 text-muted-foreground">{sub}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
 export default function HowItWorksPage() {
   return (
     <ScrollArea className="h-full">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-6 py-8 lg:px-10">
-        <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
-          <div>
-            <h1 className="font-serif text-3xl leading-tight">How to use it</h1>
-            <p className="mt-2 text-muted-foreground">Five things, in order.</p>
-          </div>
+        <Section title="How to use it">
           <Numbered items={HOW_TO} />
-        </section>
+        </Section>
 
         <Separator />
 
-        <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
-          <div>
-            <h2 className="font-serif text-3xl leading-tight">
-              It quotes the record. It does not paraphrase it.
-            </h2>
-            <p className="mt-2 text-muted-foreground">
-              Fixed steps, same order, every time. The one part that writes is held to the same
-              checks and always comes to you.
-            </p>
-          </div>
-          <Numbered items={STEPS} />
-        </section>
+        <Section
+          title="How it works"
+          sub="Jev is by Typesafe AI. Gemini 3.8 Flash is by Google. One chooses, one writes. That is the point."
+        >
+          <Numbered items={HOW} />
+        </Section>
 
-        <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
-          <div>
-            <h2 className="font-serif text-2xl leading-tight">The marks in the margin</h2>
-            <p className="mt-2 text-muted-foreground">Each sentence carries one.</p>
-          </div>
+        <Section title="The marks in the margin">
           <div className="grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
             {MARKS.map((standing) => {
               const meta = STANDING[standing];
@@ -119,38 +107,15 @@ export default function HowItWorksPage() {
               );
             })}
           </div>
-        </section>
-
-        <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
-          <div>
-            <h2 className="font-serif text-2xl leading-tight">Why the judge matters</h2>
-            <p className="mt-2 text-muted-foreground">
-              Jev is by Typesafe AI. Gemini 3.8 Flash is by Google. They are different kinds of
-              model, and the difference is the point.
-            </p>
-          </div>
-          <div className="grid gap-5 text-sm leading-relaxed sm:grid-cols-2">
-            <p>
-              A writing model answers by writing. Ask it whether a passage supports a sentence and
-              it can argue either way, and slip in a fact of its own while doing so. Checking one
-              writer with another only moves the problem.
-            </p>
-            <p>
-              Jev does not write. Give it a document and a question with fixed answers and it
-              returns one answer and how sure it is. There is nowhere in that reply for an invented
-              fact, quote or case. It can be wrong, and that can be counted. It cannot make things
-              up. And it is cheap enough to read every page.
-            </p>
-          </div>
-        </section>
+        </Section>
 
         <Separator />
 
         <Accuracy />
 
         <p className="text-sm text-muted-foreground">
-          The case is real, from public filings on CourtListener. Not affiliated with anyone in it;
-          not legal advice.
+          The prepared case is real, from public filings on CourtListener. Not affiliated with
+          anyone in it; not legal advice.
         </p>
       </div>
     </ScrollArea>

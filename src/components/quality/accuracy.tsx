@@ -1,71 +1,8 @@
-import { ChevronDown } from "lucide-react";
-import { SweepChart } from "@/components/quality/sweep-chart";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import results from "../../../bench/results/bench.json";
 import lanes from "../../../bench/results/lanes.json";
 
-const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
-
-const SETS = [
-  {
-    id: "record-faithfulness",
-    title: "Does the record say that?",
-    note: "Sentences about the facts, checked against the real filings.",
-  },
-  {
-    id: "citation-integrity",
-    title: "Does the case say that?",
-    note: "Sentences about the law, checked against real opinions and a live citation lookup.",
-  },
-] as const;
-
-const CLASS: Record<string, { name: string; what: string }> = {
-  supported: { name: "Sound", what: "True sentence, real quote, real source" },
-  pure_argument: { name: "Pure argument", what: "Asks for relief, asserts nothing new" },
-  fabricated_quote: { name: "Fabricated quote", what: "Quoted words are not in the filing" },
-  wrong_exhibit: { name: "Wrong filing", what: "Real words, cited to a filing without them" },
-  contradicted: { name: "Contradicted", what: "Real quote, sentence says the opposite" },
-  unsupported: { name: "Unsupported", what: "Real quote that does not establish the sentence" },
-  overstated: { name: "Overstated", what: "Real quote, sentence claims more than it says" },
-  relabelled: { name: "Relabelled", what: "An uncited fact declared as argument" },
-  fictitious: { name: "Fictitious case", what: "A citation that resolves to no case" },
-  mismatched: { name: "Wrong name", what: "A real citation under another case's name" },
-  misattributed_holding: {
-    name: "Misattributed holding",
-    what: "Real case, real quote, and it does not state the rule",
-  },
-  conflated: { name: "Conflated cases", what: "A quote from one case cited to another" },
-  wrong_rule: { name: "Wrong rule", what: "Cites a rule number the opinion never mentions" },
-};
-
-const LANES = [
-  { id: "pipeline", name: "Quoted, then checked (the app)" },
-  { id: "agent", name: "An assistant that plans its own steps" },
-  { id: "jev-only", name: "Quoted only, nothing written" },
-] as const;
-
-const LANE_ROWS: { key: string; label: string; format: (x: number) => string }[] = [
-  { key: "sentences", label: "Sentences in the motion", format: (x) => x.toFixed(0) },
-  { key: "written", label: "Written by the writer", format: (x) => x.toFixed(0) },
-  { key: "verified", label: "Passed every check", format: (x) => x.toFixed(0) },
-  { key: "waitingForAttorney", label: "Waiting for the attorney", format: (x) => x.toFixed(0) },
-  { key: "blockedAtFirstCheck", label: "Blocked at the first check", format: (x) => x.toFixed(0) },
-  { key: "blockedAtEnd", label: "Still blocked at the end", format: (x) => x.toFixed(0) },
-  { key: "authoritiesCited", label: "Opinions cited", format: (x) => x.toFixed(0) },
-  { key: "costUsd", label: "Cost per run", format: (x) => `$${x.toFixed(3)}` },
-  { key: "seconds", label: "Time per run", format: (x) => `${x.toFixed(0)} s` },
-];
-
-type Summary = { median: number | null; low: number | null; high: number | null };
+const pct = (x: number) => `${(x * 100).toFixed(0)}%`;
 
 // Gateway list prices, USD per million tokens. The same figures the run uses to report its cost.
 const PRICE_PER_MILLION = { judge: 0.042, writerIn: 0.75, writerOut: 3.75 };
@@ -89,37 +26,37 @@ function draftCost() {
 /** The measured numbers, in the words of the person who reads them. Lives on How it works. */
 export function Accuracy() {
   const held = results.test.atInUse;
-  const total = SETS.reduce((sum, set) => sum + results.datasets[set.id].rows, 0);
   const cost = draftCost();
+  const agent = lanes.lanes.agent;
+  const app = lanes.lanes.pipeline;
   const tiles = [
     {
       title: "Bad sentences that got through",
       value: `${held.missRate.missed} of ${held.missRate.n}`,
-      rate: held.missRate,
-      note: "A sentence that should have been held, marked as verified.",
+      note: `Could be as high as ${pct(held.missRate.high)} with this few sentences.`,
     },
     {
       title: "Sound sentences held back",
       value: `${held.falseHoldRate.held} of ${held.falseHoldRate.n}`,
-      rate: held.falseHoldRate,
-      note: "Your time spent on a sentence that was fine.",
+      note: `Could be as high as ${pct(held.falseHoldRate.high)}.`,
     },
     {
-      title: "Bad sentences blocked with no person involved",
-      value: `${held.autoBlockedShare.blocked} of ${held.autoBlockedShare.n}`,
-      rate: held.autoBlockedShare,
-      note: "The rest came to you instead.",
+      title: "Cost of a draft",
+      value: `$${cost.usd.toFixed(3)}`,
+      note: `${Math.round(cost.tokens / 1000)},000 tokens. $${cost.perMillion.toFixed(2)} per million.`,
     },
   ];
 
   return (
     <section id="accuracy" className="flex scroll-mt-6 flex-col gap-6">
       <div>
-        <h2 className="font-serif text-3xl leading-tight">How often it is wrong</h2>
+        <h2 className="font-serif text-3xl leading-tight">
+          How often it is wrong, and what it costs
+        </h2>
         <p className="mt-2 max-w-[72ch] text-muted-foreground">
-          {total} test sentences against the real case file and opinions: some sound, the rest each
-          with one planted error of the kind an AI drafter makes. Half were set aside before any
-          setting was chosen; these numbers come from that half only.
+          Tested on {held.missRate.n + held.falseHoldRate.n} sentences it had never seen: some
+          sound, the rest each with one planted error. Every planted error was caught. That is not
+          zero; the numbers say how far from zero it could be.
         </p>
       </div>
 
@@ -132,241 +69,28 @@ export function Accuracy() {
                 {tile.value}
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2 text-sm">
-              <p className="tabular-nums">
-                {pct(tile.rate.rate)}. With this few sentences the true rate could plausibly be
-                anywhere from {pct(tile.rate.low)} to {pct(tile.rate.high)}.
-              </p>
-              <p className="text-muted-foreground">{tile.note}</p>
-            </CardContent>
+            <CardContent className="text-sm text-muted-foreground">{tile.note}</CardContent>
           </Card>
         ))}
       </div>
 
-      {held.missRate.missed === 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-serif text-xl font-normal">
-              Nothing got through. That is not the same as zero.
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="max-w-[72ch] text-sm text-muted-foreground">
-            {held.missRate.n} test sentences cannot rule out a miss rate as high as{" "}
-            {pct(held.missRate.high)}. The kinds to watch are the ones that rest on the judge's
-            call: a real quote that does not establish the sentence, or a sentence that claims more
-            than its quote. Most of those were sent to you rather than blocked.
-          </CardContent>
-        </Card>
-      )}
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        {SETS.map((set) => (
-          <Card key={set.id}>
-            <CardHeader>
-              <CardTitle className="font-serif text-xl font-normal">{set.title}</CardTitle>
-              <CardDescription>{set.note}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Kind</TableHead>
-                    <TableHead className="text-right">Sentences</TableHead>
-                    <TableHead className="text-right">Cleared</TableHead>
-                    <TableHead className="text-right">To the attorney</TableHead>
-                    <TableHead className="text-right">Blocked</TableHead>
-                    <TableHead>Should be</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {results.datasets[set.id].perClass.map((row) => {
-                    const wrong = row.expected === "hold" ? row.cleared : row.review + row.blocked;
-                    return (
-                      <TableRow key={row.class}>
-                        <TableCell>
-                          <span className="font-medium">{CLASS[row.class]?.name ?? row.class}</span>
-                          <span className="block text-muted-foreground">
-                            {CLASS[row.class]?.what}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right tabular-nums">{row.n}</TableCell>
-                        <TableCell className="text-right tabular-nums">{row.cleared}</TableCell>
-                        <TableCell className="text-right tabular-nums">{row.review}</TableCell>
-                        <TableCell className="text-right tabular-nums">{row.blocked}</TableCell>
-                        <TableCell>
-                          {row.expected === "hold" ? "Held" : "Cleared"}
-                          {wrong > 0 && <span className="text-blocked">, {wrong} wrong</span>}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid gap-5 text-sm leading-relaxed text-muted-foreground sm:grid-cols-2">
+        <p>
+          The judge reads about {Math.round(cost.judge / 1000)},000 tokens a draft at $
+          {PRICE_PER_MILLION.judge} per million. The writer reads {(cost.wIn / 1000).toFixed(1)}
+          ,000 and writes {(cost.wOut / 1000).toFixed(1)},000 at ${PRICE_PER_MILLION.writerIn} and $
+          {PRICE_PER_MILLION.writerOut}. Middle of {lanes.runsPerLane} runs, list prices. A token is
+          about three quarters of a word.
+        </p>
+        <p>
+          An assistant that plans its own steps was built too and measured the same way: about{" "}
+          {Math.round((agent.costUsd.median ?? 0) / (app.costUsd.median ?? 1))} times the cost and{" "}
+          {Math.round((agent.seconds.median ?? 0) / (app.seconds.median ?? 1))} times the time for a
+          draft of similar size, and a different length every run. That is why the app drafts the
+          way it does. Most test sentences were written by the engineer, not a practising lawyer,
+          and there is one case in one court.
+        </p>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-serif text-xl font-normal">
-            Why the app drafts this way
-          </CardTitle>
-          <CardDescription>
-            The app uses the first way. The second, an assistant that decides its own next step, is
-            built too, for comparison: same case, same task, {lanes.runsPerLane} runs each. It cost
-            about 18 times more, took about 9 times longer, and varied in length where the first way
-            produced the same motion every time. Middle run shown, with the range it could plausibly
-            fall in.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Per run</TableHead>
-                {LANES.map((lane) => (
-                  <TableHead key={lane.id} className="text-right">
-                    {lane.name}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {LANE_ROWS.map((row) => (
-                <TableRow key={row.key}>
-                  <TableCell>{row.label}</TableCell>
-                  {LANES.map((lane) => {
-                    const s = (lanes.lanes[lane.id] as unknown as Record<string, Summary>)[row.key];
-                    return (
-                      <TableCell key={lane.id} className="text-right tabular-nums">
-                        {s?.median == null ? (
-                          "not run"
-                        ) : (
-                          <>
-                            {row.format(s.median)}
-                            <span className="block text-xs text-muted-foreground">
-                              {row.format(s.low ?? s.median)} to {row.format(s.high ?? s.median)}
-                            </span>
-                          </>
-                        )}
-                      </TableCell>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-serif text-xl font-normal">What a draft costs</CardTitle>
-          <CardDescription>
-            Middle of the app's {lanes.runsPerLane} recorded runs, at the gateway's list prices.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4 text-sm sm:grid-cols-3">
-          <div>
-            <p className="font-serif text-3xl tabular-nums">${cost.usd.toFixed(3)}</p>
-            <p className="text-muted-foreground">
-              per draft, about {Math.round(cost.tokens / 1000)},000 tokens read and written
-            </p>
-          </div>
-          <div>
-            <p className="font-serif text-3xl tabular-nums">${cost.perMillion.toFixed(2)}</p>
-            <p className="text-muted-foreground">
-              per million tokens, averaged over a draft. A token is about three quarters of a word.
-            </p>
-          </div>
-          <div className="flex flex-col gap-1 text-muted-foreground">
-            <p>
-              The judge reads {Math.round(cost.judge / 1000)},000 at ${PRICE_PER_MILLION.judge} per
-              million.
-            </p>
-            <p>
-              The writer reads {(cost.wIn / 1000).toFixed(1)},000 at ${PRICE_PER_MILLION.writerIn}{" "}
-              and writes {(cost.wOut / 1000).toFixed(1)},000 at ${PRICE_PER_MILLION.writerOut} per
-              million.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Collapsible className="rounded-xl border bg-card">
-        <CollapsibleTrigger className="group flex w-full items-center justify-between gap-4 rounded-xl px-6 py-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring">
-          <span>
-            <span className="block font-serif text-xl">
-              How sure the judge must be before the system acts alone
-            </span>
-            <span className="block text-sm text-muted-foreground">
-              The bar is {results.thresholdInUse} out of 1. How it was chosen, the run-to-run noise
-              and the cost.
-            </span>
-          </span>
-          <ChevronDown
-            className="size-5 shrink-0 transition-transform group-data-[state=open]:rotate-180"
-            aria-hidden
-          />
-        </CollapsibleTrigger>
-        <CollapsibleContent className="flex flex-col gap-4 px-6 pb-6 text-sm">
-          <p className="max-w-[72ch] text-muted-foreground">
-            Below the bar a judgment is never acted on: the sentence comes to you. The bar was set
-            using the other {results.dev.rows} sentences only. Anything from 0.5 to 0.95 made no
-            mistakes there, so the data cannot tell them apart, and the more cautious{" "}
-            {results.thresholdInUse} stays. At 0.99 sound sentences start being held.
-          </p>
-          <SweepChart points={results.dev.sweep} current={results.thresholdInUse} />
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Bar</TableHead>
-                <TableHead className="text-right">Bad sentences missed</TableHead>
-                <TableHead className="text-right">Sound sentences held</TableHead>
-                <TableHead className="text-right">Decided without a person</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {results.dev.sweep.map((point) => (
-                <TableRow key={point.threshold}>
-                  <TableCell className="tabular-nums">{point.threshold.toFixed(2)}</TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {point.missed} ({pct(point.missRate)})
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {point.falseHolds} ({pct(point.falseHoldRate)})
-                  </TableCell>
-                  <TableCell className="text-right tabular-nums">
-                    {pct(point.decidedWithoutAPerson)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <p className="max-w-[72ch] text-muted-foreground">
-            {SETS.reduce((sum, set) => sum + results.datasets[set.id].noise.unstableRows, 0)} of{" "}
-            {total} sentences changed status across {results.repeats} identical runs. Earlier runs
-            have shown one or two flip, so this is not a promise that every run is identical; the
-            build check allows exactly the spread that was observed and no more. Checking all{" "}
-            {total} sentences takes about {(results.cost.msPerRun / 1000).toFixed(0)} seconds and
-            costs ${(results.cost.usd / results.repeats).toFixed(4)}.
-          </p>
-        </CollapsibleContent>
-      </Collapsible>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="font-serif text-xl font-normal">What this does not show</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="flex max-w-[72ch] list-disc flex-col gap-2 pl-5 text-sm">
-            {results.limitations.map((limitation) => (
-              <li key={limitation}>{limitation}</li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
     </section>
   );
 }
