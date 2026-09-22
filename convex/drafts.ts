@@ -213,8 +213,9 @@ export const logEvent = mutation({
   },
 });
 
+/** A draft with everything on it. The id may come from a URL, so a malformed one is null, not an error. */
 export const get = query({
-  args: { draftId: v.id("drafts") },
+  args: { draftId: v.string() },
   returns: v.union(
     v.null(),
     v.object({
@@ -224,7 +225,9 @@ export const get = query({
       events: v.array(schema.doc("events")),
     }),
   ),
-  handler: async (ctx, { draftId }) => {
+  handler: async (ctx, args) => {
+    const draftId = ctx.db.normalizeId("drafts", args.draftId);
+    if (!draftId) return null;
     const draft = await ctx.db.get("drafts", draftId);
     if (!draft) return null;
     return {
