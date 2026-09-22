@@ -4,9 +4,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Skeleton } from "@/components/ui/skeleton";
 import type { SearchHit } from "@/lib/courtlistener/client";
 import type { Passage } from "@/lib/okf/parse";
+import { ResultRows, TextLines } from "./placeholders";
 
 type Opened = { hit: SearchHit; passages: Passage[] | null; error?: string };
 
@@ -89,7 +89,7 @@ export function CaseSearch() {
                   <AlertDescription>{opened.error}</AlertDescription>
                 </Alert>
               )}
-              {!opened.error && opened.passages === null && <Skeleton className="h-40 w-full" />}
+              {!opened.error && opened.passages === null && <TextLines lines={10} />}
               {opened.passages?.map((passage) => (
                 <p key={passage.index} className="font-serif text-[0.95rem] leading-relaxed">
                   {passage.text}
@@ -103,13 +103,7 @@ export function CaseSearch() {
                   <AlertDescription>{error}</AlertDescription>
                 </Alert>
               )}
-              {searching && (
-                <div className="flex flex-col gap-2">
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              )}
+              {searching && <ResultRows />}
               {!searching && hits === null && (
                 <p className="text-sm text-muted-foreground">
                   Search real opinions on CourtListener and read them here. The draft cites only

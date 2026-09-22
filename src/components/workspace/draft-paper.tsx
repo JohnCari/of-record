@@ -8,6 +8,7 @@ import { type Adjudication, type Sentence, STANDING, shortCite, standingOf } fro
 
 export function DraftPaper({
   drafting = false,
+  loading = false,
   sentences,
   adjudications,
   selectedId,
@@ -16,6 +17,8 @@ export function DraftPaper({
 }: {
   /** True while a live run is writing: empty sections are shown as placeholder lines. */
   drafting?: boolean;
+  /** True until the draft to show is known. */
+  loading?: boolean;
   sentences: Sentence[];
   adjudications: Adjudication[];
   selectedId: string | null;
@@ -36,7 +39,9 @@ export function DraftPaper({
       ?.scrollIntoView({ block: "center" });
   }, [selectedId]);
 
-  if (sentences.length === 0 && !drafting) {
+  // Before anything is known, show the paper with placeholder lines rather than an empty message
+  // that would flash and then be wrong.
+  if (sentences.length === 0 && !drafting && !loading) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
         <FileText className="size-8 text-muted-foreground" aria-hidden />
@@ -63,16 +68,17 @@ export function DraftPaper({
 
       {SECTIONS.map((section) => {
         const rows = sentences.filter((s) => s.sectionId === section.id);
-        if (rows.length === 0 && !drafting) return null;
+        if (rows.length === 0 && !drafting && !loading) return null;
         return (
           <section key={section.id} className="mb-6">
             <div className="pleading-line">
               <h2 className="font-semibold">{section.title}</h2>
             </div>
             {rows.length === 0 &&
-              [0, 1, 2].map((i) => (
+              [96, 100, 88, 58].map((width, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: static placeholder rows
                 <div key={i} className="pleading-line">
-                  <Skeleton className="my-2 h-4" style={{ width: `${88 - i * 14}%` }} />
+                  <Skeleton className="my-2 h-4" style={{ width: `${width}%` }} />
                 </div>
               ))}
             {rows.map((sentence) => {

@@ -5,6 +5,7 @@ import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } fro
 import { toast } from "sonner";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MATTER_CAPTION, MATTER_DOCKET, MATTER_ID } from "@/lib/drafting/sections";
 import { cn } from "@/lib/utils";
@@ -49,6 +50,7 @@ export function Workspace() {
   const showingRecorded = !liveId && Boolean(recorded);
   const state = useQuery(api.drafts.get, draftId ? { draftId } : "skip");
 
+  const loading = recorded === undefined || (draftId !== null && state === undefined);
   const sentences = state?.sentences ?? [];
   const adjudications = state?.adjudications ?? [];
   const selected = sentences.find((s) => s.sentenceId === selectedId) ?? null;
@@ -108,6 +110,7 @@ export function Workspace() {
         </p>
       )}
       <DraftPaper
+        loading={loading}
         drafting={isRunning(state?.draft ?? null)}
         sentences={sentences}
         adjudications={adjudications}
@@ -152,6 +155,12 @@ export function Workspace() {
       </header>
 
       {state && <RunProgress draft={state.draft} events={state.events} />}
+      {loading && (
+        <div className="flex items-center gap-4 border-b bg-card px-4 py-2.5" aria-hidden>
+          <Skeleton className="h-5 w-56" />
+          <Skeleton className="h-5 w-40" />
+        </div>
+      )}
       {state && (
         <GateBar
           draft={state.draft}

@@ -9,11 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MATTER_ID } from "@/lib/drafting/sections";
 import { api } from "../../../convex/_generated/api";
 import { CaseSearch } from "./case-search";
+import { TextLines } from "./placeholders";
 import { Quoted } from "./quoted";
 
 export function RecordPanel({
@@ -61,7 +61,7 @@ export function RecordPanel({
 
           <ScrollArea className="min-h-0 flex-1">
             <div ref={body} className="flex flex-col gap-3 p-5">
-              {source === undefined && <Skeleton className="h-40 w-full" />}
+              {source === undefined && <TextLines lines={10} heading />}
               {source && (
                 <>
                   <h2 className="font-serif text-lg leading-snug">{source.title}</h2>
