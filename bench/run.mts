@@ -208,9 +208,9 @@ const result = {
     msPerRun: Math.round(usage.ms / repeats),
   },
   limitations: [
-    "Most rows were written and labelled by the engineer who built the verifier. A few sound rows state facts the court itself found; none was adjudicated by a practising attorney.",
+    "Most test sentences were written and labelled by the engineer who built the checks. A few sound rows state facts the court itself found; none was adjudicated by a practising attorney.",
     "One real matter, in one court. The planted failures are the failure modes the author thought of.",
-    "The held-out half is small, so its intervals are wide. Read the intervals, not the point estimates.",
+    "The held-out half is small, so its ranges are wide. Read the ranges, not the single numbers.",
     "The record is scanned in places; quotes carry the recognition errors of the source text.",
   ],
 };

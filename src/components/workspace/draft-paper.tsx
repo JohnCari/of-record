@@ -37,7 +37,7 @@ export function DraftPaper({
       <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
         <FileText className="size-8 text-muted-foreground" aria-hidden />
         <p className="max-w-sm text-sm text-muted-foreground">
-          Nothing drafted yet. Start a run below.
+          Nothing drafted yet. Use "Draft the motion" above.
         </p>
       </div>
     );

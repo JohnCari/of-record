@@ -60,7 +60,7 @@ export function SweepChart({ points, current }: { points: SweepPoint[]; current:
         <ChartTooltip
           content={
             <ChartTooltipContent
-              labelFormatter={(label) => `Threshold ${label}`}
+              labelFormatter={(label) => `Bar ${label}`}
               formatter={(value, name) => (
                 <span className="flex w-full justify-between gap-4">
                   <span className="text-muted-foreground">

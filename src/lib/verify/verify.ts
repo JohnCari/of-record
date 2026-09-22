@@ -265,7 +265,7 @@ export async function verifySentences(
         ...check,
         verdict: "ambiguous",
         confidence: 0,
-        reason: "the judge returned no answer for this cite",
+        reason: "the judge gave no usable answer for this cite, so it is yours to decide",
       });
       continue;
     }
@@ -303,7 +303,7 @@ export async function verifySentences(
         stage: "code",
         confidence: null,
         reason:
-          "Its premises were checked against the cited passages. Whether the conclusion follows from them is a legal judgment, so it is yours.",
+          "The facts and rules this sentence relies on were checked against their sources. Whether the conclusion follows from them is a legal judgment, so it is yours.",
       });
     }
 

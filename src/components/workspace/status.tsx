@@ -38,22 +38,21 @@ export const STANDING: Record<
   },
   review: {
     label: "Needs your review",
-    explain: "Nothing failed, but the verifier was not confident enough to decide alone.",
+    explain: "Nothing failed, but the check was not sure enough to decide alone.",
     icon: CircleHelp,
     text: "text-review",
     mark: "bg-review",
   },
   exempt: {
     label: "Argument",
-    explain:
-      "Applies stated law to stated facts and asserts nothing new, so there is nothing to ground.",
+    explain: "States no new fact or rule, so there was nothing to check.",
     icon: CircleMinus,
     text: "text-exempt",
     mark: "bg-exempt/50",
   },
   unverified: {
     label: "Not yet verified",
-    explain: "Written, but the verifier has not run on it yet.",
+    explain: "Written, not checked yet.",
     icon: CircleDashed,
     text: "text-muted-foreground",
     mark: "bg-muted-foreground/40",

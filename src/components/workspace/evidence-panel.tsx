@@ -87,7 +87,7 @@ export function EvidencePanel({
           <p className="text-sm text-muted-foreground">
             {sentence.verification
               ? "This sentence cites nothing and asserts nothing new, so there was nothing to check."
-              : "The verifier has not run on this sentence yet."}
+              : "This sentence has not been checked yet."}
           </p>
         )}
 
@@ -112,8 +112,8 @@ export function EvidencePanel({
                 </Badge>
                 <Badge variant="outline">
                   {check.stage === "code"
-                    ? "Checked in code"
-                    : `Judged by Jev, ${Math.round((check.confidence ?? 0) * 100)}% confident`}
+                    ? "Checked word for word"
+                    : `The judge: ${Math.round((check.confidence ?? 0) * 100)}% sure`}
                 </Badge>
               </div>
               {failed && <p className="text-sm text-muted-foreground">{check.reason}</p>}
@@ -222,9 +222,8 @@ function DecideDialog({
         <DialogHeader>
           <DialogTitle>{verb} this sentence</DialogTitle>
           <DialogDescription>
-            Your decision overrides the verifier for this sentence. The sentence, what the verifier
-            said about it, and your reason are stored together, so the disagreement can be used to
-            test the verifier later.
+            Your decision overrides the check for this sentence. The sentence, what the check found,
+            and your reason are kept together.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">

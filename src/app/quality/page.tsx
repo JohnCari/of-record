@@ -53,15 +53,15 @@ const CLASS: Record<string, { name: string; what: string }> = {
 };
 
 const LANES = [
-  { id: "pipeline", name: "Jev-first pipeline" },
-  { id: "agent", name: "Agent" },
-  { id: "jev-only", name: "Jev alone, no Gemini" },
+  { id: "pipeline", name: "Quoted, then checked (the app)" },
+  { id: "agent", name: "An assistant that plans its own steps" },
+  { id: "jev-only", name: "Quoted only, nothing written" },
 ] as const;
 
 const LANE_ROWS: { key: string; label: string; format: (x: number) => string }[] = [
   { key: "sentences", label: "Sentences in the motion", format: (x) => x.toFixed(0) },
-  { key: "written", label: "Written by Gemini", format: (x) => x.toFixed(0) },
-  { key: "verified", label: "Cleared by the verifier", format: (x) => x.toFixed(0) },
+  { key: "written", label: "Written by the writer", format: (x) => x.toFixed(0) },
+  { key: "verified", label: "Passed every check", format: (x) => x.toFixed(0) },
   { key: "waitingForAttorney", label: "Waiting for the attorney", format: (x) => x.toFixed(0) },
   { key: "blockedAtFirstCheck", label: "Blocked at the first check", format: (x) => x.toFixed(0) },
   { key: "blockedAtEnd", label: "Still blocked at the end", format: (x) => x.toFixed(0) },
@@ -100,12 +100,12 @@ export default function QualityPage() {
     <ScrollArea className="h-full">
       <div className="mx-auto flex max-w-5xl flex-col gap-6 p-6">
         <div className="max-w-[68ch]">
-          <h1 className="font-serif text-3xl leading-tight">How often the verifier is wrong</h1>
+          <h1 className="font-serif text-3xl leading-tight">How often the checks are wrong</h1>
           <p className="mt-3 text-muted-foreground">
             {total} test sentences written against the real case file and real opinions. Some are
-            sound. The rest each carry one planted failure, the kinds a drafting model actually
-            makes. Half the sentences were set aside before any setting was chosen, and the numbers
-            below come from that half only. They are measurements from commit{" "}
+            sound. The rest each carry one planted failure, the kinds an AI drafter actually makes.
+            Half the sentences were set aside before any setting was chosen, and the numbers below
+            come from that half only. They are measurements from commit{" "}
             <code className="text-foreground">{results.commit}</code>, not targets.
           </p>
         </div>
@@ -139,10 +139,11 @@ export default function QualityPage() {
             </CardHeader>
             <CardContent className="max-w-[72ch] text-sm text-muted-foreground">
               {held.missRate.n} held-out bad sentences cannot rule out a miss rate as high as{" "}
-              {pct(held.missRate.high)}. The kinds to watch are the two that rest on Jev's judgment
-              rather than on code: a real quote that does not establish the sentence, and a sentence
-              that claims more than its quote. Most of those were sent to the attorney rather than
-              blocked. That is the design working, and it is also where a miss would come from.
+              {pct(held.missRate.high)}. The kinds to watch are the two that rest on the judge's
+              call rather than on a word-for-word match: a real quote that does not establish the
+              sentence, and a sentence that claims more than its quote. Most of those were sent to
+              the attorney rather than blocked. That is the design working, and it is also where a
+              miss would come from.
             </CardContent>
           </Card>
         )}
@@ -196,12 +197,15 @@ export default function QualityPage() {
         <Card>
           <CardHeader>
             <CardTitle className="font-serif text-xl font-normal">
-              Three ways to draft the same motion
+              Why the app drafts this way
             </CardTitle>
             <CardDescription>
-              Same case file, same task, {lanes.runsPerLane} runs each. The middle run is shown,
-              with the range the middle could plausibly fall in. This few runs can show a large
-              difference. It cannot rank two columns whose ranges overlap.
+              The app uses the first way. The second, an assistant that decides its own next step,
+              is kept in the repository for comparison: on the same case file and the same task,{" "}
+              {lanes.runsPerLane} runs each, it cost about eighteen times more and took about nine
+              times longer for a draft of similar size, under the same checks, and its length varied
+              from run to run where the first way produced the same motion every time. The middle
+              run is shown, with the range the middle could plausibly fall in.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -250,11 +254,11 @@ export default function QualityPage() {
           <CollapsibleTrigger className="group flex w-full items-center justify-between gap-4 rounded-xl px-6 py-4 text-left outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <span>
               <span className="block font-serif text-xl">
-                How sure Jev must be before the system acts alone
+                How sure the judge must be before the system acts alone
               </span>
               <span className="block text-sm text-muted-foreground">
-                The threshold is {results.thresholdInUse}. How it was chosen, the run-to-run noise
-                and the cost.
+                The bar is {results.thresholdInUse} out of 1. How it was chosen, the run-to-run
+                noise and the cost.
               </span>
             </span>
             <ChevronDown
@@ -264,17 +268,16 @@ export default function QualityPage() {
           </CollapsibleTrigger>
           <CollapsibleContent className="flex flex-col gap-4 px-6 pb-6 text-sm">
             <p className="max-w-[72ch] text-muted-foreground">
-              Below the threshold a judgment is never acted on: the sentence goes to the attorney.
-              The threshold was examined on the {results.dev.rows} development sentences only.
-              Anything from 0.5 to 0.95 made no mistakes there, so the data cannot tell them apart,
-              and the more cautious {results.thresholdInUse} stays. At 0.99 sound sentences start
-              being held.
+              Below the bar a judgment is never acted on: the sentence comes to you. The bar was
+              examined on the {results.dev.rows} development sentences only. Anything from 0.5 to
+              0.95 made no mistakes there, so the data cannot tell them apart, and the more cautious{" "}
+              {results.thresholdInUse} stays. At 0.99 sound sentences start being held.
             </p>
             <SweepChart points={results.dev.sweep} current={results.thresholdInUse} />
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Threshold</TableHead>
+                  <TableHead>Bar</TableHead>
                   <TableHead className="text-right">Bad sentences missed</TableHead>
                   <TableHead className="text-right">Sound sentences held</TableHead>
                   <TableHead className="text-right">Decided without a person</TableHead>
@@ -300,10 +303,10 @@ export default function QualityPage() {
             <p className="max-w-[72ch] text-muted-foreground">
               {SETS.reduce((sum, set) => sum + results.datasets[set.id].noise.unstableRows, 0)} of{" "}
               {total} sentences changed status across {results.repeats} identical runs. Earlier runs
-              have shown one or two flip, so this is not a promise of determinism; the build gate
-              allows exactly the spread that was observed and no more. Verifying all {total}{" "}
-              sentences takes about {(results.cost.msPerRun / 1000).toFixed(0)} seconds and costs $
-              {(results.cost.usd / results.repeats).toFixed(4)} in judge tokens.
+              have shown one or two flip, so this is not a promise that every run is identical; the
+              build check allows exactly the spread that was observed and no more. Checking all{" "}
+              {total} sentences takes about {(results.cost.msPerRun / 1000).toFixed(0)} seconds and
+              costs ${(results.cost.usd / results.repeats).toFixed(4)}.
             </p>
           </CollapsibleContent>
         </Collapsible>

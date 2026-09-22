@@ -111,7 +111,7 @@ export async function runPipeline(
 
   try {
     // 1. Facts. Every passage of the record is read; none is summarised.
-    await stage("Jev is reading the record");
+    await stage("Reading every page of the record");
     const facts = await selectFacts(backend, ELEMENTS, { usage: judge.usage, signal });
     const factSentences: Sentence[] = facts.map((fact) => ({
       text: factSentence(fact),
@@ -123,7 +123,10 @@ export async function runPipeline(
 
     // 2. Rules. A lead is only a lead: the citation has to resolve to one case under a matching
     //    name, and Jev has to find a paragraph in it that states the rule.
-    await stage("Jev is selecting the rule from each opinion", `${facts.length} facts selected`);
+    await stage(
+      "Finding the paragraph of each opinion that states the rule",
+      `${facts.length} facts quoted`,
+    );
     const resolver = await authorityResolver(backend);
     const rules: SelectedRule[] = [];
     for (const { id, rule, query } of RULES) {
@@ -175,7 +178,10 @@ export async function runPipeline(
     // 3. Application. The only generative step, and the model never writes a quote or a cite.
     let application: Sentence[] = [];
     if (generative && facts.length > 0) {
-      await stage("Gemini is writing the application sentences", `${rules.length} rules selected`);
+      await stage(
+        "Writing the sentences that apply the law to the facts",
+        `${rules.length} rules quoted`,
+      );
       const result = await generateText({
         model: DRAFTER,
         output: Output.object({ schema: applicationSchema }),
@@ -226,7 +232,7 @@ ${rules.map((r, i) => `R${i + 1} ${r.quote} (${r.caseName})`).join("\n")}`,
 
     // 4. Verify. A selected sentence the judge will not clear is dropped, not rewritten: there is
     //    nothing to repair in a quotation, and this lane does not argue with the verifier.
-    await stage("verifying every sentence");
+    await stage("Checking every sentence against its source");
     let summary = await validateDraft(backend, draftId, { signal });
     // Only selected sentences are dropped. A written sentence the verifier blocks stays where the
     // attorney can see it and why: hiding it would hide the one kind of mistake this lane can make.
@@ -240,7 +246,7 @@ ${rules.map((r, i) => `R${i + 1} ${r.quote} (${r.caseName})`).join("\n")}`,
         }),
     );
     if (blocked.size > 0) {
-      await stage(`dropping ${blocked.size} sentences the verifier would not clear`);
+      await stage(`Dropping ${blocked.size} sentences that did not pass`);
       for (const section of SECTIONS) {
         const kept = draft[section.id].filter((_, i) => !blocked.has(`${section.id}-${i + 1}`));
         if (kept.length !== draft[section.id].length && kept.length > 0) {
@@ -272,7 +278,7 @@ ${rules.map((r, i) => `R${i + 1} ${r.quote} (${r.caseName})`).join("\n")}`,
         durationMs: Date.now() - started,
       },
     });
-    await stage(summary.gate.open ? "ready for attorney sign-off" : "waiting for the attorney");
+    await stage(summary.gate.open ? "Ready for your signature" : "Waiting for your decisions");
     return { draftId, summary, origins };
   } catch (error) {
     await convex.mutation(api.drafts.update, {
@@ -285,7 +291,7 @@ ${rules.map((r, i) => `R${i + 1} ${r.quote} (${r.caseName})`).join("\n")}`,
       secret,
       draftId,
       type: "error",
-      label: "The pipeline failed",
+      label: "The draft could not be finished",
       detail: error instanceof Error ? error.message : String(error),
     });
     throw error;

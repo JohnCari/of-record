@@ -1,9 +1,7 @@
 "use client";
 
 import { useQuery } from "convex/react";
-import { History } from "lucide-react";
-import { type ReactNode, useState, useSyncExternalStore } from "react";
-import { Badge } from "@/components/ui/badge";
+import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -11,12 +9,12 @@ import { MATTER_CAPTION, MATTER_DOCKET, MATTER_ID } from "@/lib/drafting/section
 import { cn } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
-import { AssociateConsole } from "./associate-console";
 import { DraftPaper } from "./draft-paper";
 import { EvidencePanel } from "./evidence-panel";
 import { GateBar } from "./gate-bar";
-import { PipelineConsole } from "./pipeline-console";
 import { RecordPanel } from "./record-panel";
+import { RunControl } from "./run-control";
+import { standingOf } from "./status";
 
 const DESKTOP = "(min-width: 1024px)";
 
@@ -33,13 +31,10 @@ function useIsDesktop() {
   );
 }
 
-type Lane = "agentic" | "pipeline";
-type Pane = "draft" | "evidence" | "record" | "run";
+type Pane = "draft" | "evidence" | "record";
 
 export function Workspace() {
-  const [lane, setLane] = useState<Lane>("pipeline");
-  const [live, setLive] = useState<Partial<Record<Lane, Id<"drafts">>>>({});
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [liveId, setLiveId] = useState<Id<"drafts"> | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pane, setPane] = useState<Pane>("draft");
   const isDesktop = useIsDesktop();
@@ -48,11 +43,7 @@ export function Workspace() {
     quotes: [],
   });
 
-  // The agent creates its draft on its first write; the browser finds it by session.
-  const sessionDraft = useQuery(api.drafts.bySession, sessionId ? { sessionId } : "skip");
-  const recorded = useQuery(api.drafts.featured, { matterId: MATTER_ID, lane });
-
-  const liveId = lane === "agentic" ? (sessionDraft ?? live.agentic) : live.pipeline;
+  const recorded = useQuery(api.drafts.featured, { matterId: MATTER_ID, lane: "pipeline" });
   const draftId = liveId ?? recorded ?? null;
   const showingRecorded = !liveId && Boolean(recorded);
   const state = useQuery(api.drafts.get, draftId ? { draftId } : "skip");
@@ -61,15 +52,31 @@ export function Workspace() {
   const adjudications = state?.adjudications ?? [];
   const selected = sentences.find((s) => s.sentenceId === selectedId) ?? null;
 
-  function select(sentenceId: string) {
+  function show(sentenceId: string) {
     setSelectedId(sentenceId);
-    setPane("evidence");
     const sentence = sentences.find((s) => s.sentenceId === sentenceId);
     const cite = sentence?.recordCites[0];
     if (sentence && cite) {
       setSource({ id: cite.docId, quotes: sentence.recordCites.map((c) => c.quote) });
     }
   }
+  function select(sentenceId: string) {
+    show(sentenceId);
+    setPane("evidence");
+  }
+
+  // The first thing on screen is an example, not an empty pane: a sentence that is the reader's
+  // call, with the filing open at its quote.
+  const finished = state?.draft.status === "gated" || state?.draft.status === "signed";
+  useEffect(() => {
+    if (!finished || selectedId !== null) return;
+    const first =
+      sentences.find((s) => standingOf(s) === "review") ??
+      sentences.find((s) => s.recordCites.length > 0);
+    if (first) show(first.sentenceId);
+    // show() reads sentences from this render; nothing else should re-run this.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finished, draftId]);
 
   const record = (
     <RecordPanel
@@ -80,12 +87,14 @@ export function Workspace() {
   );
   const draft = (
     <ScrollArea className="h-full">
-      {showingRecorded && (
-        <div className="flex items-center justify-center gap-2 pt-4">
-          <Badge variant="secondary" className="gap-1.5">
-            <History className="size-3" aria-hidden /> Recorded run, no model is being called
-          </Badge>
-        </div>
+      {sentences.length > 0 && (
+        <p className="mx-auto max-w-[46rem] px-4 pt-4 text-center text-xs text-muted-foreground">
+          Click any sentence to see the filing it rests on.{" "}
+          <span className="text-verified">Green</span> passed every check,{" "}
+          <span className="text-review">amber</span> is your call,{" "}
+          <span className="text-blocked">red</span> failed.
+          {showingRecorded && " This is a recorded run."}
+        </p>
       )}
       <DraftPaper
         sentences={sentences}
@@ -108,24 +117,6 @@ export function Workspace() {
       }}
     />
   );
-  // Both consoles stay mounted so switching lanes never drops a live agent session.
-  const consoles = (
-    <>
-      <div className={lane === "agentic" ? "h-full" : "hidden"}>
-        <AssociateConsole onSession={setSessionId} />
-      </div>
-      <div className={lane === "pipeline" ? "h-full" : "hidden"}>
-        <PipelineConsole
-          draft={lane === "pipeline" ? (state?.draft ?? null) : null}
-          events={lane === "pipeline" ? (state?.events ?? []) : []}
-          onStarted={(id) => {
-            setLive((current) => ({ ...current, pipeline: id }));
-            setPane("draft");
-          }}
-        />
-      </div>
-    </>
-  );
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -136,19 +127,17 @@ export function Workspace() {
             {MATTER_DOCKET}, D. Colo. A real case, from public filings on CourtListener.
           </p>
         </div>
-        <Tabs
-          value={lane}
-          onValueChange={(value) => {
-            setLane(value as Lane);
-            setSelectedId(null);
-          }}
-          className="ml-auto"
-        >
-          <TabsList>
-            <TabsTrigger value="pipeline">Jev-first pipeline</TabsTrigger>
-            <TabsTrigger value="agentic">Agent</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <div className="ml-auto">
+          <RunControl
+            draft={state?.draft ?? null}
+            events={state?.events ?? []}
+            onStarted={(id) => {
+              setLiveId(id);
+              setSelectedId(null);
+              setPane("draft");
+            }}
+          />
+        </div>
       </header>
 
       {state && (
@@ -162,25 +151,17 @@ export function Workspace() {
       )}
 
       {isDesktop ? (
-        <ResizablePanelGroup orientation="vertical" className="min-h-0 flex-1">
-          <ResizablePanel defaultSize="74%" minSize="35%">
-            <ResizablePanelGroup orientation="horizontal">
-              <ResizablePanel defaultSize="27%" minSize="18%" className="bg-card">
-                {record}
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize="45%" minSize="30%">
-                {draft}
-              </ResizablePanel>
-              <ResizableHandle withHandle />
-              <ResizablePanel defaultSize="28%" minSize="20%" className="bg-card">
-                {evidence}
-              </ResizablePanel>
-            </ResizablePanelGroup>
+        <ResizablePanelGroup orientation="horizontal" className="min-h-0 flex-1">
+          <ResizablePanel defaultSize="27%" minSize="18%" className="bg-card">
+            {record}
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize="26%" minSize="12%" className="bg-card">
-            {consoles}
+          <ResizablePanel defaultSize="45%" minSize="30%">
+            {draft}
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize="28%" minSize="20%" className="bg-card">
+            {evidence}
           </ResizablePanel>
         </ResizablePanelGroup>
       ) : (
@@ -190,16 +171,14 @@ export function Workspace() {
               <TabsTrigger value="draft">Draft</TabsTrigger>
               <TabsTrigger value="evidence">Evidence</TabsTrigger>
               <TabsTrigger value="record">Record</TabsTrigger>
-              <TabsTrigger value="run">{lane === "agentic" ? "Agent" : "Run"}</TabsTrigger>
             </TabsList>
           </Tabs>
-          {/* Every pane stays mounted, so a live session and the scroll position survive a switch. */}
+          {/* Every pane stays mounted, so the scroll position survives a switch. */}
           {(
             [
               ["draft", draft, ""],
               ["evidence", evidence, "bg-card"],
               ["record", record, "bg-card"],
-              ["run", consoles, "bg-card"],
             ] as [Pane, ReactNode, string][]
           ).map(([id, content, tone]) => (
             <div key={id} className={cn("min-h-0 flex-1", tone, pane !== id && "hidden")}>

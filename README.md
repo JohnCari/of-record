@@ -11,7 +11,9 @@ code quotes them. A writing model is used only for the few sentences that apply 
 facts, and those always go to the attorney.
 
 **Live: [rossrecall.vercel.app](https://rossrecall.vercel.app)**. A recorded run plays for anyone,
-at no cost. Running a lane live calls paid models, so it needs an invite link.
+at no cost. Drafting live calls paid models, so it needs an invite link. The app is written for the
+lawyer who opens it: one button, plain words, the two models named once in the header with their
+jobs. The engineering is here and on the Accuracy page.
 
 ![The workspace on a recorded run: a motion for summary judgment on pleading paper, a mark beside every sentence, the real filing open at the quoted words.](docs/workspace.jpg)
 
@@ -235,10 +237,13 @@ the verifier; none was adjudicated by a practising attorney. One matter, one cou
 failures are the ones I thought of. Reproduce with `pnpm bench`, about a fifth of a cent per run.
 The [Quality page](src/app/quality/page.tsx) renders the same file.
 
-## Two lanes, one gate
+## Two lanes, one gate: the pipeline is the product, the agent is the comparison
 
 Both ways of producing the draft sit behind the same verifier and the same gate, so they can be
-compared on equal terms.
+compared on equal terms. The app shows only the pipeline. The agent stays in the repository, in the
+evals and in the measured comparison below, which is also the reason it is not in the app: for a
+draft of similar size it cost about eighteen times more, took about nine times longer, and its
+length varied from run to run where the pipeline produced the same motion every time.
 
 **The Jev-first pipeline** is described above: a fixed sequence in code, where models fill in
 stages and never choose the next one. A selected sentence the verifier will not clear is dropped,

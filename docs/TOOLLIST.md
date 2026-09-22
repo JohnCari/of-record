@@ -27,7 +27,7 @@ needs. Versions are the ones in the lockfile on the day it was built, 2026-09-21
 | Next.js | 16.3 | The app, the route handlers, and the host for the eve agent through `withEve` | `src/app`, `next.config.ts` |
 | React | 19.3 | UI | `src/components` |
 | shadcn/ui + Tailwind CSS | CLI 4.21 / 4.3 | Every interface surface. Components are source in the repo, themed through CSS variables | `src/components/ui`, `src/app/globals.css` |
-| eve | 0.63 | The agentic lane: file-per-tool agent, approval policies, durable sessions, cost limits, `useEveAgent` | `agent/` |
+| eve | 0.63 | The agent lane, its evals and the lane comparison: file-per-tool agent, approval policies, durable sessions, cost limits. Kept in the repo and measured; not shown in the app | `agent/`, `evals/` |
 | AI SDK (`ai`) | 7.0 | `experimental_evaluate` for every Jev call: selecting facts and rules, reranking, verifying. `generateText` with structured output for the few application sentences Gemini writes | `src/lib/pipeline`, `src/lib/verify/judge.ts` |
 | Vercel AI Gateway | | One key and one budget for `typesafe-ai/jev` (selects and judges) and `google/gemini-3.8-flash` (the agent, and the application sentences). `pnpm jev:check` is a smoke test of Jev through the gateway | `AI_GATEWAY_API_KEY` |
 | Convex | 1.46 | Reactive state for drafts, sentences, verifications and attorney decisions; full-text search over passages; the transactional gate check on sign-off | `convex/` |
@@ -36,7 +36,6 @@ needs. Versions are the ones in the lockfile on the day it was built, 2026-09-21
 | yaml | 2.9 | Open Knowledge Format frontmatter | `src/lib/okf` |
 | CourtListener REST v4 | | The only source of data: the case file (RECAP filings), the opinions, search, and citation lookup. Called with `fetch`; no SDK. Throttled hard, so responses are cached and both lanes search the committed corpus first | `src/lib/courtlistener`, `scripts/fetch-matter.mts`, `scripts/fetch-authorities.mts` |
 | recharts (through shadcn `chart`) | 3.10 | The threshold sweep on the Quality page | `src/components/quality` |
-| react-markdown | 10.1 | Renders the associate's replies | `src/components/workspace` |
 
 ## Automation
 

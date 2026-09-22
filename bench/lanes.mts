@@ -58,7 +58,7 @@ async function measure(
   const firstCheck =
     lane === "agent"
       ? stored.events.find((e) => e.type === "verify")?.label.match(/(\d+) blocked/)?.[1]
-      : stored.events.find((e) => e.label.startsWith("dropping"))?.label.match(/\d+/)?.[0];
+      : stored.events.find((e) => /^dropping/i.test(e.label))?.label.match(/\d+/)?.[0];
   return {
     lane,
     draftId,
