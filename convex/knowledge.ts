@@ -18,9 +18,11 @@ export const upsertSource = mutation({
     citation: v.optional(v.string()),
     url: v.optional(v.string()),
     passages: v.array(passage),
+    /** Adds passages to a source written a moment ago, for documents too long for one call. */
+    append: v.optional(v.boolean()),
   },
   returns: v.null(),
-  handler: async (ctx, { secret, passages, ...source }) => {
+  handler: async (ctx, { secret, passages, append, ...source }) => {
     assertServer(secret);
 
     const existing = await ctx.db
@@ -29,16 +31,20 @@ export const upsertSource = mutation({
         q.eq("matterId", source.matterId).eq("sourceId", source.sourceId),
       )
       .unique();
-    if (existing) await ctx.db.delete("sources", existing._id);
-
-    const old = ctx.db
-      .query("passages")
-      .withIndex("by_matterId_and_sourceId_and_index", (q) =>
-        q.eq("matterId", source.matterId).eq("sourceId", source.sourceId),
-      );
-    for await (const row of old) await ctx.db.delete("passages", row._id);
-
-    await ctx.db.insert("sources", { ...source, passageCount: passages.length });
+    if (append && existing) {
+      await ctx.db.patch("sources", existing._id, {
+        passageCount: existing.passageCount + passages.length,
+      });
+    } else {
+      if (existing) await ctx.db.delete("sources", existing._id);
+      const old = ctx.db
+        .query("passages")
+        .withIndex("by_matterId_and_sourceId_and_index", (q) =>
+          q.eq("matterId", source.matterId).eq("sourceId", source.sourceId),
+        );
+      for await (const row of old) await ctx.db.delete("passages", row._id);
+      await ctx.db.insert("sources", { ...source, passageCount: passages.length });
+    }
     for (const item of passages) {
       await ctx.db.insert("passages", {
         matterId: source.matterId,

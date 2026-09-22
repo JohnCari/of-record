@@ -374,7 +374,7 @@ search this corpus before they search CourtListener, which throttles hard.
 | **Convex** | The draft, its verifications and the attorney's decisions are reactive documents, so both lanes and the browser see the same state with no polling. Signing re-evaluates the gate inside a transaction |
 | **Next.js on Vercel** | One deployment for the app and the agent, same origin, no CORS |
 | **shadcn/ui** | Every surface is composed from its components; the pleading paper is the one custom element |
-| **CourtListener** | The only data source: RECAP filings, opinions, and a citation-lookup API built to catch invented citations |
+| **CourtListener** | The prepared case's filings, the law library, case-law search, and a citation-lookup API built to catch invented citations. An attached case needs none of it for its record |
 | **TypeScript, Biome, vitest** | One language end to end. Schemas are shared between the agent's tools, the pipeline and the database |
 
 **Jev through the gateway.** Every Jev call in development, in the bench and in production went
@@ -385,6 +385,18 @@ has a single provider behind the gateway, so there is no fallback route, and one
 
 The full tool list, with what was kept, added and dropped relative to a production monorepo, is in
 [`docs/TOOLLIST.md`](docs/TOOLLIST.md).
+
+## Attaching your own case
+
+The workspace drafts for the prepared case, and for any case a person attaches: PDF files with a
+text layer or `.txt` files (up to 10, 10 MB each; scanned images are refused), the case name, the
+court, and one sentence on what the motion asks for. The files are split into passages exactly as
+the RECAP filings are (`passagesFromFiling`) and stored under a new case id that only the browser
+that attached them lists. One generative call then writes the outline the judge selects against:
+three to five points the motion must establish, each with a one-sentence description in the style
+of [`task.ts`](src/lib/drafting/task.ts), and the substantive rules it needs; the summary-judgment
+standard is always added from code. From there the pipeline is the same code for every case.
+Attaching needs the invite link and has a daily ceiling.
 
 ## Finding a case from the workspace
 

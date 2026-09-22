@@ -12,6 +12,7 @@ import type * as drafts from "../drafts.js";
 import type * as knowledge from "../knowledge.js";
 import type * as lib from "../lib.js";
 import type * as limits from "../limits.js";
+import type * as matters from "../matters.js";
 
 import type {
   ApiFromModules,
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   knowledge: typeof knowledge;
   lib: typeof lib;
   limits: typeof limits;
+  matters: typeof matters;
 }>;
 
 /**

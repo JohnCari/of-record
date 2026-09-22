@@ -3,6 +3,8 @@
 import { join } from "node:path";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../convex/_generated/api";
+import { LAW_LIBRARY_ID } from "../src/lib/drafting/sections";
+import { PREPARED_MATTER } from "../src/lib/drafting/task";
 import { loadBundle } from "../src/lib/okf/load";
 
 const url = process.env.NEXT_PUBLIC_CONVEX_URL;
@@ -28,7 +30,8 @@ for (const doc of documents) {
 
   await convex.mutation(api.knowledge.upsertSource, {
     secret,
-    matterId,
+    // Opinions are one library shared by every case; the record belongs to this case.
+    matterId: kind === "authority" ? LAW_LIBRARY_ID : matterId,
     kind,
     sourceId: String(kind === "record" ? doc.frontmatter.doc_id : doc.frontmatter.authority_id),
     title: doc.title,
@@ -42,4 +45,7 @@ for (const doc of documents) {
   else authorities += 1;
 }
 
-console.log(`seeded matter "${matterId}": ${records} record documents, ${authorities} authorities`);
+await convex.mutation(api.matters.upsert, { secret, ...PREPARED_MATTER });
+console.log(
+  `seeded case "${matterId}": ${records} record documents; ${authorities} opinions in the law library`,
+);

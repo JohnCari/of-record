@@ -15,9 +15,11 @@ export function isRunning(draft: Doc<"drafts"> | null): boolean {
 /** One button. While a draft is in progress, the latest step is shown beside it in plain words. */
 export function RunControl({
   draft,
+  matterId,
   onStarted,
 }: {
   draft: Doc<"drafts"> | null;
+  matterId: string;
   onStarted: (draftId: Id<"drafts">) => void;
 }) {
   const [starting, setStarting] = useState(false);
@@ -25,7 +27,11 @@ export function RunControl({
 
   async function start() {
     setStarting(true);
-    const response = await fetch("/api/pipeline", { method: "POST" });
+    const response = await fetch("/api/pipeline", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ matterId }),
+    });
     setStarting(false);
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {

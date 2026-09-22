@@ -47,6 +47,23 @@ export const lane = v.union(v.literal("agentic"), v.literal("pipeline"));
 export default defineSchema({
   // One row per record document or authority. Passages live in their own table so search can
   // return the paragraph that matters instead of a whole deposition.
+  // A case the workspace can draft for: the prepared one, and any a person attaches.
+  matters: defineTable({
+    matterId: v.string(),
+    caption: v.string(),
+    court: v.string(),
+    docketNumber: v.optional(v.string()),
+    motionTitle: v.string(),
+    /** What the motion asks for, in one sentence. Drives what the judge selects for. */
+    motion: v.string(),
+    task: v.object({
+      elements: v.array(v.object({ id: v.string(), label: v.string(), need: v.string() })),
+      rules: v.array(v.object({ id: v.string(), rule: v.string(), query: v.string() })),
+    }),
+    prepared: v.boolean(),
+    url: v.optional(v.string()),
+  }).index("by_matterId", ["matterId"]),
+
   sources: defineTable({
     matterId: v.string(),
     kind: v.union(v.literal("record"), v.literal("authority")),

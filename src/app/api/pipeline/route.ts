@@ -1,5 +1,5 @@
 import { after } from "next/server";
-import { getBackend } from "@/lib/drafting/backend";
+import { getBackend, MATTER_ID } from "@/lib/drafting/backend";
 import { createPipelineDraft, runPipeline } from "@/lib/pipeline/run";
 import { isInvited, NOT_INVITED } from "@/lib/server/invited";
 import { api } from "../../../../convex/_generated/api";
@@ -8,10 +8,15 @@ import { api } from "../../../../convex/_generated/api";
 // follows progress through Convex, so nothing is held open.
 export const maxDuration = 300;
 
-export async function POST() {
+export async function POST(request: Request) {
   if (!(await isInvited())) return NOT_INVITED;
 
   const backend = getBackend();
+  const body = (await request.json().catch(() => ({}))) as { matterId?: string };
+  const matterId = body.matterId ?? MATTER_ID;
+  if (!(await backend.convex.query(api.matters.get, { matterId }))) {
+    return Response.json({ error: "Choose a case first." }, { status: 400 });
+  }
   const limit = await backend.convex.mutation(api.limits.takePipelineRun, {
     secret: backend.secret,
   });
@@ -22,7 +27,7 @@ export async function POST() {
     );
   }
 
-  const draftId = await createPipelineDraft(backend);
-  after(() => runPipeline(backend, draftId).catch(() => undefined)); // failure is recorded on the draft
+  const draftId = await createPipelineDraft(backend, matterId);
+  after(() => runPipeline(backend, draftId, { matterId }).catch(() => undefined)); // failure is recorded on the draft
   return Response.json({ draftId });
 }

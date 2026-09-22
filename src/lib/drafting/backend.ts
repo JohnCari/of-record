@@ -8,9 +8,9 @@ import { createJevJudge, type Judge } from "../verify/judge";
 import type { Authority, AuthorityResolver, RecordStore } from "../verify/sources";
 import type { DraftSentence, SentenceVerification } from "../verify/types";
 import { DEFAULT_OPTIONS, verifySentences } from "../verify/verify";
-import { MATTER_ID } from "./sections";
+import { LAW_LIBRARY_ID, MATTER_ID } from "./sections";
 
-export { MATTER_ID, SECTIONS, type SectionId } from "./sections";
+export { LAW_LIBRARY_ID, MATTER_ID, SECTIONS, type SectionId } from "./sections";
 
 export type Backend = { convex: ConvexHttpClient; secret: string };
 
@@ -43,7 +43,7 @@ export function convexRecordStore({ convex }: Backend, matterId = MATTER_ID): Re
 
 export async function authorityResolver(
   { convex }: Backend,
-  matterId = MATTER_ID,
+  matterId = LAW_LIBRARY_ID,
 ): Promise<AuthorityResolver> {
   const seeded = await convex.query(api.knowledge.listSources, { matterId, kind: "authority" });
   const corpus: Authority[] = [];
@@ -137,7 +137,7 @@ export async function validateDraft(
       : await verifySentences(
           pending,
           {
-            record: convexRecordStore(backend),
+            record: convexRecordStore(backend, state.draft.matterId),
             authorities: await authorityResolver(backend),
             judge,
           },

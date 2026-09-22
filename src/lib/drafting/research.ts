@@ -1,7 +1,7 @@
 import { api } from "../../../convex/_generated/api";
 import { createCourtListener } from "../courtlistener/client";
 import type { Backend } from "./backend";
-import { MATTER_ID } from "./sections";
+import { LAW_LIBRARY_ID } from "./sections";
 
 const COLORADO = "colo coloctapp";
 
@@ -34,12 +34,12 @@ export async function findAuthorityLeads(
   const terms = query.replace(/["()]/g, " ").replace(/\s+/g, " ").trim();
   const [passages, sources] = await Promise.all([
     convex.query(api.knowledge.search, {
-      matterId: MATTER_ID,
+      matterId: LAW_LIBRARY_ID,
       kind: "authority",
       text: terms,
       limit: 30,
     }),
-    convex.query(api.knowledge.listSources, { matterId: MATTER_ID, kind: "authority" }),
+    convex.query(api.knowledge.listSources, { matterId: LAW_LIBRARY_ID, kind: "authority" }),
   ]);
   const byId = new Map(sources.map((source) => [source.sourceId, source]));
   for (const passage of passages) {

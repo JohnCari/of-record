@@ -3,22 +3,24 @@
 import { useQuery } from "convex/react";
 import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/resizable";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MATTER_CAPTION, MATTER_DOCKET, MATTER_ID } from "@/lib/drafting/sections";
+import { MATTER_ID } from "@/lib/drafting/sections";
 import { cn } from "@/lib/utils";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+import { CasesPanel } from "./cases-panel";
 import { DraftPaper } from "./draft-paper";
 import { EvidencePanel } from "./evidence-panel";
 import { GateBar } from "./gate-bar";
-import { RecordPanel } from "./record-panel";
 import { isRunning, RunControl, RunProgress } from "./run-control";
 import { standingOf } from "./status";
 
 const DESKTOP = "(min-width: 1024px)";
+const OWN_CASES = "rossrecall.cases";
 
 /** Three panes side by side need room. Below this width the same panes become tabs. */
 function useIsDesktop() {
@@ -33,27 +35,49 @@ function useIsDesktop() {
   );
 }
 
-type Pane = "draft" | "evidence" | "record";
+/** The cases this browser attached. Kept here so an attached case is not listed to everyone. */
+function readOwnCases(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(OWN_CASES) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+
+type Pane = "draft" | "evidence" | "cases";
 
 export function Workspace() {
-  const [liveId, setLiveId] = useState<Id<"drafts"> | null>(null);
+  const [matterId, setMatterId] = useState(MATTER_ID);
+  const [ownCases, setOwnCases] = useState<string[]>([]);
+  // Blank until the person asks for a draft. Choosing another case blanks it again.
+  const [draftId, setDraftId] = useState<Id<"drafts"> | null>(null);
+  const [live, setLive] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pane, setPane] = useState<Pane>("draft");
   const isDesktop = useIsDesktop();
-  const [source, setSource] = useState<{ id: string; quotes: string[] }>({
-    id: "doc-78-1",
+  const [source, setSource] = useState<{ id: string | null; quotes: string[] }>({
+    id: null,
     quotes: [],
   });
+  useEffect(() => setOwnCases(readOwnCases()), []);
 
-  const recorded = useQuery(api.drafts.featured, { matterId: MATTER_ID, lane: "pipeline" });
-  const draftId = liveId ?? recorded ?? null;
-  const showingRecorded = !liveId && Boolean(recorded);
+  const matters = useQuery(api.matters.list, { ids: ownCases });
+  const matter = matters?.find((m) => m.matterId === matterId) ?? null;
+  const lastDraft = useQuery(api.drafts.latest, { matterId, lane: "pipeline" });
   const state = useQuery(api.drafts.get, draftId ? { draftId } : "skip");
+  const loading = draftId !== null && state === undefined;
 
-  const loading = recorded === undefined || (draftId !== null && state === undefined);
   const sentences = state?.sentences ?? [];
   const adjudications = state?.adjudications ?? [];
   const selected = sentences.find((s) => s.sentenceId === selectedId) ?? null;
+
+  function chooseMatter(id: string) {
+    setMatterId(id);
+    setDraftId(null);
+    setLive(false);
+    setSelectedId(null);
+    setSource({ id: null, quotes: [] });
+  }
 
   function show(sentenceId: string) {
     setSelectedId(sentenceId);
@@ -68,19 +92,10 @@ export function Workspace() {
     setPane("evidence");
   }
 
-  // The first thing on screen is an example, not an empty pane: a sentence that is the reader's
-  // call, with the filing open at its quote. Once per draft, and never over a choice already made.
+  // When a draft finishes, open on a sentence that is the reader's call, with the filing at its
+  // quote. Once per draft, and never over a choice already made.
   const finished = state?.draft.status === "gated" || state?.draft.status === "signed";
   const opened = useRef<string | null>(null);
-  const wasRunning = useRef(false);
-  useEffect(() => {
-    const running = isRunning(state?.draft ?? null);
-    if (wasRunning.current && !running && liveId && state) {
-      const review = sentences.filter((s) => standingOf(s) === "review").length;
-      toast.success(`Draft ready: ${sentences.length} sentences, ${review} for your review.`);
-    }
-    wasRunning.current = running;
-  }, [state, liveId, sentences]);
   useEffect(() => {
     if (!finished || !draftId || opened.current === draftId) return;
     opened.current = draftId;
@@ -92,8 +107,29 @@ export function Workspace() {
     setSource({ id: first.recordCites[0].docId, quotes: first.recordCites.map((c) => c.quote) });
   }, [finished, draftId, sentences]);
 
-  const record = (
-    <RecordPanel
+  const wasRunning = useRef(false);
+  useEffect(() => {
+    const running = isRunning(state?.draft ?? null);
+    if (wasRunning.current && !running && live && state) {
+      const review = sentences.filter((s) => standingOf(s) === "review").length;
+      toast.success(`Draft ready: ${sentences.length} sentences, ${review} for your review.`);
+    }
+    wasRunning.current = running;
+  }, [state, live, sentences]);
+
+  const cases = (
+    <CasesPanel
+      matters={matters ?? []}
+      matterId={matterId}
+      onChooseMatter={chooseMatter}
+      onAttached={(id) => {
+        const next = [...ownCases, id];
+        setOwnCases(next);
+        try {
+          localStorage.setItem(OWN_CASES, JSON.stringify(next));
+        } catch {}
+        chooseMatter(id);
+      }}
       sourceId={source.id}
       quotes={source.quotes}
       onSelect={(id) => setSource({ id, quotes: [] })}
@@ -106,7 +142,7 @@ export function Workspace() {
           Click a sentence to see its source. <span className="text-verified">Green</span> passed,{" "}
           <span className="text-review">amber</span> is your call,{" "}
           <span className="text-blocked">red</span> failed.
-          {showingRecorded && " Recorded run."}
+          {!live && " An earlier draft of this case."}
         </p>
       )}
       <DraftPaper
@@ -116,7 +152,7 @@ export function Workspace() {
         adjudications={adjudications}
         selectedId={selectedId}
         onSelect={select}
-        caption={MATTER_CAPTION}
+        matter={matter}
       />
     </ScrollArea>
   );
@@ -125,10 +161,10 @@ export function Workspace() {
       draftId={draftId ?? ""}
       sentence={selected}
       adjudication={adjudications.find((a) => a.sentenceId === selectedId)}
-      readOnly={showingRecorded}
+      readOnly={!live}
       onOpenSource={(id, quotes) => {
         setSource({ id, quotes });
-        setPane("record");
+        setPane("cases");
       }}
     />
   );
@@ -137,16 +173,27 @@ export function Workspace() {
     <div className="flex h-full min-h-0 flex-col">
       <header className="flex flex-wrap items-center gap-3 border-b bg-card px-3 py-2">
         <div className="min-w-0">
-          <h1 className="truncate font-serif text-base leading-tight">{MATTER_CAPTION}</h1>
+          <h1 className="truncate font-serif text-base leading-tight">
+            {matter?.caption ?? "Choose a case"}
+          </h1>
           <p className="text-xs text-muted-foreground">
-            {MATTER_DOCKET} (D. Colo.). One real case, prepared in advance from public filings.
+            {matter?.docketNumber ? `${matter.docketNumber}, ` : ""}
+            {matter?.court}
+            {matter?.prepared && ". Prepared in advance from public filings."}
           </p>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          {!draftId && lastDraft && (
+            <Button variant="ghost" size="sm" onClick={() => setDraftId(lastDraft)}>
+              Show the last draft
+            </Button>
+          )}
           <RunControl
             draft={state?.draft ?? null}
+            matterId={matterId}
             onStarted={(id) => {
-              setLiveId(id);
+              setDraftId(id);
+              setLive(true);
               setSelectedId(null);
               setPane("draft");
             }}
@@ -166,7 +213,7 @@ export function Workspace() {
           draft={state.draft}
           sentences={sentences}
           adjudications={adjudications}
-          readOnly={showingRecorded}
+          readOnly={!live}
           onJumpToOpen={select}
         />
       )}
@@ -174,7 +221,7 @@ export function Workspace() {
       {isDesktop ? (
         <ResizablePanelGroup orientation="horizontal" className="min-h-0 flex-1">
           <ResizablePanel defaultSize="27%" minSize="18%" className="bg-card">
-            {record}
+            {cases}
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize="45%" minSize="30%">
@@ -189,17 +236,17 @@ export function Workspace() {
         <>
           <Tabs value={pane} onValueChange={(value) => setPane(value as Pane)}>
             <TabsList className="w-full rounded-none border-b">
+              <TabsTrigger value="cases">Cases</TabsTrigger>
               <TabsTrigger value="draft">Draft</TabsTrigger>
               <TabsTrigger value="evidence">Evidence</TabsTrigger>
-              <TabsTrigger value="record">Record</TabsTrigger>
             </TabsList>
           </Tabs>
           {/* Every pane stays mounted, so the scroll position survives a switch. */}
           {(
             [
+              ["cases", cases, "bg-card"],
               ["draft", draft, ""],
               ["evidence", evidence, "bg-card"],
-              ["record", record, "bg-card"],
             ] as [Pane, ReactNode, string][]
           ).map(([id, content, tone]) => (
             <div key={id} className={cn("min-h-0 flex-1", tone, pane !== id && "hidden")}>

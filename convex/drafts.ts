@@ -259,6 +259,26 @@ export const featured = query({
   },
 });
 
+/** The most recent finished draft for a case, so switching back to it can show the last one. */
+export const latest = query({
+  args: { matterId: v.string(), lane },
+  returns: v.union(v.null(), v.id("drafts")),
+  handler: async (ctx, args) => {
+    const recent = await ctx.db
+      .query("drafts")
+      .withIndex("by_matterId_and_lane", (q) =>
+        q.eq("matterId", args.matterId).eq("lane", args.lane),
+      )
+      .order("desc")
+      .take(50);
+    return (
+      recent.find((d) => d.featured)?._id ??
+      recent.find((d) => d.status === "gated" || d.status === "signed")?._id ??
+      null
+    );
+  },
+});
+
 /** The browser knows its eve session id before it knows the draft the agent created for it. */
 export const bySession = query({
   args: { sessionId: v.string() },

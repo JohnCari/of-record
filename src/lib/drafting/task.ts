@@ -1,4 +1,5 @@
 import type { Element } from "../pipeline/select";
+import { MATTER_ID } from "./sections";
 
 /**
  * What Granite has to show to be entitled to the escrowed funds. This is the one piece of
@@ -53,3 +54,20 @@ export const RULES = [
       "breach of contract elements existence of a contract performance failure to perform damages",
   },
 ] as const;
+
+/** The prepared case, as seeded. Every other case comes from what a person attaches. */
+export const PREPARED_MATTER = {
+  matterId: MATTER_ID,
+  caption: "Granite Southlands Town Center, LLC v. Alberta Town Center, LLC",
+  court: "United States District Court for the District of Colorado",
+  docketNumber: "No. 1:09-cv-00799",
+  motionTitle: "Plaintiff's Motion for Summary Judgment",
+  motion:
+    "Granite moves for summary judgment that it, not Alberta, is entitled to the $650,000 held in escrow.",
+  task: { elements: ELEMENTS, rules: RULES.map((r) => ({ ...r })) },
+  prepared: true,
+  url: "https://www.courtlistener.com/docket/4195314/granite-southlands-town-center-llc-v-alberta-town-center-llc/",
+};
+
+/** Every summary-judgment motion states these, whatever the case. */
+export const STANDARD_RULES = RULES.filter((r) => r.id.startsWith("sj-")).map((r) => ({ ...r }));

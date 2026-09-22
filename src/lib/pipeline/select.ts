@@ -87,14 +87,15 @@ export async function selectFacts(
   backend: Backend,
   elements: Element[],
   options: {
+    matterId?: string;
     perElement?: number;
     minProbability?: number;
     usage?: JudgeUsage;
     signal?: AbortSignal;
   } = {},
 ): Promise<SelectedFact[]> {
-  const { perElement = 5, minProbability = 0.6, usage, signal } = options;
-  const candidates = await recordCandidates(backend);
+  const { matterId = MATTER_ID, perElement = 5, minProbability = 0.6, usage, signal } = options;
+  const candidates = await recordCandidates(backend, matterId);
   const criteria = Object.fromEntries([
     ...elements.map((e) => [e.id, e.need] as const),
     [

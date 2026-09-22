@@ -2,8 +2,9 @@ import { FileText } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { MATTER_COURT, MATTER_DOCKET, MOTION_TITLE, SECTIONS } from "@/lib/drafting/sections";
+import { SECTIONS } from "@/lib/drafting/sections";
 import { cn } from "@/lib/utils";
+import type { Doc } from "../../../convex/_generated/dataModel";
 import { type Adjudication, type Sentence, STANDING, shortCite, standingOf } from "./status";
 
 export function DraftPaper({
@@ -13,7 +14,7 @@ export function DraftPaper({
   adjudications,
   selectedId,
   onSelect,
-  caption,
+  matter,
 }: {
   /** True while a live run is writing: empty sections are shown as placeholder lines. */
   drafting?: boolean;
@@ -23,7 +24,7 @@ export function DraftPaper({
   adjudications: Adjudication[];
   selectedId: string | null;
   onSelect: (sentenceId: string) => void;
-  caption: string;
+  matter: Doc<"matters"> | null;
 }) {
   const decided = new Map(adjudications.map((a) => [a.sentenceId, a]));
   const paper = useRef<HTMLElement>(null);
@@ -46,7 +47,7 @@ export function DraftPaper({
       <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
         <FileText className="size-8 text-muted-foreground" aria-hidden />
         <p className="max-w-sm text-sm text-muted-foreground">
-          Nothing drafted yet. Use "Draft the motion" above.
+          Choose a case, then Draft the motion.
         </p>
       </div>
     );
@@ -59,10 +60,10 @@ export function DraftPaper({
     >
       <header className="pleading-line mb-6">
         <div>
-          <p className="text-sm">{MATTER_COURT}</p>
-          <p className="font-semibold">{caption}</p>
-          <p className="text-sm">{MATTER_DOCKET}</p>
-          <p className="mt-3 text-center font-semibold">{MOTION_TITLE}</p>
+          <p className="text-sm">{matter?.court}</p>
+          <p className="font-semibold">{matter?.caption}</p>
+          {matter?.docketNumber && <p className="text-sm">{matter.docketNumber}</p>}
+          <p className="mt-3 text-center font-semibold">{matter?.motionTitle}</p>
         </div>
       </header>
 

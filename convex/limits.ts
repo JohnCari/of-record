@@ -10,6 +10,8 @@ const limiter = new RateLimiter(components.rateLimiter, {
   pipelineRun: { kind: "fixed window", rate: 40, period: DAY },
   // Case-law search is open to anyone, so the ceiling protects the CourtListener quota.
   search: { kind: "token bucket", rate: 30, period: MINUTE, capacity: 10 },
+  // Attaching a case stores files and calls the writer once, so it has a daily ceiling too.
+  attachCase: { kind: "fixed window", rate: 20, period: DAY },
 });
 
 export const takePipelineRun = mutation({
@@ -28,6 +30,16 @@ export const takeSearch = mutation({
   handler: async (ctx, { secret }) => {
     assertServer(secret);
     const { ok, retryAfter } = await limiter.limit(ctx, "search");
+    return { ok, retryAfterMs: retryAfter ?? null };
+  },
+});
+
+export const takeAttachCase = mutation({
+  args: { secret: v.string() },
+  returns: v.object({ ok: v.boolean(), retryAfterMs: v.union(v.number(), v.null()) }),
+  handler: async (ctx, { secret }) => {
+    assertServer(secret);
+    const { ok, retryAfter } = await limiter.limit(ctx, "attachCase");
     return { ok, retryAfterMs: retryAfter ?? null };
   },
 });

@@ -10,23 +10,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MATTER_ID } from "@/lib/drafting/sections";
 import { api } from "../../../convex/_generated/api";
+import type { Doc } from "../../../convex/_generated/dataModel";
+import { AttachCaseDialog } from "./attach-case-dialog";
 import { CaseSearch } from "./case-search";
 import { TextLines } from "./placeholders";
 import { Quoted } from "./quoted";
 
-export function RecordPanel({
+export function CasesPanel({
+  matters,
+  matterId,
+  onChooseMatter,
+  onAttached,
   sourceId,
   quotes,
   onSelect,
 }: {
-  sourceId: string;
+  matters: Doc<"matters">[];
+  matterId: string;
+  onChooseMatter: (matterId: string) => void;
+  onAttached: (matterId: string) => void;
+  sourceId: string | null;
   quotes: string[];
   onSelect: (sourceId: string) => void;
 }) {
-  const sources = useQuery(api.knowledge.listSources, { matterId: MATTER_ID, kind: "record" });
-  const source = useQuery(api.knowledge.getSource, { matterId: MATTER_ID, sourceId });
+  const sources = useQuery(api.knowledge.listSources, { matterId, kind: "record" });
+  const source = useQuery(api.knowledge.getSource, sourceId ? { matterId, sourceId } : "skip");
   const body = useRef<HTMLDivElement>(null);
 
   // Bring the highlighted words into view when a sentence sends the reader here. The rendered
@@ -39,15 +48,31 @@ export function RecordPanel({
   return (
     <Tabs defaultValue="file" className="flex h-full min-h-0 flex-col gap-0">
       <TabsList className="w-full rounded-none border-b">
-        <TabsTrigger value="file">Case file</TabsTrigger>
+        <TabsTrigger value="file">Cases</TabsTrigger>
         <TabsTrigger value="search">Find a case</TabsTrigger>
       </TabsList>
       <TabsContent value="file" className="min-h-0 flex-1">
         <div className="flex h-full min-h-0 flex-col">
-          <div className="border-b p-2">
-            <Select value={sourceId} onValueChange={onSelect}>
-              <SelectTrigger className="w-full" aria-label="Record document">
-                <SelectValue placeholder="Choose a filing" />
+          <div className="flex flex-col gap-2 border-b p-2">
+            <div className="flex gap-2">
+              <Select value={matterId} onValueChange={onChooseMatter}>
+                <SelectTrigger className="min-w-0 flex-1" aria-label="Case">
+                  <SelectValue placeholder="Choose a case" />
+                </SelectTrigger>
+                <SelectContent>
+                  {matters.map((m) => (
+                    <SelectItem key={m.matterId} value={m.matterId}>
+                      {m.caption}
+                      {m.prepared ? " (prepared)" : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <AttachCaseDialog onAttached={onAttached} />
+            </div>
+            <Select value={sourceId ?? ""} onValueChange={onSelect}>
+              <SelectTrigger className="w-full" aria-label="Filing">
+                <SelectValue placeholder="Choose a filing to read" />
               </SelectTrigger>
               <SelectContent>
                 {(sources ?? []).map((s) => (
@@ -61,7 +86,13 @@ export function RecordPanel({
 
           <ScrollArea className="min-h-0 flex-1">
             <div ref={body} className="flex flex-col gap-3 p-5">
-              {source === undefined && <TextLines lines={10} heading />}
+              {sourceId && source === undefined && <TextLines lines={10} heading />}
+              {!sourceId && (
+                <p className="text-sm text-muted-foreground">
+                  {sources?.length ?? 0} filings. Choose one to read, or click a sentence in the
+                  draft.
+                </p>
+              )}
               {source && (
                 <>
                   <h2 className="font-serif text-lg leading-snug">{source.title}</h2>

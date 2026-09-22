@@ -10,6 +10,10 @@ export const metadata: Metadata = { title: `How it works, ${APP_NAME}` };
 
 // What the reader does, in order.
 const HOW_TO = [
+  {
+    title: "Choose a case",
+    body: "The prepared one is ready. Or attach your own: the filings you have, and one sentence on what the motion asks for.",
+  },
   { title: "Draft the motion", body: "One button, top right. About half a minute." },
   {
     title: "Click a sentence",
@@ -74,7 +78,7 @@ export default function HowItWorksPage() {
         <section className="grid gap-6 lg:grid-cols-[1fr_2fr]">
           <div>
             <h1 className="font-serif text-3xl leading-tight">How to use it</h1>
-            <p className="mt-2 text-muted-foreground">Four things, in order.</p>
+            <p className="mt-2 text-muted-foreground">Five things, in order.</p>
           </div>
           <Numbered items={HOW_TO} />
         </section>
